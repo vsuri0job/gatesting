@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Example of using Google Analytics API Tutorial using Javascript</title>
+ <meta name="description" content="Learn how to query Google Analytics API using Javascript - ByTutorial.com">
+<link href="style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="transparent-wrapper">
+	<div id="wait-box">
+		<div><img src="images/loading-bubble.gif"/></div>
+		<div>Please wait....</div>
+	</div>
+	
+</div>
+<div id="login-box" class="hidden">
+	<p>Please login on your google account.</p>
+	<button id="btnLogin" onclick="byTutorialAnalytics.handleAuthClick()" class="button">Login</button>
+</div>
+
+<div id="account-panel" class="hidden">
+	<h1>Example of My Analytics Panel</h1>
+	<p>Please note this is an example only on how to access your google analytics account.</p>
+	<table class="tbl" cellpadding="0" cellspacing="0">
+		<tr>
+			<td>Site: </td>
+			<td><select id="cboAccount"></select></td>
+		</tr>
+		<tr>
+			<td>Period: </td>
+			<td><select id="cboPeriod">
+					<option value="today">Today</option>
+					<option value="yesterday">Yesterday</option>
+					<option value="7daysago">Last Week</option>
+					<option value="14daysago">Last Two Weeks</option>
+					<option value="28daysago"">Last Four Weeks</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Data Type: </td>
+			<td>
+				<div><input type="checkbox" data-id="ga:users" class="chk-data" checked="true"/> ga:users</div>
+				<div><input type="checkbox" data-id="ga:newUsers" class="chk-data" checked="true"/> ga:newUsers</div>
+				<div><input type="checkbox" data-id="ga:hits" class="chk-data" checked="true"/> ga:hits</div>
+				<div><input type="checkbox" data-id="ga:sessions" class="chk-data" checked="true"/> ga:sessions</div>
+				<div><input type="checkbox" data-id="ga:visits" class="chk-data" checked="true"/> ga:visits</div>
+				<div><input type="checkbox" data-id="ga:bounces" class="chk-data" checked="true"/> ga:bounces</div>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><button id="btnQuery" onclick="byTutorialAnalytics.queryAnalytics()" class="button">Query</button> <button id="btnReset" onclick="byTutorialAnalytics.reset()" class="button">Reset</button> <button id="btnLogout" onclick="byTutorialAnalytics.handleSignoutClick()" class="button">Log off</button></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+	
+	<div id="result" class="hidden">
+		<h2>Query Result</h2>
+		<div id="query-result" class="result-box"></div>
+		
+		<h2>JSON Result</h2>
+		<div id="json-result" class="result-box"></div>
+	</div>
+	
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="analytics.js"></script>
+<script async defer src="http://apis.google.com/js/api.js" 
+      onload="this.onload=function(){};byTutorialAnalytics.handleClientLoad()" 
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+</body>
+</html>

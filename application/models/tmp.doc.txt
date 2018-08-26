@@ -1,0 +1,308 @@
+https://console.developers.google.com/apis/api/analytics.googleapis.com/overview?project=webstie-portals&duration=PT1H
+https://ga-dev-tools.appspot.com/query-explorer/
+
+AIzaSyCX4IqApFXkbFm22e5f0-xYMC5P1WffqM8
+
+webstie-portals
+webstie-portals
+
+https://benmarshall.me/google-analytics-api-tutorial/
+
+UA-122935284-1
+122935284
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122935284-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122935284-1');
+</script>
+
+
+
+Google
+https://github.com/jayaneetha/GoogleAnalytics-CodeIgniter
+
+https://github.com/renofizaldy/google-analytics-library-codeigniter
+https://github.com/joeauty/Google-API-Client-CodeIgniter-Spark
+https://stackoverflow.com/questions/25668009/google-analytics-api-on-codeigniter-website
+
+Rankinity
+https://github.com/JayBizzle/Rankinity-API
+
+$ga_params = array(
+          'applicationName' => $this->config->item('ga_api_applicationName'),
+           'clientID' => $this->config->item('ga_api_clientId'),
+          'clientSecret' => $this->config->item('ga_api_clientSecret'),
+          'redirectUri' => $this->config->item('ga_api_redirectUri'),
+           'developerKey' => $this->config->item('ga_api_developerKey'),
+           'profileID' => $this->config->item('ga_api_profileId')
+       );
+ $this->load->library('GoogleAnalytics', $ga_params);
+
+https://analytics.google.com/analytics/web/?authuser=0#/report-home/a122935284w181125869p179093056
+  
+
+=========================================
+https://support.google.com/analytics/answer/1009702
+https://developers.google.com/analytics/devguides/platform/
+https://ga-dev-tools.appspot.com/embed-api/basic-dashboard/
+
+https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/web-php
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+
+
+
+Gmail Logins:
+51blocks@gmail.com	UTa4xTDQ%kPsdV
+303-349-4233
+
+From:
+Harish Chander
+ga:132440718
+
+
+Credentials for the cablescience.net :-
+www.cablescience.net
+www.cablescience.net/admin   ( interstellar   /   nT5e,b||〉qQ〉 )
+
+Cpanel:- 
+https://la.interstellardata.com:2083/  ( cablesci / uNrx@I(4Z1H1 )
+
+tep_href_link
+
+OAuth client
+client ID
+5094604723-p5r009kn58j9ucgehqe09djmktnr9ttr.apps.googleusercontent.com
+client secret
+2EwY1gHPNnIXX5u-ODhcoiiW
+
+Open For Check:
+https://ga-dev-tools.appspot.com/query-explorer/
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/reference/
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/authorization
+
+https://developers.google.com/api-client-library/php/start/get_started
+https://developers.google.com/identity/protocols/OAuth2WebServer
+https://developers.google.com/api-client-library/php/auth/web-app
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/reference/data/realtime/get
+https://developers.google.com/apis-explorer/#search/analytics/analytics/v3/analytics.data.ga.get
+
+
+https://developers.google.com/analytics/devguides/reporting/core/v3/quickstart/service-php
+https://developers.google.com/analytics/devguides/config/mgmt/v3/quickstart/web-php
+
+https://console.developers.google.com/apis/dashboard?project=webstie-portals&duration=PT1H
+https://support.google.com/analytics/answer/1009702
+
+https://developers.google.com/analytics/devguides/config/mgmt/v3/quickstart/web-php
+
+http://ladash.com
+ngrok http -host-header=ladash.com ladash.com:80
+
+SVN checkout link: http://10.11.11.10:18080/svn/adash
+
+Database details: http://10.20.1.20/phpmyadmin
+	
+	username: adash
+	Database: adash
+	Passworf: g4dDY9WozoUy95jT
+
+Web link: http://adash.mobilytedev.com
+
+su-admin logins
+
+	URL: http://adash.mobilytedev.com/
+	username: superadmin
+	password: superadmin@123
+
+5094604723
+527941907632
+
+658-302-2172
+Gmail Logins:
+51blocks@gmail.com	UTa4xTDQ%kPsdV
+51blocks@gmail.com  G}_a58%t?g8\M!38
+51blocks@gmail.com  zeF2a*v$ghz8
+borgeltadwords51TM@gmail.com  UTa4xTDQ%kPsdV
+
+280-148-8220
+imsadvertisingseo@gmail.com
+IMSAdvertising123
+
+mborgelt@gmail.com
+Durant33
+
+eb6069b753b22a60b920e06234d75e1c
+e510ef1896516f5a7ed69ef24c6e4eb11f609b7f6593013b4b9a0e8fea4e4365
++---------
+Trello Developer API Key
+464d5cf6358ff139d1b80d9bbe5ac862
+Trello Secret Key
+fb3ff944bf99f0bee73ae19f241b19fb549963f6227dfae6d6898fe2ab07861d
+
+www.webexpert@gmail.com
+Password- mobilyte@123
+
+<script src="https://api.trello.com/1/client.js?key=464d5cf6358ff139d1b80d9bbe5ac862"></script>
+
+
+Google My Business API
+
+	API project
+
+admin
+Borgelt
+
+ALTER TABLE `users`  ADD `google_access_token` VARCHAR(400) NOT NULL DEFAULT ''  AFTER `report_logo`;
+
+INSERT INTO `social_app_data` (`id`, `social_name`, `client_id`, `client_secret`) VALUES ('1', 'google', '5094604723-p5r009kn58j9ucgehqe09djmktnr9ttr.apps.googleusercontent.com', '2EwY1gHPNnIXX5u-ODhcoiiW');
+
+
+TRUNCATE TABLE analytic_profiles;
+TRUNCATE TABLE analytic_profile_properties;
+TRUNCATE TABLE analytic_profile_property_views;
+TRUNCATE TABLE analytic_profile_property_view_data;
+ALTER TABLE `users` CHANGE `google_access_token` `google_access_token` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL;
+ALTER TABLE `analytic_profile_property_view_data`  ADD `modified_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  AFTER `goal_completion_all`;
+ALTER TABLE `users` ADD `google_token_expiration_time` DATETIME NULL DEFAULT NULL AFTER `google_access_token`;
+ALTER TABLE `users` ADD `google_refresh_token` TEXT NULL AFTER `report_logo`;
+
+{"access_token":"ya29.GlwJBmgFpkZQaMEvYPnkSgB3gk-qygAqQnHcyCmkZqrd6-pnQOOcD-1aaebCk3tWlmYvxXNz9wnkKDmJZy5AsTlK_jfWcRZEuals-hdlLz_7y4CO4rshaVcD72v3mw","token_type":"Bearer","expires_in":3599,"id_token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjQwYzZiMDliNDQ5NjczNDUzYzNkYTY5OWUyZGY1NTI3ZjkxZTY4MDMifQ.eyJhenAiOiI1MDk0NjA0NzIzLXA1cjAwOWtuNThqOXVjZ2VocWUwOWRqbWt0bnI5dHRyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNTA5NDYwNDcyMy1wNXIwMDlrbjU4ajl1Y2dlaHFlMDlkam1rdG5yOXR0ci5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNzU0NzA2ODU5OTg4MTA2NjA1MiIsImVtYWlsIjoiNTFibG9ja3NAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiI0M3FQSU8yRDZMMFoxQjVUbkh6a0pRIiwiZXhwIjoxNTMzMDc3MzUwLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJpYXQiOjE1MzMwNzM3NTAsIm5hbWUiOiJNaWNoYWVsIEJvcmdlbHQiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDUuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy1oMDlDdEpKZC1wSS9BQUFBQUFBQUFBSS9BQUFBQUFBQUJ1VS8wVzVMOTBOQXFmRS9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiTWljaGFlbCIsImZhbWlseV9uYW1lIjoiQm9yZ2VsdCIsImxvY2FsZSI6ImVuIn0.bSZyjSUbZguTNctirRX0QbJUEY-IYT3BNL5h3ny-v5WFBT3YaPE1n5SYCZyVgpV4G4gA7TJmi3HMe63bcfbBPOw66U6RL1V4SA6c1e5S2DithHePwh7KO4a2HJhTci5Hv_fM5YN4JMWJfaM3rY-5vPzsC3YXkN4YlzKCvukUxYC_xNAxmLxnS69l4t0If-8N5ToCMO21g9AGJTCJKY9YL1i7gUCFwcgIoVhSaIPdN_J1G9y6F19VbhQ6ePEWhV4k1Ho5kLu-w1JREjE_1pgH0fWbDsuwSgSqtLMXFNiYHyF6H9w_kSWYUw4CcEuuYX2jzEGvDMV4o4gNuw_BzV8UhQ","created":1533073750}
+
+AT9Td3CG7HNw34E-wRM7Mg
+
+Brittany Filori [3:42 PM]
+michael@51blocks.com
+Durant33!
+
+
+https://github.com/googleads/googleads-php-lib/wiki/API-access-on-behalf-of-your-clients-(web-flow)
+https://developers.google.com/adwords/api/docs/guides/authentication#webapp
+https://github.com/googleads/googleads-php-lib/wiki/API-access-using-own-credentials-(installed-application-flow)
+https://github.com/googleads/googleads-php-lib/wiki/API-access-using-own-credentials-(installed-application-flow)#step-2---setting-up-the-client-library
+https://developers.google.com/identity/protocols/OAuth2WebServer
+https://developers.google.com/adwords/api/docs/guides/authentication#scope
+https://developers.google.com/identity/protocols/OAuth2WebServer#offline
+https://developers.google.com/adwords/api/docs/guides/authentication#installed
+https://developers.google.com/adwords/api/docs/guides/samples-use-cases
+https://developers.google.com/adwords/api/docs/guides/authentication#webapp
+https://github.com/googleads/googleads-php-lib
+https://developers.google.com/identity/protocols/OAuth2WebServer#offline
+
+https://console.cloud.google.com/home/dashboard?project=webstie-portals&_ga=2.165851581.-2037616461.1534195035&pli=1&authuser=1
+https://console.developers.google.com/home/dashboard?project=project-adash-io&authuser=1&duration=PT1H
+
+imsadvertisingseo@gmail.com
+IMSAdvertising123
+
+API Key
+AIzaSyB8tgyN3rcPZN1ui_LW0jYJQugiXWro-w8
+http://reviewchamp.net
+http://www.reviewchamp.net/login/manage/connect-social-pages
+
+Review Champ - Web client
+Client ID:  455306179471-57g8mnief9065t2kd2gdbd3v8sd0j2n4.apps.googleusercontent.com
+Client secret:  OiyKGU_gPn8TR7zOl1o399CM
+http://reviewchamp.net
+http://www.reviewchamp.net/login/manage/connect-social-pages
+
+
+Hi,
+
+It seems that you are setting your clientCustomerId in your property file as your manager account, that's why, there are no campaigns and ad groups being returned in your responses. Most of the AdWords API services like CampaignService and AdGroupService requires the clientCustomerId to be a client account, and not a manager account.
+
+If this is indeed your scenario, then please do the suggestion. If this is not your scenario, then kindly provide your SOAP request and response logs so I can further investigate. Please use the Reply privately to author option when replying.
+
+Thanks,
+Vincent
+AdWords API Team
+
+https://developers.google.com/adwords/api/docs/guides/samples-use-cases
+
+INSERT INTO `social_app_data` (`id`, `social_name`, `client_id`, `client_secret`) VALUES (NULL, 'google-adword', '658-302-2172', 'd3jwI25PeYNjLSBCg_NzpQ');
+
+"message": "Google My Business API has not been used in project 407408718192 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/mybusiness.googleapis.com/overview?project=407408718192 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.", 
+
+
+Message: { "error": { "code": 401, "message": "Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.", "errors": [ { "message": "Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.", "domain": "global", "reason": "unauthorized" } ], "status": "UNAUTHENTICATED" } }
+
+DROP TABLE `accounts`, `agencies`, `client_citations`, `contacts`, `contents`, `logins`, `services`, `services_master`, `services_owner`;
+https://docs.google.com/spreadsheets/d/18ZjCAvlC-Z939cgQ9iTgTjLjtSiK7vU-0z8YGnQ2e4o/edit#gid=62778057
+
+
+UPDATE `account_url_profiles_social_token` SET `adword_refresh_token` = '', `adword_access_token` = '' WHERE `account_url_profiles_social_token`.`id` = 10;
+
+Your email has been sent to AdWords Support! We'll send you a reply as soon as we can, typically within one business day.
+
+Hi Muniyasamy, 
+
+The USER_PERMISSION_DENIED error means that the user who authorized your API call does not have access to the target AdWords account. If you are using the credentials of an MCC account to make the calls against the client account, you have to make sure that the accounts are still linked. If you are using the credentials of the user on the target account, you will have to make sure that the person who authorized the call (who accepted the prompt manually to generate the authorization code while setting up OAuth) has access to the specific account. If you are doubtful about this, please follow the steps to setup the OAuth once again and accept the prompt while logged in as the user who has access to the account. 
+
+If you believe that the credentials you are using has access to the target account, you could perform a CustomerService.getCustomers() and check for the results. If they are using the credentials of a manager account, it will list the MCC accounts and any other account that user has direct access to. If the target account is not listed in the results, that would mean that the credentials cannot access that specific account. Please give this a try and let me know if you are still facing issues. 
+
+Thanks,
+Sreelakshmi, AdWords API Team
+
+https://groups.google.com/forum/#!topic/adwords-api/7y4Y8Faf0aY
+https://groups.google.com/forum/#!newtopic/adwords-api/adwords-api/2-8chqrGyps
+
+ALTER TABLE `adword_account_list`  ADD `log_acc_id` INT(11) UNSIGNED NOT NULL DEFAULT '0'  AFTER `id`,  ADD `prof_id` INT(10) UNSIGNED NOT NULL DEFAULT '0'  AFTER `log_acc_id`;
+
+ALTER TABLE `google_business_pages` ADD `url_profile_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `account_id`;
+
+
+658-302-2172
+
+ALTER TABLE `account_url_profiles_social_token`  ADD `adword_customer_id` VARCHAR(50) NOT NULL DEFAULT ''  AFTER `anlytic_token_expiration_time`;
+
+ALTER TABLE `analytic_profile_property_view_adword_data` CHANGE `fetched_analytic_prof_id` `url_profile_id` INT(10) UNSIGNED NOT NULL DEFAULT '0';
+
+
+TRUNCATE table `analytic_profile_property_view_adword_data`;
+TRUNCATE table `analytic_profile_property_view_adword_data_detail`;
+
+ALTER TABLE `analytic_profile_property_view_adword_data` ADD  FOREIGN KEY (`account_id`) REFERENCES `account_url_profiles`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `analytic_profile_property_view_adword_data_detail` ADD  FOREIGN KEY (`account_id`) REFERENCES `account_url_profiles`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `adword_account_list` ADD  FOREIGN KEY (`prof_id`) REFERENCES `account_url_profiles`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+TRUNCATE TABLE account_url_profiles;
+TRUNCATE TABLE analytic_profiles;
+TRUNCATE TABLE account_url_profiles_social_token;
+TRUNCATE TABLE analytic_profile_properties;
+TRUNCATE TABLE analytic_profile_property_views;
+TRUNCATE TABLE `google_business_pages`;
+TRUNCATE TABLE `google_business_page_locations`;
+TRUNCATE TABLE `analytic_profile_property_view_adword_data`;
+TRUNCATE TABLE `analytic_profile_property_view_adword_data_detail`;
+TRUNCATE TABLE `analytic_profile_property_view_data`;
+TRUNCATE TABLE `analytic_profile_property_view_data_detail`;
+
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE  `rankinity_projects`;
+TRUNCATE TABLE adword_account_list;
+TRUNCATE TABLE account_url_profiles;
+TRUNCATE TABLE analytic_profiles;
+TRUNCATE TABLE account_url_profiles_social_token;
+TRUNCATE TABLE analytic_profile_properties;
+TRUNCATE TABLE analytic_profile_property_views;
+TRUNCATE TABLE `google_business_pages`;
+TRUNCATE TABLE `google_business_page_locations`;
+TRUNCATE TABLE `analytic_profile_property_view_adword_data`;
+TRUNCATE TABLE `analytic_profile_property_view_adword_data_detail`;
+TRUNCATE TABLE `analytic_profile_property_view_data`;
+TRUNCATE TABLE `analytic_profile_property_view_data_detail`;
+TRUNCATE TABLE analytic_profile_property_adwords_associations;
+SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE `analytic_profile_property_view_adword_data` CHANGE `fetched_analytic_prof_id` `account_url_profiles` INT(10) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `analytic_profile_property_view_adword_data_detail` CHANGE `fetched_analytic_prof_id` `account_url_profiles` INT(10) UNSIGNED NOT NULL DEFAULT '0';
+https://my.rankinity.com/api.html
+
+5a0db85f460fd75b40d3b6a0a57e63e0
+5a0db85f460fd75b40d3b6a0a57e63e0

@@ -1,0 +1,10 @@
+assets/*
+logs/*
+uploads/*
+user_guide
+application/composer.lock
+application/vendor
+application/config/config.php
+application/config/database.php
+otherTemp.txt
+application/custom_libraries/*
