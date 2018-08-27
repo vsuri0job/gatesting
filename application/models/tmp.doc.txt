@@ -258,7 +258,7 @@ ALTER TABLE `google_business_pages` ADD `url_profile_id` INT(10) UNSIGNED NOT NU
 
 658-302-2172
 
-ALTER TABLE `account_url_profiles_social_token`  ADD `adword_customer_id` VARCHAR(50) NOT NULL DEFAULT ''  AFTER `anlytic_token_expiration_time`;
+ALTER TABLE `account_url_profiles_social_token`  ADD `adword_customer_id` VARCHAR(50) NOT NULL DEFAULT ''  AFTER `analytic_token_expiration_time`;
 
 ALTER TABLE `analytic_profile_property_view_adword_data` CHANGE `fetched_analytic_prof_id` `url_profile_id` INT(10) UNSIGNED NOT NULL DEFAULT '0';
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 25, 2018 at 04:57 AM
+-- Generation Time: Aug 28, 2018 at 05:08 AM
 -- Server version: 5.7.22-0ubuntu0.16.04.1
 -- PHP Version: 7.1.20-1+ubuntu16.04.1+deb.sury.org+1
 
@@ -886,8 +886,8 @@ CREATE TABLE `account_url_profiles` (
 --
 
 INSERT INTO `account_url_profiles` (`id`, `account_id`, `account_url`, `linked_rankinity_id`, `linked_adwords_acc_id`, `linked_google_page`, `linked_google_page_location`, `linked_google_page_id`, `linked_account_id`, `profile_id`, `property_id`, `view_id`, `modified_at`) VALUES
-(1, 1, '51blocks.com', '', '7193601563', '', '', '', 0, '12827904', 'UA-12827904-1', '26000314', '2018-08-24 18:54:41'),
-(2, 1, 'abc.com', '', '2801488220', '', '', '', 0, '', '', '', '2018-08-24 18:47:57');
+(1, 1, '51blocks.com', '', '7193601563', 'accounts/117547068599881066052', 'ChIJC6niKzB_bIcRbpNSce0YaVQ', '', 1, '12827904', 'UA-12827904-1', '26000314', '2018-08-27 21:48:28'),
+(2, 1, 'abc.com', '', '2801488220', 'accounts/117547068599881066052', 'ChIJz2JKqjl9bIcR3JOqQyjkIAI', '', 0, '', '', '', '2018-08-27 17:44:49');
 
 -- --------------------------------------------------------
 
@@ -900,16 +900,19 @@ CREATE TABLE `account_url_profiles_social_token` (
   `profile_id` int(10) UNSIGNED NOT NULL,
   `trello_access_token` text,
   `rankinity_access_token` text NOT NULL,
-  `anlytic_refresh_token` text,
-  `anlytic_access_token` text,
-  `anlytic_token_expiration_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `analytic_refresh_token` text,
+  `analytic_access_token` text,
+  `analytic_token_expiration_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `analytic_reset_token` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `adword_customer_id` varchar(50) NOT NULL DEFAULT '',
   `adword_refresh_token` text,
   `adword_access_token` text,
   `adword_token_expiration_time` datetime DEFAULT NULL,
+  `adword_reset_token` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `gmb_refresh_token` text,
   `gmb_access_token` text,
   `gmb_token_expiration_time` datetime DEFAULT NULL,
+  `gmb_reset_token` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `modified_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -917,9 +920,9 @@ CREATE TABLE `account_url_profiles_social_token` (
 -- Dumping data for table `account_url_profiles_social_token`
 --
 
-INSERT INTO `account_url_profiles_social_token` (`id`, `profile_id`, `trello_access_token`, `rankinity_access_token`, `anlytic_refresh_token`, `anlytic_access_token`, `anlytic_token_expiration_time`, `adword_customer_id`, `adword_refresh_token`, `adword_access_token`, `adword_token_expiration_time`, `gmb_refresh_token`, `gmb_access_token`, `gmb_token_expiration_time`, `modified_at`) VALUES
-(1, 1, '', '', '1/K1UGLCl_Msc9Iys0XqI4O4zPzmk_yWH9l2O5eBQ6hg8', '{\"access_token\":\"ya29.GlsDBhWqhR-b6uaVzEb7iJqtLa0_nw01A4HQiRVFkbQTAd-Xv35k1nGMVZglNQwsNZnku5uw5KNWQlY3VndEYpj9xMLyY-aKO2ZHTLay5A4R0NWKgtSm-_s6LxsO\",\"expires_in\":3600,\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/analytics https:\\/\\/www.googleapis.com\\/auth\\/analytics.provision https:\\/\\/www.googleapis.com\\/auth\\/analytics.edit https:\\/\\/www.googleapis.com\\/auth\\/analytics.manage.users\",\"token_type\":\"Bearer\",\"created\":1535136881,\"refresh_token\":\"1\\/K1UGLCl_Msc9Iys0XqI4O4zPzmk_yWH9l2O5eBQ6hg8\"}', '2018-08-25 01:24:11', '6583022172', '1/LRJqTyRF7f6qAfHIjJfDst1tw0pRZXTIM2MpOoQ7IxvtzRm4TV_L2RrJSUIpG8Qh', '{\"access_token\":\"ya29.GlsDBmgkkwAugWfL1WIUDpwYNLdeZ8al4a51ZzDWyv4UtSFftIIaIrlpl7QGOv7-5jkVX4m40HzJgEFSfvPDYhxaP_HlmJX-F42PZU4w9YMl4skLiW5tPKuSLU-4\",\"expires_in\":3600,\"refresh_token\":\"1\\/LRJqTyRF7f6qAfHIjJfDst1tw0pRZXTIM2MpOoQ7IxvtzRm4TV_L2RrJSUIpG8Qh\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/adwords\",\"token_type\":\"Bearer\",\"created\":1535133496}', '2018-08-25 12:27:46', '1/pAfo8Xg-yJely0xgIgSvdCClHfzrkeWijWMIQjVBEKEsPizvuOOo2nRixZNFjSnl', '{\"access_token\":\"ya29.GlsDBniHC_R_HnFNm6CXDTa_7skWlhRmM-sYUiAAZpGmXuAfB7kjq28rRuNgv5g-9WL8DNxs7C5qMfKg0dq6ZgA0PBpSxkbP9Pm585rQXrIZt56fYovZVT-B8Xok\",\"expires_in\":3600,\"refresh_token\":\"1\\/pAfo8Xg-yJely0xgIgSvdCClHfzrkeWijWMIQjVBEKEsPizvuOOo2nRixZNFjSnl\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/plus.business.manage\",\"token_type\":\"Bearer\",\"created\":1535142238}', '2018-08-25 02:53:28', '2018-08-24 17:58:18'),
-(2, 2, '57c91ebf357014fdc77a25e3464b050e269378d4b76ae76d4b256e7516b314aa', '', '', '', '2018-08-24 11:39:38', '2801488220', '1/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE', '{\"access_token\":\"ya29.GlsDBiI6NDbO8ZcWrdeJwFLxDyJ-Zd1fhdDAyoiBUYwWWqbqdGl30Pd2PXJOkDBuC7xC3RzM0cnk6gyVqj0wHXiLmKLNuVJ-44waroAMcsBsikOf5dtmlwHhkK3f\",\"expires_in\":3600,\"refresh_token\":\"1\\/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/adwords\",\"token_type\":\"Bearer\",\"created\":1535134921}', '2018-08-25 12:51:31', '', '', '2018-08-24 11:39:38', '2018-08-24 21:31:49');
+INSERT INTO `account_url_profiles_social_token` (`id`, `profile_id`, `trello_access_token`, `rankinity_access_token`, `analytic_refresh_token`, `analytic_access_token`, `analytic_token_expiration_time`, `analytic_reset_token`, `adword_customer_id`, `adword_refresh_token`, `adword_access_token`, `adword_token_expiration_time`, `adword_reset_token`, `gmb_refresh_token`, `gmb_access_token`, `gmb_token_expiration_time`, `gmb_reset_token`, `modified_at`) VALUES
+(1, 1, '', '', '1/-gum6ffPwNKAJhedL-Q1I8jsOitbQDhUhtNyWcyVfk5xy-mHYc9EUATylrPyZzTI', '{\"access_token\":\"ya29.GlsGBtcPl4KizZ392ChwnRTTjDxb04XIdYcPBIBAWi-b4z--mfnpqzukawvuEDzDGopjDN7LIA9u5OswaBYrMv5UNSuse85Fv70r_w8gNzRDv-NubIxRYCQ5LUNr\",\"expires_in\":3600,\"refresh_token\":\"1\\/-gum6ffPwNKAJhedL-Q1I8jsOitbQDhUhtNyWcyVfk5xy-mHYc9EUATylrPyZzTI\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/analytics.provision https:\\/\\/www.googleapis.com\\/auth\\/analytics https:\\/\\/www.googleapis.com\\/auth\\/analytics.edit https:\\/\\/www.googleapis.com\\/auth\\/analytics.manage.users\",\"token_type\":\"Bearer\",\"created\":1535409557}', '2018-08-28 05:08:47', 0, '6583022172', '1/LRJqTyRF7f6qAfHIjJfDst1tw0pRZXTIM2MpOoQ7IxvtzRm4TV_L2RrJSUIpG8Qh', '{\"access_token\":\"ya29.GlsDBmgkkwAugWfL1WIUDpwYNLdeZ8al4a51ZzDWyv4UtSFftIIaIrlpl7QGOv7-5jkVX4m40HzJgEFSfvPDYhxaP_HlmJX-F42PZU4w9YMl4skLiW5tPKuSLU-4\",\"expires_in\":3600,\"refresh_token\":\"1\\/LRJqTyRF7f6qAfHIjJfDst1tw0pRZXTIM2MpOoQ7IxvtzRm4TV_L2RrJSUIpG8Qh\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/adwords\",\"token_type\":\"Bearer\",\"created\":1535133496}', '2018-08-25 12:27:46', 1, '1/dLd5QArm2JcUKwUJmE5bupG7yhWe97iM-9ss-1sKmJw', '{\"access_token\":\"ya29.GlsGBgGqth_R9DNzpy7mcGO9M5FvLc3J9GlmnnoEh8hYrQZv9SGYHHcUvjXCBiAnNRgbXY6LqmWuJh_EekZEJ982sUSl7mpgGvv4HQCg4GlG9XfN0mXAhiaydpPM\",\"expires_in\":3600,\"refresh_token\":\"1\\/dLd5QArm2JcUKwUJmE5bupG7yhWe97iM-9ss-1sKmJw\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/plus.business.manage\",\"token_type\":\"Bearer\",\"created\":1535411591}', '2018-08-28 05:42:41', 0, '2018-08-24 17:58:18'),
+(2, 2, '57c91ebf357014fdc77a25e3464b050e269378d4b76ae76d4b256e7516b314aa', '', '1/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE', '{\"access_token\":\"ya29.GlwGBhnFFnT71RwKz9Rey1XOx4ep4WD81XPPtUIUMJRpWMBxVE9lVc95s-JXQdwpPc7vvyK0EfTg2Hw8yxHj9V8pVlOTG8hVCbxKZ5wuMjiNxymjCyflYRcpCsED7A\",\"expires_in\":3600,\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/adwords\",\"token_type\":\"Bearer\",\"created\":1535405278,\"refresh_token\":\"1\\/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE\"}', '2018-08-28 03:57:28', 0, '2801488220', '1/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE', '{\"access_token\":\"ya29.GlwGBk9B3LJVn8awLP9gRFhSPypuLYv8VrfMI-ocoprf026xWJ89vDUKGJjnvi6tq-Wl3FXOwOggyRzzsEPbyQOw1fweqwmkwoK9AvetfMC47uxkhx4pEV2CQokUHw\",\"expires_in\":3600,\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/adwords\",\"token_type\":\"Bearer\",\"created\":1535405279,\"refresh_token\":\"1\\/9bTQQBT7KLj3d6VxLmeWZ87UlOitqk_TPuYeC9XH0EE\"}', '2018-08-28 03:57:29', 0, '1/50N4TbBfjd2vaM912VVl0le5EUTsvwYy5x1O1E4bqyM', '{\"access_token\":\"ya29.GlsGBiwc4OImCRlWnkeHq4eVWNMDXjq67jkyLJL3jQhbOJ0Qt55XlmUUBIyAa5-0OLFmeVkBKwdI2oAavdj3m9ZWP-G85UPyZb6Ghs5-rxi84xHN2rb7K3_XiaKW\",\"expires_in\":3600,\"refresh_token\":\"1\\/50N4TbBfjd2vaM912VVl0le5EUTsvwYy5x1O1E4bqyM\",\"scope\":\"https:\\/\\/www.googleapis.com\\/auth\\/plus.business.manage\",\"token_type\":\"Bearer\",\"created\":1535411897}', '2018-08-28 05:47:47', 0, '2018-08-27 23:18:03');
 
 -- --------------------------------------------------------
 
@@ -7517,7 +7520,9 @@ CREATE TABLE `google_business_pages` (
 
 INSERT INTO `google_business_pages` (`id`, `account_id`, `url_profile_id`, `account_page_name`, `account_page_name_url`, `account_page_name_id`) VALUES
 (1, 1, 1, 'Michael Borgelt', 'accounts/117547068599881066052', 'accounts/117547068599881066052'),
-(2, 1, 1, 'Rich LTD', 'accounts/107427335435618380029', 'accounts/107427335435618380029');
+(2, 1, 1, 'Rich LTD', 'accounts/107427335435618380029', 'accounts/107427335435618380029'),
+(7, 1, 2, 'Michael Borgelt', 'accounts/117547068599881066052', 'accounts/117547068599881066052'),
+(8, 1, 2, 'Rich LTD', 'accounts/107427335435618380029', 'accounts/107427335435618380029');
 
 -- --------------------------------------------------------
 
@@ -7574,7 +7579,40 @@ INSERT INTO `google_business_page_locations` (`id`, `account_id`, `url_profile_i
 (30, 1, 1, 'accounts/117547068599881066052', 'ChIJe2831AqfToYRh1bejOG7Zug', 'Gallatin Natural Resources, LLC', 'http://www.gallatinnr.com/', '', ''),
 (31, 1, 1, 'accounts/117547068599881066052', 'ChIJSYNcuJtbCogRrZfTUY8Edjw', 'Nerds On Call | Peoria, IL', 'http://www.callrnerds.com/computer-pc-repair-peoria-il.html', '40.747388', '-89.611797'),
 (32, 1, 1, 'accounts/117547068599881066052', 'ChIJH-F9E672CogRzmJWf-Eu4_U', 'Facet Technologies, Inc.', 'http://www.facettech.com/', '40.558802', '-89.616814'),
-(33, 1, 1, 'accounts/117547068599881066052', 'ChIJz5HoBLHta4cRCGYtDJ_-LAA', 'Hummingbird Community Acupuncture', 'http://www.communityacupuncture.org/', '40.01457', '-105.250114');
+(33, 1, 1, 'accounts/117547068599881066052', 'ChIJz5HoBLHta4cRCGYtDJ_-LAA', 'Hummingbird Community Acupuncture', 'http://www.communityacupuncture.org/', '40.01457', '-105.250114'),
+(100, 1, 2, 'accounts/117547068599881066052', 'ChIJz2JKqjl9bIcR3JOqQyjkIAI', 'Denver Electronic Cigarettes', 'http://www.denverelectroniccigarettes.com/', '', ''),
+(101, 1, 2, 'accounts/117547068599881066052', 'ChIJIXr0G45644kRdt-S_kuI__U', 'South Boston Animal Hospital', 'http://www.southbostonanimalhospital.com/', '42.3424351', '-71.0573451'),
+(102, 1, 2, 'accounts/117547068599881066052', 'ChIJ35-iTv1YwokRD3OPI2PTR7s', 'Scheichet & Davis P.C.', 'http://www.scheichetdavis.com/', '40.7543207', '-73.9716114'),
+(103, 1, 2, 'accounts/117547068599881066052', 'ChIJtS4UYaVZwokRhMhe9t60b38', 'Ramp Up Technology', 'http://www.rampuptech.com/', '40.753078', '-73.986037'),
+(104, 1, 2, 'accounts/117547068599881066052', 'ChIJYVH66C1nCYgRZFYOGush7s0', 'Nerds On Call', 'http://www.callrnerds.com', '', ''),
+(105, 1, 2, 'accounts/117547068599881066052', 'ChIJCdu3syV5bIcRhi0VB-wiWJo', 'Net Prophet', 'http://netprophet.biz/', '39.76149', '-104.9789844'),
+(106, 1, 2, 'accounts/117547068599881066052', 'ChIJu490Gj8r5okRuguArD8Zrf0', 'Clarity Medical Aesthetics', 'https://clarityct.com/', '41.2877642', '-72.6900325'),
+(107, 1, 2, 'accounts/117547068599881066052', 'ChIJc338IpJFLoYRPGGeoKIYSR4', 'Affordable Safe Storage', 'http://www.affordablesafestorage.net/', '32.523474', '-92.044573'),
+(108, 1, 2, 'accounts/117547068599881066052', 'ChIJEylqSxR-bIcRRo_4ReNHumc', 'Olive Tree Medical Spa', 'http://olivetreemedspa.com/', '', ''),
+(109, 1, 2, 'accounts/117547068599881066052', 'ChIJh9ef7ifCwogR797HJy0t8rA', 'Engine and Transmission Center', 'http://www.tampabaytransmission.com/', '28.002216', '-82.529884'),
+(110, 1, 2, 'accounts/117547068599881066052', 'ChIJlwBIcfYl2YgRK4lzoISA1OQ', 'Petrover Orthodontics in Wellington, FL', 'http://www.petroverortho.com/', '', ''),
+(111, 1, 2, 'accounts/117547068599881066052', 'ChIJjcac2I5wC4gR85hdDBs_YLc', 'Nerds on Call | Normal, IL', 'http://www.callrnerds.com/', '40.5138697', '-88.9533464'),
+(112, 1, 2, 'accounts/117547068599881066052', 'ChIJvcZhiNl4bIcRhKE0gEfRCu4', 'Integrity Fire Safety Services', 'https://www.integrityfiresafetyservices.com/', '39.749546', '-104.991282'),
+(113, 1, 2, 'accounts/117547068599881066052', 'ChIJPdxLsdZ9bIcRkCin_IONP_I', 'Monks Project Solutions', 'http://www.monks.com/', '39.704599', '-104.935241'),
+(114, 1, 2, 'accounts/117547068599881066052', 'ChIJ35-iTv1YwokRB8rP-4eXug0', 'Scheichet & Davis, P. C.', 'http://www.scheichetanddavis.com/', '', ''),
+(115, 1, 2, 'accounts/117547068599881066052', 'ChIJBZ74izgLkVQRNCg72Yf9emA', 'Marriage & Family Therapy - Holly Blue, LMFT', 'http://www.hollybluecounseling.net/', '47.042924', '-122.825343'),
+(116, 1, 2, 'accounts/117547068599881066052', 'ChIJn3046p19woAReLKlAPkarJg', 'Mazza Inspection Group', 'http://www.mazzainspections.com/', '', ''),
+(117, 1, 2, 'accounts/117547068599881066052', 'ChIJJe8Bmf3kwogRGctS_SqNacU', 'Engine and Transmission Center', 'http://www.tampabaytransmission.com/', '27.871035', '-82.699429'),
+(118, 1, 2, 'accounts/117547068599881066052', 'ChIJafyZkmp-bIcRrO8P_mrhzM0', 'The Foot Mechanic', 'http://www.thefootmechanic.com/', '39.682678', '-104.962219'),
+(119, 1, 2, 'accounts/117547068599881066052', 'ChIJeQY3rsZ9bIcRglt80tVDLAE', 'Stay at Home Healthcare, LLC', 'https://stayathomehealthcarellc.com/', '', ''),
+(120, 1, 2, 'accounts/117547068599881066052', 'ChIJl-kxc0GBbIcR4rO4CZSbc6s', 'Walker, Wright & Associates, LLP', 'https://www.walkerwrightlaw.com/', '39.596793', '-104.95883'),
+(121, 1, 2, 'accounts/117547068599881066052', 'ChIJYbAc2mp8j4AR85iIv-duzGc', 'Nor Cal Veterinary Emergency and Specialty Hospital', 'https://norcalvet.com/', '37.697232', '-122.470123'),
+(122, 1, 2, 'accounts/117547068599881066052', 'ChIJDUwjgib6a4cRREPKK6y6XVc', 'Rigid Bits, LLC.', 'https://www.rigidbits.com/', '40.1536505', '-105.1188091'),
+(123, 1, 2, 'accounts/117547068599881066052', 'ChIJuR9ROppbCogRhxTa3uCbNBo', 'Facet Web Tech', 'https://facetwebtech.com/', '', ''),
+(124, 1, 2, 'accounts/117547068599881066052', 'ChIJH3lbE1Z-24ARKoEl2TaynuQ', 'Pacific Clear Pool & Spa, Inc.', 'www.pacificclearpoolandspa.com', '', ''),
+(125, 1, 2, 'accounts/117547068599881066052', 'ChIJC6niKzB_bIcRbpNSce0YaVQ', '51Blocks', 'https://www.51blocks.com/', '39.7448282', '-105.0354975'),
+(126, 1, 2, 'accounts/117547068599881066052', 'ChIJnzUujXZ-bIcRA-X7_GaMhUg', 'Stay at Home Healthcare, LLC', 'http://www.stayathomehealthcarellc.com', '', ''),
+(127, 1, 2, 'accounts/117547068599881066052', 'ChIJ9dHJFwfykFQRRYMG74Wv_ZQ', 'White River Credit Union', 'http://www.whiterivercu.com/', '47.2008407', '-121.9864434'),
+(128, 1, 2, 'accounts/117547068599881066052', 'ChIJX1e6RTlgkFQRlglmiu64_jY', 'Penny Harris CPA', '', '47.391775', '-122.0471318'),
+(129, 1, 2, 'accounts/117547068599881066052', 'ChIJe2831AqfToYRh1bejOG7Zug', 'Gallatin Natural Resources, LLC', 'http://www.gallatinnr.com/', '', ''),
+(130, 1, 2, 'accounts/117547068599881066052', 'ChIJSYNcuJtbCogRrZfTUY8Edjw', 'Nerds On Call | Peoria, IL', 'http://www.callrnerds.com/computer-pc-repair-peoria-il.html', '40.747388', '-89.611797'),
+(131, 1, 2, 'accounts/117547068599881066052', 'ChIJH-F9E672CogRzmJWf-Eu4_U', 'Facet Technologies, Inc.', 'http://www.facettech.com/', '40.558802', '-89.616814'),
+(132, 1, 2, 'accounts/117547068599881066052', 'ChIJz5HoBLHta4cRCGYtDJ_-LAA', 'Hummingbird Community Acupuncture', 'http://www.communityacupuncture.org/', '40.01457', '-105.250114');
 
 -- --------------------------------------------------------
 
@@ -11161,12 +11199,12 @@ ALTER TABLE `contents`
 -- AUTO_INCREMENT for table `google_business_pages`
 --
 ALTER TABLE `google_business_pages`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `google_business_page_locations`
 --
 ALTER TABLE `google_business_page_locations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 --
 -- AUTO_INCREMENT for table `logins`
 --

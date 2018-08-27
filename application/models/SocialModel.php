@@ -155,4 +155,20 @@ class SocialModel extends CI_Model {
 			->where('account_id', $adword_id)
 			->get()->row_array();
 	}
+
+	public function getGbusinessDetail($profId) {
+		return $this->db->select( 'concat(account_page_name_ref, "/", account_page_location_id) as `gpId`, 
+				account_page_location_place, account_page_name' )
+			->from('google_business_pages')
+			->join('google_business_page_locations', 'account_page_name_id=account_page_name_ref', 'left')
+			->where('google_business_pages.url_profile_id', $profId)
+			->get()->result_array();
+	}
+
+	public function getGbusinessPageDetail($profId, $page_id) {
+		return $this->db->from('google_business_page_locations')			
+			->where('google_business_page_locations.url_profile_id', $profId)
+			->where('google_business_page_locations.account_page_location_id', $page_id)
+			->get()->row_array();
+	}
 }

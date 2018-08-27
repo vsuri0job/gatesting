@@ -61,16 +61,20 @@ class Loaddata {
 
 	public function getGoogleClient($prod, $profId, $extra_state = "") {
 		$scopes = array();
+		$rName = "";
 		if ($prod == 'analytic') {
+			$rName = "Analytic";
 			$scopes[] = "https://www.googleapis.com/auth/analytics";
 			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.edit";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.provision";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.manage.users";
 		} else if ($prod == 'adwords') {
+			$rName = "Adwords";
 			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
 			$scopes[] = "https://www.googleapis.com/auth/adwords";
 		} else if ($prod == 'mbusiness') {
+			$rName = "Google Business";
 			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
 			$scopes[] = "https://www.googleapis.com/auth/plus.business.manage";
 		}
@@ -81,27 +85,12 @@ class Loaddata {
 		}
 		$state = $this->_ci->encrypt->encode($state, $this->enc_key);
 		$client = new Google_Client();
-		$client->setApplicationName("Analytics Report");
+		$client->setApplicationName("$rName Report");
 		$client->setAccessType("offline");
 		$client->setApprovalPrompt("force");
 		$client->setState($state);
 		$client->setClientId(GOOGLE_CLIENT_ID);
 		$client->setClientSecret(GOOGLE_CLIENT_SECRET);
-		$client->setRedirectUri($redirect_uri);
-		$client->addScope($scopes);
-		return $client;
-	}
-
-	public function getGoogleAdwordClient() {
-		$scopes = array();
-		$scopes[] = "https://www.googleapis.com/auth/adwords";
-		$redirect_uri = base_url('social/verify_tmpgoogle');
-		$client = new Google_Client();
-		$client->setApplicationName("Adwords Report");
-		$client->setAccessType("offline");
-		$client->setApprovalPrompt("force");
-		$client->setClientId(GOOGLE_ADWORD_CLIENT_ID);
-		$client->setClientSecret(GOOGLE_ADWORD_CLIENT_SECRET);
 		$client->setRedirectUri($redirect_uri);
 		$client->addScope($scopes);
 		return $client;
@@ -115,16 +104,20 @@ class Loaddata {
 		$redirect_uri = base_url('social/verify_google');
 		$client = $this->getGoogleClient($prodType, $profId);
 		$client->setAccessToken($access_token);
-		if ($client->isAccessTokenExpired()) {
+		$tokenExpired = $client->isAccessTokenExpired();
+		$profToken = array();
+		if ($tokenExpired) {
 			$client->fetchAccessTokenWithRefreshToken($refresh_token);
-			$access_token = $client->getAccessToken();
-			$this->_ci->SocialappModel->updateGoogleTokens($prodType, $access_token, $refresh_token, $profId);
+			$access_token = $client->getAccessToken();			
+			$profToken = $this->_ci->SocialappModel
+							->updateGoogleTokens($prodType, $access_token, $refresh_token, $profId);
 		}
 		if ($getClient) {
 			$out = array();
 			$out['client'] = $client;
 			$out['access_token'] = $access_token;
 			$out['refresh_token'] = $refresh_token;
+			$out['profile_detail'] = $profToken;
 			return $out;
 		}
 	}

@@ -8,8 +8,7 @@ class AccountModel extends CI_Model {
 		if ($agencies) {
 			$rst = $this->db->select('accounts.id, accounts.agency_id, accounts.name,
 						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
-						accounts.account_status, accounts.report_logo,
-						accounts.status, agencies.name `agency_name`,
+						accounts.account_status, accounts.status, agencies.name `agency_name`,
 						group_concat( services_master.name ) `services`')
 				->from('accounts')
 				->join('agencies', 'agency_id=agencies.id')
@@ -19,8 +18,7 @@ class AccountModel extends CI_Model {
 				->where_in('accounts.status', 1)
 				->group_by('accounts.id, accounts.agency_id, accounts.name,
 						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
-						accounts.account_status, accounts.report_logo,
-						accounts.status,agency_name')
+						accounts.account_status, accounts.status,agency_name')
 				->get()
 				->result_array();
 		}
@@ -30,13 +28,15 @@ class AccountModel extends CI_Model {
 	public function getAccountDetail($account_id, $agencies = array()) {
 		$rst = array();
 		if ($account_id) {
+			if( $agencies ){
+				$this->db->where_in('agency_id', $agencies);
+			}
 			$rst = $this->db->select('accounts.id, accounts.agency_id, accounts.name,
 						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
-						accounts.account_status, accounts.report_logo,
+						accounts.account_status, 
 						accounts.status, agencies.name `agency_name`')
 				->from('accounts')
-				->join('agencies', 'agency_id=agencies.id')
-				->where_in('agency_id', $agencies)
+				->join('agencies', 'agency_id=agencies.id')				
 				->where_in('accounts.status', 1)
 				->where('accounts.id', $account_id)
 				->get()->row_array();
@@ -107,7 +107,7 @@ class AccountModel extends CI_Model {
 					account_url_profiles.profile_id,
 					analytic_profile_property_views.view_id,
 					account_url_profiles.property_id,
-					account_url_profiles.id')
+					account_url_profiles.id, account_url_profiles.account_id')
 			->from('account_url_profiles')
 			->join('account_url_profiles_social_token', 'account_url_profiles_social_token.profile_id=account_url_profiles.id')
 			->join('analytic_profiles', 'account_url_profiles.profile_id=analytic_profiles.profile_id', 'left')
@@ -472,9 +472,9 @@ class AccountModel extends CI_Model {
 		$data['profile_id'] = $this->db->insert_id();
 		$data['trello_access_token'] = "";
 		$data['rankinity_access_token'] = "";
-		$data['anlytic_access_token'] = "";
-		$data['anlytic_refresh_token'] = "";
-		$data['anlytic_token_expiration_time'] = date("Y-m-d h:i:s", time());
+		$data['analytic_access_token'] = "";
+		$data['analytic_refresh_token'] = "";
+		$data['analytic_token_expiration_time'] = date("Y-m-d h:i:s", time());
 		$data['adword_customer_id'] = "";
 		$data['adword_access_token'] = "";
 		$data['adword_refresh_token'] = "";

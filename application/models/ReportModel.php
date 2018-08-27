@@ -195,6 +195,9 @@ class ReportModel extends CI_Model {
 	}
 
 	public function citationReport($month_date, $account_id = 0) {
+		if ($account_id) {
+			$this->db->where('account_id', $account_id);
+		}
 		return $this->db->select('accounts.name `account_name`, accounts.id as `account_id`,
             citation_status, live_link, directory, login_url, username, password, domain_authority, notes')
 			->from('client_citations')

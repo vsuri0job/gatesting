@@ -158,8 +158,8 @@ class Report extends MY_Controller {
 			$opt['prod'] = 'analytic';
 			$opt['profId'] = $prodDet['id'];
 			$opt['log_user_id'] = com_user_data('id');
-			$opt['refresh_token'] = $prodDet['anlytic_refresh_token'];
-			$opt['access_token'] = $prodDet['anlytic_access_token'];
+			$opt['refresh_token'] = $prodDet['analytic_refresh_token'];
+			$opt['access_token'] = $prodDet['analytic_access_token'];
 			$client_token = $this->loaddata->updateGoogleTokens(true, $opt);
 			$client = $client_token['client'];
 			$service = new Google_Service_Oauth2($client);
@@ -662,7 +662,7 @@ class Report extends MY_Controller {
 		$shell = array();
 		$log_user_id = com_user_data('id');
 		$inner['account_id'] = $accountId;
-		$inner['cc_counts'] = $this->ReportModel->getCitationContentCount($accountId);
+		$inner['cc_counts'] = $this->ReportModel->getCitationContentCount($accountId);		
 		$shell['page_title'] = 'Citation & Content';
 		$shell['content'] = $this->load->view('citation_content', $inner, true);
 		$shell['footer_js'] = $this->load->view('citation_content_js', $inner, true);
@@ -691,7 +691,7 @@ class Report extends MY_Controller {
 		$shell = array();
 		$log_user_id = com_user_data('id');
 		$inner['month'] = date("Y F", $tstamp);
-		$inner['citations'] = $this->ReportModel->citationReport($month_date, $accountId);
+		$inner['citations'] = $this->ReportModel->citationReport($month_date, $accountId);		
 		$shell['page_title'] = 'Citation';
 		$shell['content'] = $this->load->view('citation_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('citation_report_js', $inner, true);

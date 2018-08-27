@@ -70,9 +70,13 @@ if (!function_exists('com_e')) {
 }
 
 if (!function_exists('com_user_data')) {
-	function com_user_data($fld) {
+	function com_user_data($fld = null) {
 		$CI = &get_instance();
-		return $CI->session->userdata($fld);
+		if( is_null( $fld ) ){
+			return $CI->session->userdata();
+		} else {
+			return $CI->session->userdata( $fld );
+		}
 	}
 }
 
@@ -175,7 +179,7 @@ if (!function_exists('com_make2dArray')) {
 
 if (!function_exists('com_makelist')) {
 	function com_makelist($rstSet, $Key_index, $Key_text, $forSelect = true, 
-		$defaultSel = 'Select', $selected = array()) {
+		$defaultSel = 'Select', $selected = array(), $grpKey = '') {
 		$result = [];
 		if ($forSelect) {
 			$result[] = $defaultSel;
@@ -192,7 +196,16 @@ if (!function_exists('com_makelist')) {
 			}			
 			$new_stack_index = $rstSetRow[$Key_index];
 			$new_stack_text = implode(" ", $Key_text);
-			$result[$new_stack_index] = ucfirst($new_stack_text);
+			if( $grpKey && isset( $rstSetRow[$grpKey] ) ){
+				if( !isset( $result[ $rstSetRow[$grpKey] ] ) ){
+					$result[ $rstSetRow[$grpKey] ] = array();
+				}
+				if( $new_stack_text && $new_stack_index ){
+					$result[ $rstSetRow[$grpKey] ][$new_stack_index] = ucfirst($new_stack_text);
+				}
+			} else {
+				$result[$new_stack_index] = ucfirst($new_stack_text);
+			}
 		}
 		return $result;
 	}

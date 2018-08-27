@@ -9,28 +9,54 @@ class SocialappModel extends CI_Model {
 			->get()->row_array();
 	}
 	
-	public function updateGoogleTokens($prodType, $access_token, $refresh_token, $profId, $reset = false){
+	public function updateGoogleTokens($prodType, $access_token, $refresh_token, $profId, $reset = false){		
 		$profData = $this->db->from( 'account_url_profiles_social_token' )
 						->where( 'profile_id', $profId )
 						->get()->row_array();
+		$pre_exp_time = 0;
+		$new_exp_time = 0;
 		$data = $profData;
 		$data[ 'profile_id' ] = $profId;		
 		if( $prodType == 'analytic' && !$reset){
-		 	$data[ 'anlytic_refresh_token' ] = $refresh_token;
-		 	$data[ 'anlytic_access_token' ] = json_encode( $access_token );
-		 	$data[ 'anlytic_token_expiration_time' ] = date( 'Y-m-d h:i:s', $access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$data[ 'analytic_reset_token' ] = 0;
+		 	$data[ 'analytic_refresh_token' ] = $refresh_token;
+		 	$data[ 'analytic_access_token' ] = json_encode( $access_token );
+		 	$pre_exp_time = $data[ 'analytic_token_expiration_time' ];
+		 	$data[ 'analytic_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
+ 				$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$new_exp_time = $data[ 'analytic_token_expiration_time' ];
+		 	$new_exp_timeStamp = strtotime( $new_exp_time );
+		 	if( $new_exp_timeStamp < time() ){
+		 		$data[ 'analytic_reset_token' ] = 1;
+		 	}
 		} else if( $prodType == 'adwords' && !$reset){
+			$data[ 'adword_reset_token' ] = 0;
 		 	$data[ 'adword_refresh_token' ] = $refresh_token;
 		 	$data[ 'adword_access_token' ] = json_encode( $access_token );
-		 	$data[ 'adword_token_expiration_time' ] = date( 'Y-m-d h:i:s', $access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$pre_exp_time = $data[ 'adword_token_expiration_time' ];
+		 	$data[ 'adword_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
+	 			$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$new_exp_time = $data[ 'adword_token_expiration_time' ];
+		 	$new_exp_timeStamp = strtotime( $new_exp_time );
+		 	if( $new_exp_timeStamp < time() ){
+		 		$data[ 'adword_reset_token' ] = 1;
+		 	}
 		} else if( $prodType == 'mbusiness' && !$reset){
+			$data[ 'gmb_reset_token' ] = 0;
 		 	$data[ 'gmb_refresh_token' ] = $refresh_token;
 		 	$data[ 'gmb_access_token' ] = json_encode( $access_token );
-		 	$data[ 'gmb_token_expiration_time' ] = date( 'Y-m-d h:i:s', $access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$pre_exp_time = $data[ 'gmb_token_expiration_time' ];
+		 	$data[ 'gmb_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
+		 		$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$new_exp_time = $data[ 'gmb_token_expiration_time' ];
+		 	$new_exp_timeStamp = strtotime( $new_exp_time );
+		 	if( $new_exp_timeStamp < time() ){
+		 		$data[ 'gmb_reset_token' ] = 1;
+		 	}
 		} else if( $reset ){
 			$fldRef = $prodType == 'mbusiness' ? 'gmb'
 				: ( $prodType == 'adwords' ? 'adword' : (  $prodType == 'analytic' ? 'analytic' : '' ) );
-			if( $fldRef ){
+			if( $fldRef ){				
 			 	$data[ "$fldRef_refresh_token" ] = "";
 			 	$data[ "$fldRef_access_token" ] = "";
 			 	$data[ "$fldRef_token_expiration_time" ] = date( 'Y-m-d h:i:s', time() );
@@ -42,6 +68,8 @@ class SocialappModel extends CI_Model {
 	        $this->db->where( 'id', $data[ 'id' ] )
 	                ->update( 'account_url_profiles_social_token', $data);
         }
+
+        return $data;
 	}
 
 	public function updateTrelloAccessToken($access_token, $profId){
@@ -135,4 +163,17 @@ class SocialappModel extends CI_Model {
 					->from( 'account_url_profiles' )
 					->get()->row_array();;
 	}
+
+	public function updateAdminAccount( $prof_id, $admin_account_id ){
+		$data = array();
+		$data[ 'linked_account_id' ] = $admin_account_id;
+		return $this->db->where( 'id', $prof_id )
+					->update( 'account_url_profiles', $data );
+	}
+
+	public function updateGBuissList( $prof_id, $udata ){
+		$data = $udata;
+		return $this->db->where( 'id', $prof_id )
+					->update( 'account_url_profiles', $data );
+	}	
 }

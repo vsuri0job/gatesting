@@ -12,11 +12,18 @@ class Social extends MY_Controller {
 	}
 
 	public function google($prod, $profId) {
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		$ex_state = "";
+		$fldCheck = $prod == 'adwords' ? 'adword_' : ( $prod == 'analytic' ? 'analytic_' 
+				: ( $prod == 'mbusiness' ? 'gmb_' : '' ) );
+		if( $fldCheck && $fetchedProfile[ $fldCheck.'reset_token' ]){
+			$ex_state .= '|RESET_TOKEN:1';
+		}
 		$customer_id = $this->input->post('customer_id');
 		if ($customer_id) {
 			$customer_id = str_replace("-", "", $customer_id);
-			$ex_state = '|CUS_ID:' . trim($customer_id);
+			$ex_state .= '|CUS_ID:' . trim($customer_id);
 		}
 		$client = $this->loaddata->getGoogleClient($prod, $profId, $ex_state);
 		//Send Client Request
@@ -49,6 +56,29 @@ class Social extends MY_Controller {
 		exit();
 	}
 
+	public function checkTokenValid( $profId ){
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		$profDet = $fetchedProfile;
+		if( $fetchedProfile ){
+			$profDet = $fetchedProfile;
+			$socialAcc = array( 'mbusiness', 'analytic', 'adwords' );
+			foreach ($socialAcc as $sAcc) {
+				$opt = array();
+				$opt['prod'] = $sAcc;
+				$opt['profId'] = $profId;
+				$opt['log_user_id'] = $fetchedProfile[ 'account_id' ];;
+				$opt['access_token'] = $fetchedProfile[ 'adword_access_token' ];
+				$opt['refresh_token'] = $fetchedProfile[ 'adword_refresh_token' ];			
+				$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
+				$client = $ctoken['client'];
+				$access_token = $client->getAccessToken();
+				$refresh_token = $client->getRefreshToken();
+				$profDet = $ctoken['profile_detail'];
+			}
+		}
+	}
+
 	public function verify_google() {
 		$ret_code = $this->input->get('code');
 		$state = $this->input->get('state');
@@ -56,7 +86,7 @@ class Social extends MY_Controller {
 		if ($ret_code && $state) {
 			$state = explode('|', $state);
 			$sD = array('PROD' => '', 'PID' => '');
-			$ex = array('CUS_ID' => '');
+			$ex = array('CUS_ID' => '', 'RESET_TOKEN' => 0);
 			foreach ($state as $state_data) {
 				$state_data = explode(':', $state_data);
 				if (isset($sD[$state_data[0]])) {
@@ -71,36 +101,38 @@ class Social extends MY_Controller {
 			$access_token = $client->getAccessToken();
 			$refresh_token = $client->getRefreshToken();
 			if ($access_token) {
-				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);
-				if ($sD['PROD'] == 'analytic') {
-					$this->fetchAnalyticData($client, $sD['PID']);
-				} else if ($sD['PROD'] == 'adwords') {
-					$opt = array();
-					$opt['prod'] = $sD['PROD'];
-					$opt['profId'] = $sD['PID'];
-					$opt['access_token'] = $access_token;
-					$opt['refresh_token'] = $refresh_token;
-					$opt['clientCustomerId'] = $ex["CUS_ID"];
-					$opt['log_user_id'] = com_user_data('id');
-					$adWordsAccounts = $this->adwords->getList($opt);
-					if (is_array($adWordsAccounts) && $adWordsAccounts) {
-						$rsWhere = array();
-						$rsWhere['prof_id'] = $sD['PID'];
-						$rsWhere['log_acc_id'] = com_user_data('id');
-						$this->SocialModel->resetAdwordsAccounts($rsWhere, $adWordsAccounts);
-						$this->SocialappModel->linkProfileAdword($sD['PID'], $ex["CUS_ID"]);
-					} else if (is_string($adWordsAccounts) && $adWordsAccounts) {
-						$this->session->set_flashdata('emsg', $adWordsAccounts);
-						$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID'], true);
+				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);				
+				if( !$ex["RESET_TOKEN"] ){
+					if ($sD['PROD'] == 'analytic') {
+						$this->fetchAnalyticData($client, $sD['PID']);
+					} else if ($sD['PROD'] == 'adwords') {
+						$opt = array();
+						$opt['prod'] = $sD['PROD'];
+						$opt['profId'] = $sD['PID'];
+						$opt['access_token'] = $access_token;
+						$opt['refresh_token'] = $refresh_token;
+						$opt['clientCustomerId'] = $ex["CUS_ID"];
+						$opt['log_user_id'] = com_user_data('id');
+						$adWordsAccounts = $this->adwords->getList($opt);
+						if (is_array($adWordsAccounts) && $adWordsAccounts) {
+							$rsWhere = array();
+							$rsWhere['prof_id'] = $sD['PID'];
+							$rsWhere['log_acc_id'] = com_user_data('id');
+							$this->SocialModel->resetAdwordsAccounts($rsWhere, $adWordsAccounts);
+							$this->SocialappModel->linkProfileAdword($sD['PID'], $ex["CUS_ID"]);
+						} else if (is_string($adWordsAccounts) && $adWordsAccounts) {
+							$this->session->set_flashdata('emsg', $adWordsAccounts);
+							$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID'], true);
+						}
+					} else if ($sD['PROD'] == 'mbusiness') {
+						$opt = array();
+						$opt['prod'] = $sD['PROD'];
+						$opt['profId'] = $sD['PID'];
+						$opt['access_token'] = $access_token;
+						$opt['refresh_token'] = $refresh_token;
+						$opt['log_user_id'] = com_user_data('id');
+						$this->update_google_business_list($opt);
 					}
-				} else if ($sD['PROD'] == 'mbusiness') {
-					$opt = array();
-					$opt['prod'] = $sD['PROD'];
-					$opt['profId'] = $sD['PID'];
-					$opt['access_token'] = $access_token;
-					$opt['refresh_token'] = $refresh_token;
-					$opt['log_user_id'] = com_user_data('id');
-					$this->update_google_business_list($opt);
 				}
 				redirect('accounts/list');
 				exit;
@@ -457,5 +489,153 @@ class Social extends MY_Controller {
 		}
 		redirect('accounts/list');
 		exit;
+	}
+
+	public function link_account_admin($profId) {
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		if ($fetchedProfile && !$fetchedProfile['linked_account_id']) {
+			// $this->breadcrumb->addElement( 'Google Analytics', 'report/ganalyticreport' );
+			$agencies = explode(",", com_user_data( 'agencies' ));
+			$accounts = $this->AccountModel->getAgencyAccounts( $agencies );
+			$accounts_list = com_makelist( $accounts, 'id', 'name' );			
+			$inner = array();
+			$shell = array();
+			$log_user_id = com_user_data('id');
+			$inner['profile'] = $fetchedProfile;
+			$inner['accounts'] = $accounts_list;
+			$shell['page_title'] = 'Link Admin Account';
+			$shell['content'] = $this->load->view('link_admin_account', $inner, true);
+			$shell['footer_js'] = $this->load->view('link_admin_account_js', $inner, true);
+			$this->load->view(TMP_DEFAULT, $shell);
+		} else {
+			redirect("/");
+			exit;
+		}
+	}
+
+	public function updateAdminAccount( $profId ){
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);		
+		$adminAccounts = $this->input->post( 'adminAccounts' );
+		$adminAccounts = $this->AccountModel->getAccountDetail( $adminAccounts );
+		if ($fetchedProfile && !$fetchedProfile['linked_account_id'] && $adminAccounts) {
+			$this->SocialappModel->updateAdminAccount( $fetchedProfile[ 'id' ], $adminAccounts[ 'id' ] );
+		}
+		redirect("accounts/list");
+		exit;
+	}
+	
+
+	public function link_gbusiness($profId) {
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		if ($fetchedProfile && !$fetchedProfile['linked_google_page']) {
+			$gList = $this->SocialModel->getGbusinessDetail( $fetchedProfile[ 'id' ] );			
+			$gList = com_makelist( $gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name" );
+			$inner = array();
+			$shell = array();
+			$inner[ 'gList' ] = $gList;
+			$log_user_id = com_user_data('id');
+			$inner['profile'] = $fetchedProfile;
+			$inner['accounts'] = $accounts_list;
+			$shell['page_title'] = 'Link Admin Account';
+			$shell['content'] = $this->load->view('link_gbusiness', $inner, true);
+			$shell['footer_js'] = $this->load->view('link_gbusiness_js', $inner, true);
+			$this->load->view(TMP_DEFAULT, $shell);
+		} else {
+			redirect("/");
+			exit;
+		}
+	}
+
+	public function updateGbusinessAccount( $profId ){
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		$gBusinessAccounts = $this->input->post( 'gbuissAccounts' );
+		if ($fetchedProfile && !$fetchedProfile['linked_google_page'] && $gBusinessAccounts) {
+			$udata = array();
+			$gPages = array();
+			$gLocations = array();
+			foreach( $gBusinessAccounts as $gK => $gVal ){
+				$gAList = explode("/", $gVal);
+				if( $gAList && count( $gAList ) == 3 ){
+					$gPages[] = $gAList[ 0 ].'/'.$gAList[ 1 ];
+					$gLocations[] = $gAList[ 2 ];
+				}
+			}
+			$gPages = implode(',', $gPages);
+			$gLocations = implode(',', $gLocations);
+			if( $gPages && $gLocations ){
+					$udata[ 'linked_google_page' ] = $gPages;
+					$udata[ 'linked_google_page_location' ] = $gLocations;					
+					$this->SocialappModel->updateGBuissList( $fetchedProfile[ 'id' ], $udata );
+					// $this->updateProfileGBuissData($profId, com_user_data( 'id' ) );
+			}
+		}
+		redirect("accounts/list");
+		exit;
+	}
+
+	public function updateProfileGBuissData( $profId, $userId ){
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		if( $fetchedProfile ){
+			$gPages = explode(',', $fetchedProfile[ 'linked_google_page' ]);
+			$gPageLocs = explode(',', $fetchedProfile[ 'linked_google_page_location' ]);
+			$opt = array();
+			$opt['prod'] = 'mbusiness';
+			$opt['profId'] = $profId;
+			$opt['log_user_id'] = $userId;
+			$opt['access_token'] = $fetchedProfile[ 'gmb_access_token' ];
+			$opt['refresh_token'] = $fetchedProfile[ 'gmb_refresh_token' ];
+			$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
+			$client = $ctoken['client'];
+			$objOAuthService = new Google_Service_Oauth2($client);
+			$authUrl = $client->createAuthUrl();
+			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
+			foreach ($gPages as $key => $gPage) {
+				try{
+					$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+					$page_name = $gPage.'/locations/'.$gPageLocs[ $key ];
+					$gPageLoc = $this->SocialModel->getGbusinessPageDetail( $profId, $gPageLocs[ $key ]);
+					com_e( $gPage, 0 );
+					com_e( $page_name, 0);
+					com_e( $gPageLoc, 0);
+					// $gPageLName = $gPageLoc[ 'account_page_location_place' ];
+					$opt = array();
+					$opt[ 'locationNames' ] = $gPageLocs[ $key ];
+					$bMetric = new Google_Service_MyBusiness_BasicMetricsRequest();
+					$bMetric->setMetricRequests( ALL );
+					$bMetric->setTimeRange( '' );
+					com_e( $bMetric, 0 );
+					$opt = new Google_Service_MyBusiness_ReportLocationInsightsRequest();
+					$opt->locationNames = $gPageLocs[ $key ];
+					$opt->setBasicRequest( $bMetric );
+					com_e( $opt, 0);
+					// setBasicRequest
+					$extra = array();
+					// $extra[ 'basicRequest' ][ 'metricRequests' ] = 'ALL';
+					// // com_e( $opt, 0);
+					// $rs = $this->GMBS->accounts_locations->get( $page_name );
+					// com_e( $rs );
+					$gList = $this->GMBS->accounts_locations->reportInsights( $gPage, $opt);
+					com_e( $gList, 0);
+					// $gAList = $gList->accounts;
+					// $gADataBPages = array();
+					// $gADataBPagesLocations = array();
+					// foreach ($gAList as $key => $value) {
+					// 	$gADataBPages[$value->name]['account_id'] = $log_user_id;
+					// 	$gADataBPages[$value->name]['url_profile_id'] = $profId;
+					// 	$gADataBPages[$value->name]['account_page_name'] = $value->accountName;
+					// 	$gADataBPages[$value->name]['account_page_name_id'] = $value->name;
+					// 	$gADataBPages[$value->name]['account_page_name_url'] = $value->name;
+					// 	$locations = $this->GMBS->accounts_locations->listAccountsLocations($value->name);
+					// }
+				} catch(Exception $ex){
+					com_e( $ex->getMessage() );
+				}
+			}
+		}
 	}
 }
