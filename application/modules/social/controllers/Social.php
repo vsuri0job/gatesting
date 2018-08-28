@@ -15,9 +15,9 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		$ex_state = "";
-		$fldCheck = $prod == 'adwords' ? 'adword_' : ( $prod == 'analytic' ? 'analytic_' 
-				: ( $prod == 'mbusiness' ? 'gmb_' : '' ) );
-		if( $fldCheck && $fetchedProfile[ $fldCheck.'reset_token' ]){
+		$fldCheck = $prod == 'adwords' ? 'adword_' : ($prod == 'analytic' ? 'analytic_'
+			: ($prod == 'mbusiness' ? 'gmb_' : ''));
+		if ($fldCheck && $fetchedProfile[$fldCheck . 'reset_token']) {
 			$ex_state .= '|RESET_TOKEN:1';
 		}
 		$customer_id = $this->input->post('customer_id');
@@ -56,20 +56,20 @@ class Social extends MY_Controller {
 		exit();
 	}
 
-	public function checkTokenValid( $profId ){
+	public function checkTokenValid($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		$profDet = $fetchedProfile;
-		if( $fetchedProfile ){
+		if ($fetchedProfile) {
 			$profDet = $fetchedProfile;
-			$socialAcc = array( 'mbusiness', 'analytic', 'adwords' );
+			$socialAcc = array('mbusiness', 'analytic', 'adwords');
 			foreach ($socialAcc as $sAcc) {
 				$opt = array();
 				$opt['prod'] = $sAcc;
 				$opt['profId'] = $profId;
-				$opt['log_user_id'] = $fetchedProfile[ 'account_id' ];;
-				$opt['access_token'] = $fetchedProfile[ 'adword_access_token' ];
-				$opt['refresh_token'] = $fetchedProfile[ 'adword_refresh_token' ];			
+				$opt['log_user_id'] = $fetchedProfile['account_id'];
+				$opt['access_token'] = $fetchedProfile['adword_access_token'];
+				$opt['refresh_token'] = $fetchedProfile['adword_refresh_token'];
 				$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
 				$client = $ctoken['client'];
 				$access_token = $client->getAccessToken();
@@ -101,8 +101,8 @@ class Social extends MY_Controller {
 			$access_token = $client->getAccessToken();
 			$refresh_token = $client->getRefreshToken();
 			if ($access_token) {
-				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);				
-				if( !$ex["RESET_TOKEN"] ){
+				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);
+				if (!$ex["RESET_TOKEN"]) {
 					if ($sD['PROD'] == 'analytic') {
 						$this->fetchAnalyticData($client, $sD['PID']);
 					} else if ($sD['PROD'] == 'adwords') {
@@ -369,6 +369,7 @@ class Social extends MY_Controller {
 				$gADataBPagesLocations[$lData->name]['account_page_name_ref'] = $value->name;
 				$gADataBPagesLocations[$lData->name]['account_page_location_id'] = $lData->locationKey->placeId;
 				$gADataBPagesLocations[$lData->name]['account_page_location_place'] = $lData->locationName;
+				$gADataBPagesLocations[$lData->name]['account_page_location_name'] = $lData->name;
 			}
 		}
 		$this->SocialappModel->resetBusinessProfData($log_user_id, $profId);
@@ -496,9 +497,9 @@ class Social extends MY_Controller {
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_account_id']) {
 			// $this->breadcrumb->addElement( 'Google Analytics', 'report/ganalyticreport' );
-			$agencies = explode(",", com_user_data( 'agencies' ));
-			$accounts = $this->AccountModel->getAgencyAccounts( $agencies );
-			$accounts_list = com_makelist( $accounts, 'id', 'name' );			
+			$agencies = explode(",", com_user_data('agencies'));
+			$accounts = $this->AccountModel->getAgencyAccounts($agencies);
+			$accounts_list = com_makelist($accounts, 'id', 'name');
 			$inner = array();
 			$shell = array();
 			$log_user_id = com_user_data('id');
@@ -514,28 +515,27 @@ class Social extends MY_Controller {
 		}
 	}
 
-	public function updateAdminAccount( $profId ){
+	public function updateAdminAccount($profId) {
 		$this->load->model('AccountModel');
-		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);		
-		$adminAccounts = $this->input->post( 'adminAccounts' );
-		$adminAccounts = $this->AccountModel->getAccountDetail( $adminAccounts );
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		$adminAccounts = $this->input->post('adminAccounts');
+		$adminAccounts = $this->AccountModel->getAccountDetail($adminAccounts);
 		if ($fetchedProfile && !$fetchedProfile['linked_account_id'] && $adminAccounts) {
-			$this->SocialappModel->updateAdminAccount( $fetchedProfile[ 'id' ], $adminAccounts[ 'id' ] );
+			$this->SocialappModel->updateAdminAccount($fetchedProfile['id'], $adminAccounts['id']);
 		}
 		redirect("accounts/list");
 		exit;
 	}
-	
 
 	public function link_gbusiness($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page']) {
-			$gList = $this->SocialModel->getGbusinessDetail( $fetchedProfile[ 'id' ] );			
-			$gList = com_makelist( $gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name" );
+			$gList = $this->SocialModel->getGbusinessDetail($fetchedProfile['id']);
+			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");
 			$inner = array();
 			$shell = array();
-			$inner[ 'gList' ] = $gList;
+			$inner['gList'] = $gList;
 			$log_user_id = com_user_data('id');
 			$inner['profile'] = $fetchedProfile;
 			$inner['accounts'] = $accounts_list;
@@ -549,78 +549,92 @@ class Social extends MY_Controller {
 		}
 	}
 
-	public function updateGbusinessAccount( $profId ){
+	public function updateGbusinessAccount($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		$gBusinessAccounts = $this->input->post( 'gbuissAccounts' );
+		$gBusinessAccounts = $this->input->post('gbuissAccounts');
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page'] && $gBusinessAccounts) {
 			$udata = array();
 			$gPages = array();
 			$gLocations = array();
-			foreach( $gBusinessAccounts as $gK => $gVal ){
+			foreach ($gBusinessAccounts as $gK => $gVal) {
 				$gAList = explode("/", $gVal);
-				if( $gAList && count( $gAList ) == 3 ){
-					$gPages[] = $gAList[ 0 ].'/'.$gAList[ 1 ];
-					$gLocations[] = $gAList[ 2 ];
+				if ($gAList && count($gAList) == 3) {
+					$gPages[] = $gAList[0] . '/' . $gAList[1];
+					$gLocations[] = $gAList[2];
 				}
 			}
 			$gPages = implode(',', $gPages);
 			$gLocations = implode(',', $gLocations);
-			if( $gPages && $gLocations ){
-					$udata[ 'linked_google_page' ] = $gPages;
-					$udata[ 'linked_google_page_location' ] = $gLocations;					
-					$this->SocialappModel->updateGBuissList( $fetchedProfile[ 'id' ], $udata );
-					// $this->updateProfileGBuissData($profId, com_user_data( 'id' ) );
+			if ($gPages && $gLocations) {
+				$udata['linked_google_page'] = $gPages;
+				$udata['linked_google_page_location'] = $gLocations;
+				$this->SocialappModel->updateGBuissList($fetchedProfile['id'], $udata);
+				// $this->updateProfileGBuissData($profId, com_user_data( 'id' ) );
 			}
 		}
 		redirect("accounts/list");
 		exit;
 	}
 
-	public function updateProfileGBuissData( $profId, $userId ){
+	public function updateProfileGBuissData($profId, $userId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		if( $fetchedProfile ){
-			$gPages = explode(',', $fetchedProfile[ 'linked_google_page' ]);
-			$gPageLocs = explode(',', $fetchedProfile[ 'linked_google_page_location' ]);
+		if ($fetchedProfile) {
+			$gPages = explode(',', $fetchedProfile['linked_google_page']);
+			$gPageLocs = explode(',', $fetchedProfile['linked_google_page_location']);
 			$opt = array();
 			$opt['prod'] = 'mbusiness';
 			$opt['profId'] = $profId;
 			$opt['log_user_id'] = $userId;
-			$opt['access_token'] = $fetchedProfile[ 'gmb_access_token' ];
-			$opt['refresh_token'] = $fetchedProfile[ 'gmb_refresh_token' ];
+			$opt['access_token'] = $fetchedProfile['gmb_access_token'];
+			$opt['refresh_token'] = $fetchedProfile['gmb_refresh_token'];
 			$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
 			$client = $ctoken['client'];
 			$objOAuthService = new Google_Service_Oauth2($client);
 			$authUrl = $client->createAuthUrl();
 			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
 			foreach ($gPages as $key => $gPage) {
-				try{
+				try {
 					$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-					$page_name = $gPage.'/locations/'.$gPageLocs[ $key ];
-					$gPageLoc = $this->SocialModel->getGbusinessPageDetail( $profId, $gPageLocs[ $key ]);
-					com_e( $gPage, 0 );
-					com_e( $page_name, 0);
-					com_e( $gPageLoc, 0);
+					$page_name = $gPage . '/locations/' . $gPageLocs[$key];
+					$gPageLoc = $this->SocialModel->getGbusinessPageDetail($profId, $gPageLocs[$key]);
+					$loc_name = $gPageLoc['account_page_location_name'];
+					com_e($gPage, 0);
+					com_e($page_name, 0);
+					com_e($gPageLoc, 0);
 					// $gPageLName = $gPageLoc[ 'account_page_location_place' ];
 					$opt = array();
-					$opt[ 'locationNames' ] = $gPageLocs[ $key ];
+					$opt['locationNames'] = $gPageLocs[$key];
 					$bMetric = new Google_Service_MyBusiness_BasicMetricsRequest();
-					$bMetric->setMetricRequests( ALL );
-					$bMetric->setTimeRange( '' );
-					com_e( $bMetric, 0 );
+					$metricRequests = new Google_Service_MyBusiness_MetricRequest();
+					$metricRequests->setMetric("ALL");
+					// $metricRequests->setOptions(array("AGGREGATED_DAILY"));
+					$bMetric->setMetricRequests($metricRequests);
+					$first_minute = mktime(0, 0, 0, date("n"), 1);
+					$last_minute = mktime(23, 59, 59, date("n"), date("t"));
+					$first_minute = date('Y-m-d\Th:i:s\Z', $first_minute);
+					$last_minute = date('Y-m-d\Th:i:s\Z', $last_minute);
+					com_e($first_minute, 0);
+					com_e($last_minute, 0);
+					$trange = new Google_Service_MyBusiness_TimeRange();
+					$trange->setStartTime($first_minute);
+					$trange->setEndTime($last_minute);
+					// com_e($trange);
+					$bMetric->setTimeRange($trange);
+					com_e($bMetric, 0);
 					$opt = new Google_Service_MyBusiness_ReportLocationInsightsRequest();
-					$opt->locationNames = $gPageLocs[ $key ];
-					$opt->setBasicRequest( $bMetric );
-					com_e( $opt, 0);
+					$opt->locationNames = array($loc_name);
+					$opt->setBasicRequest($bMetric);
+					com_e($opt, 0);
 					// setBasicRequest
 					$extra = array();
 					// $extra[ 'basicRequest' ][ 'metricRequests' ] = 'ALL';
 					// // com_e( $opt, 0);
 					// $rs = $this->GMBS->accounts_locations->get( $page_name );
 					// com_e( $rs );
-					$gList = $this->GMBS->accounts_locations->reportInsights( $gPage, $opt);
-					com_e( $gList, 0);
+					$gList = $this->GMBS->accounts_locations->reportInsights($gPage, $opt);
+					com_e($gList, 0);
 					// $gAList = $gList->accounts;
 					// $gADataBPages = array();
 					// $gADataBPagesLocations = array();
@@ -632,8 +646,8 @@ class Social extends MY_Controller {
 					// 	$gADataBPages[$value->name]['account_page_name_url'] = $value->name;
 					// 	$locations = $this->GMBS->accounts_locations->listAccountsLocations($value->name);
 					// }
-				} catch(Exception $ex){
-					com_e( $ex->getMessage() );
+				} catch (Exception $ex) {
+					com_e($ex->getMessage());
 				}
 			}
 		}
