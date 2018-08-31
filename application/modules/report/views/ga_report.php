@@ -4,7 +4,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white">Fetch Account <small><i><?= $profDet[ 'account_url' ]; ?></i></small></h4>
+                        <h4 class="m-b-0 text-white">Link and Update Account <small><i><?= $profDet[ 'account_url' ]; ?></i></small></h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
                         <a href="<?= base_url( 'social/updateGoogleProfiles' ) ?>" 
@@ -60,7 +60,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                  
                     </div>
                     <hr>
                     <div class="form-actions">
@@ -68,7 +68,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn btn-success">Fetch Data</button>
+                                        <button type="submit" class="btn btn-success">Link and Update Data</button>
                                     </div>
                                 </div>
                             </div>
@@ -77,8 +77,10 @@
                     </div>
                 </form>
             </div>
-        </div>
     </div>
+<div class="progress-bar bg-success hide" role="progressbar" id="progress-bar" 
+        style="width: 0%;height:15px;" role="progressbar"> 0% </div>
+        </div>
 </div>
 <!-- Row -->
 <div id="currentMonthData">

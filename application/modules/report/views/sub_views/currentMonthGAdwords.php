@@ -24,11 +24,6 @@ foreach( $currMonthData as $key => $val ){
         }
     }
 }
-// $currMonthData[ 'bounce_rate' ] = number_format($currMonthData[ 'bounce_rate' ], 2).'%';
-// $currMonthData[ 'goal_conversion_rate' ] = number_format($currMonthData[ 'goal_conversion_rate' ], 2).'%';
-// $currMonthData[ 'avg_session_duration' ] = gmdate("H:i:s", $currMonthData[ 'avg_session_duration' ]);
-// $currMonthData[ 'page_view_per_sessions' ] = number_format($currMonthData[ 'page_view_per_sessions' ], 2);
-// $currMonthData[ 'avg_page_download_time' ] = number_format($currMonthData[ 'avg_page_download_time' ], 2);
 if( $currMonthData[ 'cost' ] ){
     $currMonthData[ 'cost' ] = '$'.number_format( $currMonthData[ 'cost' ] / 1000000, 2);
 }
@@ -38,6 +33,16 @@ if( $currMonthData[ 'avg_cpc' ] ){
 if( $currMonthData[ 'cost_per_conversion' ] ){
     $currMonthData[ 'cost_per_conversion' ] = '$'.number_format( $currMonthData[ 'cost_per_conversion' ] / 1000000, 2);
 }
+$kpis = array();
+$kpis[ 'clicks' ] = array('text' => 'Clicks', 'skip_icon' => false );
+$kpis[ 'impressions' ] = array('text' => 'Impressions', 'skip_icon' => false );
+$kpis[ 'ctr' ] = array('text' => 'CTR', 'skip_icon' => false );
+$kpis[ 'avg_cpc' ] =  array('text' => 'AVG. CPC', 'skip_icon' => true );
+$kpis[ 'cost' ] =  array('text' => 'COST', 'skip_icon' => true );
+$kpis[ 'conversion' ] = array('text' => 'CONV.', 'skip_icon' => false );
+$kpis[ 'cost_per_conversion' ] = array('text' => 'COST / CONV.', 'skip_icon' => false );
+$kpis[ 'avg_position' ] = array('text' => 'AVG. POSITION', 'skip_icon' => false );
+// $kpis[ 'phone_calls' ] = array('text' => 'PHONE CALLS', 'skip_icon' => false );
 ?>
 <style type="text/css">
 .align-bottom small {
@@ -50,179 +55,35 @@ if( $currMonthData[ 'cost_per_conversion' ] ){
 }
 </style>
 <div class="row">
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Clicks</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'clicks' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'clicks' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'clicks' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">IMPRESSIONS</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'impressions' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'impressions' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'impressions' ] ?></h2>  
+    <?php 
+        foreach ($kpis as $kpKey => $kpValUser) {
+            $kpVal = $kpValUser[ 'text' ];
+            $kpIcon = $kpValUser[ 'skip_icon' ];
+    ?>
+        <!-- Column -->
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"> 
+                        <img src="<?= base_url( 'img/social/adwords-on.png' ) ?>" width="20px" height="20px"> <?= $kpVal; ?></h4>
+                    <div class="text-left m-l-10">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 kpiText">
+                                <h2 class="font-light m-b-0"><?= $currMonthData[ $kpKey ] ?></h2>
+                                <?php if( !$kpIcon ){ ?>
+                                    <small><i class="<?= $statClasses[ $kpKey ][ 'class' ]; ?>"></i> <?= $statClasses[ $kpKey ][ 'inc' ]; ?></small>
+                                <?php } else {
+                                    echo '<br/>';
+                                }?>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">CTR</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'ctr' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'ctr' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'ctr' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">AVG. CPC</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'avg_cpc' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'avg_cpc' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'avg_cpc' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">COST</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'cost' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'cost' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'cost' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">CONV.</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'conversion' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'conversion' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'conversion' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">COST / CONV.</h4>                
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'cost_per_conversion' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'cost_per_conversion' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'cost_per_conversion' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">AVG. POSITION</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'avg_position' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'avg_position' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'avg_position' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">PHONE CALLS</h4>                
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'phone_calls' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'phone_calls' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'phone_calls' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
+    <?php } ?>
 </div>
-<!-- Row -->    
 <?php
 }
 ?>

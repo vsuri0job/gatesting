@@ -84,6 +84,8 @@ defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
-defined('TMP_DEFAULT')        		OR define('TMP_DEFAULT', 'templates/default');
-defined('TMP_DASHBOARD')        	OR define('TMP_DASHBOARD', 'templates/dashboard');
 defined('TMP_LOGIN')        		OR define('TMP_LOGIN', 'templates/login');
+defined('TMP_DEFAULT')        		OR define('TMP_DEFAULT', 'templates/default');
+defined('TMP_PREPORT')        		OR define('TMP_PREPORT', 'templates/onlyReport');
+defined('TMP_DASHBOARD')        	OR define('TMP_DASHBOARD', 'templates/dashboard');
+defined('GEKEY')        			OR define('GEKEY', 'M08|!#3');

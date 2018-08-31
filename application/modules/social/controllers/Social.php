@@ -15,8 +15,24 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		$ex_state = "";
-		$fldCheck = $prod == 'adwords' ? 'adword_' : ($prod == 'analytic' ? 'analytic_'
-			: ($prod == 'mbusiness' ? 'gmb_' : ''));
+		$fldCheck = "";
+		switch ($prod) {
+			case 'adwords':
+				$fldCheck = "adword_";
+			break;
+			
+			case 'analytic':
+				$fldCheck = "analytic_";
+			break;
+
+			case 'mbusiness':
+				$fldCheck = "gmb_";
+			break;
+
+			case 'webmaster':
+				$fldCheck = "gsc_";
+			break;
+		}		
 		if ($fldCheck && $fetchedProfile[$fldCheck . 'reset_token']) {
 			$ex_state .= '|RESET_TOKEN:1';
 		}
@@ -100,7 +116,7 @@ class Social extends MY_Controller {
 			$authentication = $client->authenticate($ret_code);
 			$access_token = $client->getAccessToken();
 			$refresh_token = $client->getRefreshToken();
-			if ($access_token) {
+			if ($access_token) {				
 				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);
 				if (!$ex["RESET_TOKEN"]) {
 					if ($sD['PROD'] == 'analytic') {
@@ -132,6 +148,14 @@ class Social extends MY_Controller {
 						$opt['refresh_token'] = $refresh_token;
 						$opt['log_user_id'] = com_user_data('id');
 						$this->update_google_business_list($opt);
+					} else if ($sD['PROD'] == 'webmaster') {
+						$opt = array();
+						$opt['prod'] = $sD['PROD'];
+						$opt['profId'] = $sD['PID'];
+						$opt['access_token'] = $access_token;
+						$opt['refresh_token'] = $refresh_token;
+						$opt['log_user_id'] = com_user_data('id');
+						$this->update_google_website_list($opt);
 					}
 				}
 				redirect('accounts/list');
@@ -215,7 +239,7 @@ class Social extends MY_Controller {
 		$this->SocialModel->addUserGoogleAnalyticsProfileProperties($profile_properties);
 		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyView($profile_property_views);
 		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyAdwordAssoc($profile_property_adass);
-		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);
+		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);		
 	}
 
 	private function getPropViewAnalyticData($analytics, $viewId) {
@@ -532,14 +556,14 @@ class Social extends MY_Controller {
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page']) {
 			$gList = $this->SocialModel->getGbusinessDetail($fetchedProfile['id']);
-			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");
+			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");			
 			$inner = array();
 			$shell = array();
 			$inner['gList'] = $gList;
 			$log_user_id = com_user_data('id');
 			$inner['profile'] = $fetchedProfile;
 			$inner['accounts'] = $accounts_list;
-			$shell['page_title'] = 'Link Admin Account';
+			$shell['page_title'] = 'Link Google My Business';
 			$shell['content'] = $this->load->view('link_gbusiness', $inner, true);
 			$shell['footer_js'] = $this->load->view('link_gbusiness_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
@@ -552,41 +576,56 @@ class Social extends MY_Controller {
 	public function updateGbusinessAccount($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		$gBusinessAccounts = $this->input->post('gbuissAccounts');
+		$gBusinessAccounts = $this->input->post('gbuissAccounts');		
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page'] && $gBusinessAccounts) {
 			$udata = array();
-			$gPages = array();
-			$gLocations = array();
-			foreach ($gBusinessAccounts as $gK => $gVal) {
-				$gAList = explode("/", $gVal);
-				if ($gAList && count($gAList) == 3) {
-					$gPages[] = $gAList[0] . '/' . $gAList[1];
-					$gLocations[] = $gAList[2];
-				}
-			}
-			$gPages = implode(',', $gPages);
-			$gLocations = implode(',', $gLocations);
-			if ($gPages && $gLocations) {
+			$gPages = '';
+			$gLocations = implode(',', $gBusinessAccounts);
+			if ($gLocations) {
 				$udata['linked_google_page'] = $gPages;
 				$udata['linked_google_page_location'] = $gLocations;
 				$this->SocialappModel->updateGBuissList($fetchedProfile['id'], $udata);
-				// $this->updateProfileGBuissData($profId, com_user_data( 'id' ) );
+				$this->updateProfileGBuissData($profId);
 			}
 		}
 		redirect("accounts/list");
 		exit;
 	}
 
-	public function updateProfileGBuissData($profId, $userId) {
+	public function updateProfileGBuissData($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile) {
-			$gPages = explode(',', $fetchedProfile['linked_google_page']);
+			$flds = array();			
+			$flds[ 'month_ref' ] = "";
+			$flds[ 'url_profile_id' ] = $profId;
+			$flds[ 'location_name' ] = "";
+			$flds[ 'views_maps' ] = '0';
+			$flds[ 'views_search' ] = '0';
+			$flds[ 'queries_chain' ] = '0';
+			$flds[ 'actions_phone' ] = '0';
+			$flds[ 'queries_direct' ] = '0';
+			$flds[ 'actions_website' ] = '0';
+			$flds[ 'queries_indirect' ] = '0';
+			$flds[ 'actions_driving_directions' ] = '0';
+			$flds[ 'photos_views_merchant' ] = '0';
+			$flds[ 'photos_views_customers' ] = '0';
+			$flds[ 'photos_count_merchant' ] = '0';
+			$flds[ 'photos_count_customers' ] = '0';
+			$flds[ 'local_post_views_search' ] = '0';
+			$flds[ 'local_post_actions_call_to_action' ] = '0';
+			
 			$gPageLocs = explode(',', $fetchedProfile['linked_google_page_location']);
+			$pageLocPrep = array();
+			foreach ($gPageLocs as $pageLoc) {
+				$locRef = $pageLoc;
+				$pageLoc = explode("/", $pageLoc);
+				$pageLocPrep[ $pageLoc[ 0 ].'/'.$pageLoc[ 1 ] ][] = $locRef;
+			}			
 			$opt = array();
 			$opt['prod'] = 'mbusiness';
 			$opt['profId'] = $profId;
-			$opt['log_user_id'] = $userId;
+			$opt['log_user_id'] = $fetchedProfile[ 'account_id' ];
 			$opt['access_token'] = $fetchedProfile['gmb_access_token'];
 			$opt['refresh_token'] = $fetchedProfile['gmb_refresh_token'];
 			$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
@@ -594,62 +633,83 @@ class Social extends MY_Controller {
 			$objOAuthService = new Google_Service_Oauth2($client);
 			$authUrl = $client->createAuthUrl();
 			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
-			foreach ($gPages as $key => $gPage) {
-				try {
-					$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-					$page_name = $gPage . '/locations/' . $gPageLocs[$key];
-					$gPageLoc = $this->SocialModel->getGbusinessPageDetail($profId, $gPageLocs[$key]);
-					$loc_name = $gPageLoc['account_page_location_name'];
-					com_e($gPage, 0);
-					com_e($page_name, 0);
-					com_e($gPageLoc, 0);
-					// $gPageLName = $gPageLoc[ 'account_page_location_place' ];
-					$opt = array();
-					$opt['locationNames'] = $gPageLocs[$key];
-					$bMetric = new Google_Service_MyBusiness_BasicMetricsRequest();
+			$months_tstamps = array(
+				date( "Y-m", strtotime("-13 months")) => strtotime("-13 months"),
+				date( "Y-m", strtotime("-12 months")) => strtotime("-12 months"),
+				date( "Y-m", strtotime("-11 months")) => strtotime("-11 months"),
+				date( "Y-m", strtotime("-10 months")) => strtotime("-10 months"),
+				date( "Y-m", strtotime("-9 months")) => strtotime("-9 months"),
+				date( "Y-m", strtotime("-8 months")) => strtotime("-8 months"),
+				date( "Y-m", strtotime("-7 months")) => strtotime("-7 months"),
+				date( "Y-m", strtotime("-6 months")) => strtotime("-6 months"),
+				date( "Y-m", strtotime("-5 months")) => strtotime("-5 months"),
+				date( "Y-m", strtotime("-4 months")) => strtotime("-4 months"),
+				date( "Y-m", strtotime("-3 months")) => strtotime("-3 months"),
+				date( "Y-m", strtotime("-2 months")) => strtotime("-2 months"),
+				date( "Y-m", strtotime("-1 months")) => strtotime("-1 months"),
+				date( "Y-m", time()) => time(),
+			);
+			$gmbData = array();
+			$currTimeStamp = date("Y-m", time());
+			foreach( $months_tstamps as $monthRef => $monthDTime ){
+				$monthYearDate = date("Y-m", $monthDTime);
+				$stTime = date('Y-m-01\T00:00:00\Z', $monthDTime);
+				$edTime = date('Y-m-t\T23:59:59\Z', $monthDTime);
+				if( $monthYearDate == $currTimeStamp ){
+					$edTime = date('Y-m-d\Th:i:s\Z', $monthDTime);
+				}
+				foreach ($pageLocPrep as $pageRef => $pageLocRef) {
+					$trange = new Google_Service_MyBusiness_TimeRange();
+					$trange->setStartTime($stTime);
+					$trange->setEndTime($edTime);
+
 					$metricRequests = new Google_Service_MyBusiness_MetricRequest();
 					$metricRequests->setMetric("ALL");
-					// $metricRequests->setOptions(array("AGGREGATED_DAILY"));
+					$metricRequests->setOptions(array("AGGREGATED_TOTAL"));
+
+					$bMetric = new Google_Service_MyBusiness_BasicMetricsRequest();
 					$bMetric->setMetricRequests($metricRequests);
-					$first_minute = mktime(0, 0, 0, date("n"), 1);
-					$last_minute = mktime(23, 59, 59, date("n"), date("t"));
-					$first_minute = date('Y-m-d\Th:i:s\Z', $first_minute);
-					$last_minute = date('Y-m-d\Th:i:s\Z', $last_minute);
-					com_e($first_minute, 0);
-					com_e($last_minute, 0);
-					$trange = new Google_Service_MyBusiness_TimeRange();
-					$trange->setStartTime($first_minute);
-					$trange->setEndTime($last_minute);
-					// com_e($trange);
 					$bMetric->setTimeRange($trange);
-					com_e($bMetric, 0);
-					$opt = new Google_Service_MyBusiness_ReportLocationInsightsRequest();
-					$opt->locationNames = array($loc_name);
-					$opt->setBasicRequest($bMetric);
-					com_e($opt, 0);
-					// setBasicRequest
-					$extra = array();
-					// $extra[ 'basicRequest' ][ 'metricRequests' ] = 'ALL';
-					// // com_e( $opt, 0);
-					// $rs = $this->GMBS->accounts_locations->get( $page_name );
-					// com_e( $rs );
-					$gList = $this->GMBS->accounts_locations->reportInsights($gPage, $opt);
-					com_e($gList, 0);
-					// $gAList = $gList->accounts;
-					// $gADataBPages = array();
-					// $gADataBPagesLocations = array();
-					// foreach ($gAList as $key => $value) {
-					// 	$gADataBPages[$value->name]['account_id'] = $log_user_id;
-					// 	$gADataBPages[$value->name]['url_profile_id'] = $profId;
-					// 	$gADataBPages[$value->name]['account_page_name'] = $value->accountName;
-					// 	$gADataBPages[$value->name]['account_page_name_id'] = $value->name;
-					// 	$gADataBPages[$value->name]['account_page_name_url'] = $value->name;
-					// 	$locations = $this->GMBS->accounts_locations->listAccountsLocations($value->name);
-					// }
-				} catch (Exception $ex) {
-					com_e($ex->getMessage());
+
+					$repoInsight = new Google_Service_MyBusiness_ReportLocationInsightsRequest();
+					$repoInsight->locationNames = $pageLocRef;
+					$repoInsight->setBasicRequest($bMetric);
+
+					$gList = $this->GMBS->accounts_locations->reportInsights($pageRef, $repoInsight);
+					foreach ($gList->locationMetrics as $locKey => $locDet) {
+						$indKey = $monthRef.'-'.$locDet->locationName;
+						$gmbData[ $indKey ] = $flds;
+						$gmbData[ $indKey ][ 'month_ref' ] = $monthRef;
+						$gmbData[ $indKey ][ 'location_name' ] = $locDet->locationName;
+						if( $locDet->metricValues ){
+							foreach ($locDet->metricValues as $metKey => $metDet) {
+								$metricKet = strtolower( $metDet->metric );
+								$gmbData[ $indKey ][ $metricKet ] = $metDet->totalValue->value;
+							}
+						}
+					}
 				}
 			}
+			/* Loop End */			
+			$this->SocialappModel->updateGBuissData($profId, $gmbData);
+		}
+	}
+
+	public function update_google_website_list( $opt ){
+		$profId = $opt['profId'];
+		$log_user_id = $opt['log_user_id'];		
+		$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
+		$client = $ctoken['client'];
+		$webMaster = new Google_Service_Webmasters($client);		
+	  	$web_urls = $webMaster->sites->listSites();	
+		$web_urls_data = array();
+		if( $web_urls->siteEntry ){
+			foreach( $web_urls->siteEntry as $siteKey => $siteDetail ){
+				$web_urls_data[ $siteKey ][ 'site_url' ] = $siteDetail->siteUrl;
+				$web_urls_data[ $siteKey ][ 'permission_level' ] = $siteDetail->permissionLevel;
+				$web_urls_data[ $siteKey ][ 'url_profile_id' ] = $profId;
+			}
+			$this->SocialModel->addUserGoogleMasterSites( $web_urls_data );
 		}
 	}
 }

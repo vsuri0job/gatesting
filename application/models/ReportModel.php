@@ -29,6 +29,15 @@ class ReportModel extends CI_Model {
 		return $profiles;
 	}
 
+	public function getAccountWebmasterProfiles($profile_id) {
+		$profiles = array();
+		$profiles = $this->db
+			->from('google_webmaster_sites')
+			->where('url_profile_id', $profile_id)
+			->get()->result_array();
+		return $profiles;
+	}
+
 	public function getAccountGoogleAnalyticProfileAssos($account_id) {
 		$profiles = array();
 		$profiles = $this->db->select(' `account_id`, `property_id`, `adword_link_id`, `adword_link_name`, `adword_refs` ')
@@ -38,6 +47,23 @@ class ReportModel extends CI_Model {
 		return $profiles;
 	}
 
+	public function fetchUrlGoogleMyBusiness($profId, $locationss, $limit = 0) {
+		$profiles = array();
+		if( $limit ){
+			$this->db->limit( $limit, 0 );
+		}
+		$profiles = $this->db->select( 'account_url_profile_gmb_data.*, account_page_location_place' )
+			->from('account_url_profile_gmb_data')
+			->join( 'google_business_page_locations', 
+			'account_page_location_name=location_name 
+			and account_url_profile_gmb_data.url_profile_id=google_business_page_locations.url_profile_id' )
+			->where('account_url_profile_gmb_data.url_profile_id', $profId)
+			->where('location_name', $locationss)
+			->order_by('month_ref desc, location_name' )
+			->get()
+			->result_array();		
+		return $profiles;
+	}
 	public function fetchViewAnalyticData($monthRef, $viewId, $profId) {
 		return $this->db->select('month_ref, sessions, users, page_view_per_sessions, avg_session_duration, bounce_rate,
 						avg_page_download_time, goal_conversion_rate, goal_completion_all, page_views, per_new_sessions')
@@ -122,9 +148,14 @@ class ReportModel extends CI_Model {
 		$this->insertGAdataDetail($udata);
 	}
 
-	public function getGAdataDetail($whereArr, $orderBy) {
+	public function getGAdataDetail($whereArr, $orderBy, $opt = array()) {
 		if ($orderBy) {
 			$this->db->order_by($orderBy);
+		}
+		$limit = com_arrIndex( $opt, 'limit', 0 );
+		$offset = com_arrIndex( $opt, 'offset', 0 );
+		if( $limit ){
+			$this->db->limit($limit, $offset);
 		}
 		return $this->db->where($whereArr)
 			->get('analytic_profile_property_view_data_detail')
@@ -327,5 +358,27 @@ class ReportModel extends CI_Model {
 			->order_by('month_ref', 'desc')
 			->limit(13, 0)
 			->get()->result_array();
+	}
+
+	public function updateWebmasterData( $data, $where, $rowData = true ){
+		$this->db->where( $where )
+				->delete( 'account_url_profile_webmaster_data' );
+		if( $rowData ){
+			$this->db->insert( 'account_url_profile_webmaster_data', $data);
+		} else {			
+			$this->db->insert_batch( 'account_url_profile_webmaster_data', $data);
+		}
+	}
+
+	public function getWebmasterData($prof_id, $report_type) {
+		$profiles = array();
+		$profiles = $this->db->from('account_url_profile_webmaster_data')
+			->where('report_type', $report_type)
+			->where('url_profile_id', $prof_id)
+			->get();		
+		if( $profiles->num_rows() > 1 ){
+			return $profiles->result_array();
+		}
+		return $profiles->row_array();
 	}
 }

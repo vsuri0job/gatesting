@@ -7,7 +7,10 @@
                         <h4 class="m-b-0 text-white">View Linked Adwords ( <?= $linked_adwords[ 'account_name' ] ?> )</h4>
                     </div>
                     <div class="col-md-4 col-4 align-self-center">
-                        <a href="<?= base_url( 'accounts/updateAccountAdwords/'.$assoc_prof_id ) ?>" class="btn pull-right btn-outline-primary">Update adwords data</a>
+                        <?php if( $show_public_url ){
+                            echo anchor( 'publicReport/'.$prodDet[ 'share_adwords_link' ], 
+                                'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ' );
+                        } ?>
                     </div>
                 </div>
             </div>

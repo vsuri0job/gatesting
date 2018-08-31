@@ -21,6 +21,7 @@
                                 <th>Local</th>
                                 <th>Trello</th>
                                 <th>Rankinity</th>
+                                <th>Webmaster</th>
                                 <th>Content/Citations</th>
                             </tr>
                         </thead>
@@ -33,6 +34,7 @@
                                 <th>Local</th>
                                 <th>Trello</th>
                                 <th>Rankinity</th>
+                                <th>Webmaster</th>
                                 <th>Content/Citations</th>
                             </tr>
                         </tfoot>
@@ -77,7 +79,7 @@
             </div>
             <div class="modal-body" id="link-account-modal-body">
                 <input type="text" name="customer_id" value="" class="form-control" required
-                    placeholder="Please Provide 10 Digit Customer Id">
+                    placeholder="Please Provide 10 Digit Customer Id" id="customer_id">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>

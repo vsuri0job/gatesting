@@ -4,7 +4,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white">Link Admin Account</h4>
+                        <h4 class="m-b-0 text-white">Link Google My Business</h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
                     </div>

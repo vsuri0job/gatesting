@@ -4,11 +4,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Report extends MY_Controller {
 
 	public function __construct() {
-		parent::__construct();
-		$this->isLogin();
+		parent::__construct();		
+		if( !in_array($this->router->method, 
+			array( 'viewPublicSocialReport' )) ){
+			$this->isLogin();
+		}
 		$this->load->model('ReportModel');
 		$this->load->model('AccountModel');
 		$this->load->library('Rankinity', RANKINITY_KEY);
+	}
+
+	public function viewPublicSocialReport( $report ){
+		$report = explode("/", com_b64UrlDecode( $report ));		
+		$profId = com_arrIndex($report, 1, 0);
+		$reportName = com_arrIndex($report, 0, 0);		
+		if( $reportName && $profId ){
+			if( $reportName == 'analytic' ){
+				$this->fetchedAnalytic( $profId, 1);
+			} else if( $reportName == 'adword' ){				
+				$this->fetchedAdwords( $profId, 1);
+			}			
+		}
 	}
 
 	public function link_analytic($prof_id) {
@@ -24,7 +40,7 @@ class Report extends MY_Controller {
 		$inner['profDet'] = $prodDet;
 		$inner['profiles'] = $this->ReportModel->getAccountGoogleAnalyticProfiles($profile_id);
 		$inner['props'] = $this->ReportModel->getAccountGoogleAnalyticProfileProps($profile_id);
-		$inner['views'] = $this->ReportModel->getAccountGoogleAnalyticProfilePropViews($profile_id);
+		$inner['views'] = $this->ReportModel->getAccountGoogleAnalyticProfilePropViews($profile_id);	
 		$shell['page_title'] = 'Google Analytic';
 		$shell['content'] = $this->load->view('ga_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('ga_report_js', $inner, true);
@@ -53,15 +69,17 @@ class Report extends MY_Controller {
 		$this->load->view(TMP_DASHBOARD, $shell);
 	}
 
-	public function fetchedAnalytic($prof_id) {
+	public function fetchedAnalytic($prof_id, $publicView = 0) {
+		$log_user_id = 0;
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
 			redirect('accounts/list');
 			exit;
-		}
+		}		
 		$viewId = $prodDet['view_id'];
 		$profileId = $prodDet['profile_id'];
 		$propertyId = $prodDet['property_id'];
+		$log_user_id = $prodDet['account_id'];
 		$months_tstamps = array(
 			strtotime("-13 months"),
 			strtotime("-12 months"),
@@ -99,7 +117,7 @@ class Report extends MY_Controller {
 		$whereStack['report_type'] = 'medium';
 		$whereStack['month_ref'] = $month_ref;
 		$whereStack['url_profile_id'] = $prof_id;
-		$whereStack['account_id'] = com_user_data('id');
+		$whereStack['account_id'] = $log_user_id;
 		$orderBy = ' ABS(users) desc ';
 		$inner['ga_data_medium'] = $this->ReportModel->getGAdataDetail($whereStack, $orderBy);
 		$whereStack = array();
@@ -107,29 +125,47 @@ class Report extends MY_Controller {
 		$whereStack['month_ref'] = $month_ref;
 		$whereStack['url_profile_id'] = $prof_id;
 		$whereStack['report_type'] = 'source_medium';
-		$whereStack['account_id'] = com_user_data('id');
-		$inner['ga_data_source_medium'] = $this->ReportModel->getGAdataDetail($whereStack, $orderBy);
+		$whereStack['account_id'] = $log_user_id;
+		$opt = array();
+		$opt[ 'offset' ] = 0;
+		$opt[ 'limit' ] = 10;
+		$inner['ga_data_source_medium'] = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);
+		$whereStack = array();
+		$whereStack['view_id'] = $viewId;
+		$whereStack['month_ref'] = $month_ref;
+		$whereStack['url_profile_id'] = $prof_id;
+		$whereStack['report_type'] = 'landing_page';
+		$whereStack['account_id'] = $log_user_id;
+		$opt = array();		
+		$inner['ga_data_landing_page'] = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
 		$inner['prodDet'] = $prodDet;
+		$inner['show_public_url'] = !$publicView;
 		$shell['page_title'] = 'Google Analytic';
 		$shell['content'] = $this->load->view('ganalytic_report', $inner, true);
-		$shell['footer_js'] = $this->load->view('ganalytic_report_js', $inner, true);
-		$this->load->view(TMP_DEFAULT, $shell);
+		$shell['footer_js'] = $this->load->view('ganalytic_report_js', $inner, true);		
+		$temp = TMP_DEFAULT;
+		if( $publicView ){
+			$temp = TMP_PREPORT;
+		}
+		$this->load->view($temp, $shell);
 	}
 
-	public function fetchedAdwords($fAnalyticReportid) {
-		$reportData = $this->AccountModel->getFetchedAccountDetail($fAnalyticReportid);
-		if (!$reportData) {
+	public function fetchedAdwords($fAnalyticReportid, $publicView = 0) {
+		$prodDet = $this->AccountModel->getFetchedAccountDetail($fAnalyticReportid);
+		if (!$prodDet) {
 			redirect('dashboard');
 			exit();
-		}
+		}		
 		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');
 		$inner = array();
 		$shell = array();
 		$log_user_id = com_user_data('id');
-		$fetch_prof_id = $reportData['id'];
-		$adword_acc_id = $reportData['linked_adwords_acc_id'];
+		$fetch_prof_id = $prodDet['id'];
+		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
+		$inner['prodDet'] = $prodDet;
+		$inner['show_public_url'] = !$publicView;
 		$inner['assoc_prof_id'] = $fetch_prof_id;
 		$inner['linked_adwords'] = $this->SocialModel->getAdwordProjDetail($adword_acc_id);
 		$inner['assoc_links'] = $this->ReportModel->getAccountGoogleAnalyticProfileAssos($log_user_id);
@@ -140,14 +176,197 @@ class Report extends MY_Controller {
 		$shell['page_title'] = 'Google Adwords';
 		$shell['content'] = $this->load->view('gad_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('gad_report_js', $inner, true);
-		$this->load->view(TMP_DASHBOARD, $shell);
+		// $this->load->view(TMP_DASHBOARD, $shell);
+		$temp = TMP_DEFAULT;
+		if( $publicView ){
+			$temp = TMP_PREPORT;
+		}
+		$this->load->view($temp, $shell);
+	}
+
+	public function fetchedWebmaster($fAnalyticReportid, $publicView = 0) {
+		$prodDet = $this->AccountModel->getFetchedAccountDetail($fAnalyticReportid);
+		if (!$prodDet) {
+			redirect('dashboard');
+			exit();
+		}		
+		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');
+		$inner = array();
+		$shell = array();
+		$log_user_id = com_user_data('id');
+		$fetch_prof_id = $prodDet['id'];
+		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
+		$inner['prodDet'] = $prodDet;
+		$inner['show_public_url'] = !$publicView;				
+		$inner['kpis'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'kpi');
+		$inner['queries'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'query');
+		$inner['pages'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'page');
+		$inner['months'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'month');	
+		$shell['page_title'] = 'Google Webmaster';
+		$shell['content'] = $this->load->view('gwmaster_report', $inner, true);
+		$shell['footer_js'] = $this->load->view('gwmaster_report_js', $inner, true);
+		// $this->load->view(TMP_DASHBOARD, $shell);
+		$temp = TMP_DEFAULT;
+		if( $publicView ){
+			$temp = TMP_PREPORT;
+		}
+		$this->load->view($temp, $shell);
+	}
+
+	public function link_webmaster( $prof_id ){
+		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
+		if (!$prodDet) {
+			redirect('accounts/list');
+			exit;
+		}
+		$this->breadcrumb->addElement('Google Webmaster', 'report/link_webmaster/' . $prof_id);		
+		$this->form_validation->set_rules('webmaster_sites', 'Webmaster Site', 'required');
+		if( $this->form_validation->run() == false){
+			$inner = array();
+			$shell = array();
+			$profile_id = $prodDet['id'];
+			$inner['profDet'] = $prodDet;
+			$inner['webmaster_sites'] = com_makelist( $this->ReportModel->getAccountWebmasterProfiles($profile_id),
+			'site_url', 'site_url', false );		
+			$shell['page_title'] = 'Google Analytic';
+			$shell['content'] = $this->load->view('gwmaster_report', $inner, true);
+			$shell['footer_js'] = $this->load->view('gwmaster_report_js', $inner, true);
+			$this->load->view(TMP_DEFAULT, $shell);
+		} else {
+			$webmaster_site = $this->input->post('webmaster_sites');
+			$data = array();
+			$data['linked_webmaster_site'] = $webmaster_site;
+			$this->ReportModel->updateProfileAnalytic($prof_id, $data);
+			$opt = array();
+			$opt['prod'] = 'webmaster';
+			$opt['profId'] = $prodDet['id'];
+			$opt['log_user_id'] = com_user_data('id');
+			$opt['refresh_token'] = $prodDet['gsc_refresh_token'];
+			$opt['access_token'] = $prodDet['gsc_access_token'];
+			$client_token = $this->loaddata->updateGoogleTokens(true, $opt);
+			$client = $client_token['client'];
+			$webMaster = new Google_Service_Webmasters($client);
+			$prodDet = $this->AccountModel->getProfileDetail($prof_id);
+
+			$flds = array( 'month_ref' => '', 'queries' => '', 'pages' => '', 'report_type' => '', 
+				'clicks' => '', 'ctr' => '', 'impressions' => '', 'server_error' => '', 'url_profile_id' => '',
+				'soft_404' => '', 'not_found' => '', 'other' => '', 'total_pages' => '', 'total_links' => ''
+			);
+			// webmasters.urlcrawlerrorscounts.query
+
+			$wmKpi = $flds;
+			$wmKpi[ 'report_type' ] = 'kpi';
+			$wmKpi[ 'url_profile_id' ] = $prof_id;
+			$kpiStack = array();
+			$kpiStack[ 'other' ] = 'other';
+			$kpiStack[ 'soft404' ] = 'soft_404';
+			$kpiStack[ 'notFound' ] = 'not_found';
+			$kpiStack[ 'serverError' ] = 'server_error';
+			foreach ($kpiStack as $kKey => $kVal) {
+				$opts = array();
+				$opts[ 'platform' ] = 'web';
+				$opts[ 'category' ] = $kKey;
+				$webResult = $webMaster->urlcrawlerrorscounts->query($webmaster_site, $opts);
+				if( $webResult && isset( $webResult->countPerTypes ) ){
+					if( isset( $webResult->countPerTypes[ 0 ] ) ){
+						$typeDet = $webResult->countPerTypes[ 0 ];
+						if( $typeDet->entries && isset( $typeDet->entries[ 0 ] ) ){							
+							$wmKpi[ $kVal ] = $typeDet->entries[ 0 ]->count;
+						}
+					}
+				}
+			}
+			$sday_month = date('Y-m-01', time());
+			$lday_month = date('Y-m-t', time());
+		// webmasters.searchanalytics.query
+			$queries = $pages = array();
+			$kTopFilter = array( 'query' => array( 'limit' => 50, 'fld' => 'queries' ),
+				'page' => array( 'limit' => 20, 'fld' => 'pages' ) );
+			foreach ($kTopFilter as $Kfilter => $filterDet) {
+				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();				
+				// responseAggregationType,rows
+				$reqObj->setRowLimit( $filterDet[ 'limit' ] );
+				$reqObj->setDimensions( array( $Kfilter ) );
+				$reqObj->setEndDate( $lday_month );
+				$reqObj->setStartDate( $sday_month );
+				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);				
+				if( $webResult && $webResult->rows){					
+					foreach ($webResult->rows as $rKey => $rData) {
+						${$filterDet[ 'fld' ]}[$rKey] = $flds;
+						$keyRef = implode(",", $rData->keys );
+						${$filterDet[ 'fld' ]}[$rKey][ 'report_type' ] = $Kfilter;
+						${$filterDet[ 'fld' ]}[$rKey][ 'url_profile_id' ] = $prof_id;
+						${$filterDet[ 'fld' ]}[$rKey][ $filterDet[ 'fld' ] ] = $keyRef;
+						${$filterDet[ 'fld' ]}[$rKey][ 'clicks' ] = $rData->clicks;
+						${$filterDet[ 'fld' ]}[$rKey][ 'ctr' ] = $rData->ctr;
+						${$filterDet[ 'fld' ]}[$rKey][ 'impressions' ] = $rData->impressions;
+					}
+				}
+			}
+
+			$months_tstamps = array(
+				strtotime("-13 months"),
+				strtotime("-12 months"),
+				strtotime("-11 months"),
+				strtotime("-10 months"),
+				strtotime("-9 months"),
+				strtotime("-8 months"),
+				strtotime("-7 months"),
+				strtotime("-6 months"),
+				strtotime("-5 months"),
+				strtotime("-4 months"),
+				strtotime("-3 months"),
+				strtotime("-2 months"),
+				strtotime("-1 months"),
+				time(),
+			);
+			krsort($months_tstamps);
+
+			$web_month_data = array();
+			foreach ($months_tstamps as $mtstamp) {
+				$month_ref = date('Y-m-t', $mtstamp);
+				$lday_month = date('Y-m-t', $mtstamp);
+				$sday_month = date('Y-m-01', $mtstamp);
+				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();				
+				$reqObj->setEndDate( $lday_month );
+				$reqObj->setStartDate( $sday_month );
+				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
+				if( $webResult && $webResult->rows){
+					foreach ($webResult->rows as $rKey => $rData) {
+						$web_month_data[$month_ref] = $flds;
+						$web_month_data[$month_ref][ 'month_ref' ] = $month_ref;
+						$web_month_data[$month_ref][ 'report_type' ] = 'month';
+						$web_month_data[$month_ref][ 'url_profile_id' ] = $prof_id;						
+						$web_month_data[$month_ref][ 'clicks' ] = $rData->clicks;
+						$web_month_data[$month_ref][ 'ctr' ] = $rData->ctr;
+						$web_month_data[$month_ref][ 'impressions' ] = $rData->impressions;
+					}
+				}
+			}
+			$where = array();			
+			$where[ 'report_type' ] = 'kpi';
+			$where[ 'url_profile_id' ] = $prof_id;
+			$this->ReportModel->updateWebmasterData($wmKpi, $where);
+			$where[ 'report_type' ] = 'query';
+			$where[ 'url_profile_id' ] = $prof_id;
+			$this->ReportModel->updateWebmasterData($queries, $where, false);
+			$where[ 'report_type' ] = 'page';
+			$where[ 'url_profile_id' ] = $prof_id;
+			$this->ReportModel->updateWebmasterData($pages, $where, false);
+			$where[ 'report_type' ] = 'month';
+			$where[ 'url_profile_id' ] = $prof_id;
+			$this->ReportModel->updateWebmasterData($web_month_data, $where, false);
+
+			redirect( 'dashboard' );
+			exit;
+		}
 	}
 
 	public function getViewData() {
 		$viewId = $this->input->post('view');
 		$propertyId = $this->input->post('prop');
 		$profileId = $this->input->post('profile');
-		$relProfId = $this->input->post('prof_id');
+		$relProfId = $this->input->post('prof_id');		
 		$prodDet = $this->AccountModel->getProfileDetail($relProfId);
 		$inner = $out = array();
 		$out['linkAccount'] = "";
@@ -173,23 +392,17 @@ class Report extends MY_Controller {
 		exit;
 	}
 
+
 	private function updateFetchedAccountProfile($profId) {
 		$viewId = $this->input->post('view');
 		$propertyId = $this->input->post('prop');
 		$profileId = $this->input->post('profile');
-		$propDetail = $this->SocialModel->getPropertyDetail($propertyId);
+		$propDetail = $this->SocialModel->getPropertyDetail($propertyId);		
 		$data = array();
 		$data['view_id'] = $viewId;
 		$data['profile_id'] = $profileId;
-		$data['property_id'] = $propertyId;
+		$data['property_id'] = $propertyId;		
 		$aProfileId = $this->ReportModel->updateProfileAnalytic($profId, $data);
-		// $rankFetch = $this->getRankinityProject($propDetail, $aProfileId);
-		// $linkedAccount['rankinity_msg'] = ' Rankinity Project has not found!';
-		// if ($rankFetch) {
-		// 	$linkedAccount['rankinity_msg'] = ' Rankinity Project has been fetched ';
-		// }
-		// $linkedAccount['msg'] .= $linkedAccount['rankinity_msg'];
-		// return $linkedAccount;
 	}
 
 	private function getPropViewAnalyticData($analytics, $viewId) {
@@ -282,6 +495,7 @@ class Report extends MY_Controller {
 		$out['ga_data_organic'] = $ga_data_organic;
 		$out['ga_data_medium'] = $this->fetchMediumPerformance($analytics, $viewId, $profId);
 		$out['ga_data_source_medium'] = $this->fetchSourMediumPerformance($analytics, $viewId, $profId);
+		$out['ga_data_landing_page'] = $this->fetchLandingPagePerformance($analytics, $viewId, $profId);		
 		return $out;
 	}
 
@@ -352,7 +566,10 @@ class Report extends MY_Controller {
 			$pview_per_sessions = 0;
 			if ($ga_rstdata->totalsForAllResults['ga:pageviews'] && $ga_rstdata->totalsForAllResults['ga:sessions']) {
 				$pview_per_sessions = $ga_rstdata->totalsForAllResults['ga:pageviews'] / $ga_rstdata->totalsForAllResults['ga:sessions'];
-			}
+			}			
+			$gaData['medium'] = "";
+			$gaData['source_medium'] = "";
+			$gaData['landing_page'] = "";
 			$gaData['account_id'] = $logUserId;
 			$gaData['view_id'] = $viewId;
 			$gaData['month_ref'] = $month_ref;
@@ -401,7 +618,7 @@ class Report extends MY_Controller {
 				$pview_per_sessions = 0;
 				if ($detRow[7] && $detRow[3]) {
 					$pview_per_sessions = $detRow[7] / $detRow[3];
-				}
+				}				
 				$detailData[$rIndex]['view_id'] = $viewId;
 				$detailData[$rIndex]['report_type'] = 'medium';
 				$detailData[$rIndex]['month_ref'] = $month_ref;
@@ -409,6 +626,7 @@ class Report extends MY_Controller {
 				$detailData[$rIndex]['url_profile_id'] = $profId;
 				$detailData[$rIndex]['medium'] = $detRow[0];
 				$detailData[$rIndex]['source_medium'] = '';
+				$detailData[$rIndex]['landing_page'] = "";
 				$detailData[$rIndex]['sessions'] = $detRow[1];
 				$detailData[$rIndex]['users'] = $detRow[2];
 				$detailData[$rIndex]['new_users'] = $detRow[3];
@@ -456,6 +674,7 @@ class Report extends MY_Controller {
 				$detailData[$rIndex]['url_profile_id'] = $profId;
 				$detailData[$rIndex]['medium'] = '';
 				$detailData[$rIndex]['source_medium'] = $detRow[0];
+				$detailData[$rIndex]['landing_page'] = "";
 				$detailData[$rIndex]['sessions'] = $detRow[1];
 				$detailData[$rIndex]['users'] = $detRow[2];
 				$detailData[$rIndex]['new_users'] = $detRow[3];
@@ -474,6 +693,54 @@ class Report extends MY_Controller {
 			$whereStack['account_id'] = $logUserId;
 			$whereStack['url_profile_id'] = $profId;
 			$whereStack['report_type'] = 'source_medium';
+			$this->ReportModel->updateGAdataDetail($whereStack, $detailData);
+		}
+		return $detailData;
+	}
+
+	private function fetchLandingPagePerformance($analytics, $viewId, $profId) {
+		$logUserId = com_user_data('id');
+		$month_ref = date('Y-m', time());
+		$sday_month = date('Y-m-01', time());
+		$lday_month = date('Y-m-t', time());
+		$opt = array();
+		$opt['dimensions'] = 'ga:landingPagePath';
+		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+			$sday_month, $lday_month,
+			'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
+		$detailData = array();
+		if ($ga_rstdata->rows) {
+			foreach ($ga_rstdata->rows as $rIndex => $detRow) {
+				$pview_per_sessions = 0;
+				if ($detRow[7] && $detRow[3]) {
+					$pview_per_sessions = $detRow[7] / $detRow[3];
+				}
+				$detailData[$rIndex]['report_type'] = 'landing_page';
+				$detailData[$rIndex]['view_id'] = $viewId;
+				$detailData[$rIndex]['month_ref'] = $month_ref;
+				$detailData[$rIndex]['account_id'] = $logUserId;
+				$detailData[$rIndex]['url_profile_id'] = $profId;
+				$detailData[$rIndex]['medium'] = '';
+				$detailData[$rIndex]['source_medium'] = "";
+				$detailData[$rIndex]['landing_page'] = $detRow[0];
+				$detailData[$rIndex]['sessions'] = $detRow[1];
+				$detailData[$rIndex]['users'] = $detRow[2];
+				$detailData[$rIndex]['new_users'] = $detRow[3];
+				$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
+				$detailData[$rIndex]['page_views'] = $detRow[5];
+				$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
+				$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
+				$detailData[$rIndex]['bounce_rate'] = $detRow[7];
+				$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
+				$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
+				$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
+			}
+			$whereStack = array();
+			$whereStack['view_id'] = $viewId;
+			$whereStack['month_ref'] = $month_ref;
+			$whereStack['account_id'] = $logUserId;
+			$whereStack['url_profile_id'] = $profId;
+			$whereStack['report_type'] = 'landing_page';
 			$this->ReportModel->updateGAdataDetail($whereStack, $detailData);
 		}
 		return $detailData;
@@ -594,19 +861,26 @@ class Report extends MY_Controller {
 		$fdata = array();
 		foreach ($formData as $form) {
 			$fdata[$form['name']] = $form['value'];
-		}
-		$query = http_build_query([
-			'key' => TRELLO_SECRET_KEY,
-			'token' => com_user_data('trello_access_token'),
-		]);
-		$opt = array();
-		$opt['url'] = "https://api.trello.com/1/boards/" . $fdata['board'] . '/cards?' . $query;
-		$inner = array();
-		$cards = $this->curlRequest($opt);
-		$inner['cards'] = json_decode($cards);
-		$inner['cardsColor'] = RandomColor::many(count($inner['cards']));
+		}		
+		$profId = $fdata[ 'profId' ];
+		$prodDet = $this->AccountModel->getProfileDetail($profId);
 		$out = array();
-		$out['cardsHtml'] = $this->load->view('sub_views/boardCard', $inner, true);
+		$out['cardsHtml'] = "";
+		$trello_token = com_arrIndex($prodDet, 'trello_access_token', '');
+		if( $trello_token ){			
+			$query = http_build_query([
+				'key' => TRELLO_DEV_KEY,
+				'token' => $trello_token
+			]);
+			$opt = array();
+			$opt['url'] = "https://api.trello.com/1/boards/" . $fdata['board'] . '/cards?' . $query;
+			$inner = array();
+			$cards = $this->curlRequest($opt);
+			$inner['cards'] = json_decode($cards);
+			$inner['cardsColor'] = RandomColor::many(count($inner['cards']));
+			$out = array();
+			$out['cardsHtml'] = $this->load->view('sub_views/boardCard', $inner, true);
+		}
 		echo json_encode($out);
 		exit;
 	}
@@ -722,14 +996,96 @@ class Report extends MY_Controller {
 			$this->ReportModel->getRankinityProfileEngineRanks($engine['project_id'], $engine['engine_id'], $profId);
 			$profileEnginesVisibility[$engine['engine_id']] =
 			$this->ReportModel->getRankinityProfileEngineVisibility($engine['project_id'], $engine['engine_id'], $profId);
-		}
+			$profileEnginesVisibilityHistory[$engine['engine_id']] = $this->buildHistory( $profileEnginesVisibility[$engine['engine_id']] );
+		}		
 		$inner['rankProfile'] = $rankProfile;
 		$inner['profileEngines'] = $profileEngines;
 		$inner['profileEnginesRanks'] = $profileEnginesRanks;
 		$inner['profileEnginesVisibility'] = $profileEnginesVisibility;
+		$inner['profileEnginesVisibilityHistory'] = $profileEnginesVisibilityHistory;
 		$shell['page_title'] = 'Keyword Ranking Report';
 		$shell['content'] = $this->load->view('rankinity_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('rankinity_report_js', $inner, true);
-		$this->load->view(TMP_DASHBOARD, $shell);
+		$this->load->view(TMP_DEFAULT, $shell);
+	}
+
+	private function buildHistory( $visibility ){
+		$visHistory = array();
+		$historyStDate = $visibility[ 'visibility_created_at' ];
+		$historyStack = json_decode( $visibility[ 'position_history' ] );
+		if( $historyStDate && $historyStack){
+			$defSize = 29;
+			$historyStDate = explode(".", $historyStDate);
+			$format = 'Y-m-d\TH:i:s';
+			$historyStDate = DateTime::createFromFormat($format, $historyStDate[0]);
+			$historyStDateShow = $historyStDate->format('Y-m-d');
+			$hisShow = array();
+			$min = $historyStack[ 0 ][ 0 ];
+			$max = $historyStack[ count( $historyStack)  - 1 ][ 0 ];
+			$size = $max - $min;
+			if( $size < $defSize ){
+				$hisShow = array_fill(0, ( $min - ( $defSize - $size) ), 0);
+			}
+			// $hisShow = array_merge($hisShow, );
+			foreach( $historyStack as $hisStack ){
+				$add_days = "+".$hisStack[ 0 ]." day";
+				$start = new DateTimeImmutable( $historyStDateShow );
+				$datetime = $start->modify($add_days);
+				// $visHistory[ $datetime->format('Y-m-d') ] = $hisStack[ 1 ];
+				$visHistory[] = array(
+						'date' => $datetime->format('Y-m-d'),
+						'vdata' => $hisStack[ 1 ]
+					);
+			}				
+		}
+		return $visHistory;
+	}
+	
+	public function fetchedGMB($fAnalyticReportid, $publicView = 0) {
+		$prodDet = $this->AccountModel->getFetchedAccountDetail($fAnalyticReportid);
+		if (!$prodDet) {
+			redirect('dashboard');
+			exit();
+		}
+		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');		
+		$inner = array();
+		$shell = array();
+		$log_user_id = com_user_data('id');
+		$fetch_prof_id = $prodDet['id'];
+		$locs = explode(",", $prodDet['linked_google_page_location']);
+		$inner['prodDet'] = $prodDet;
+		$inner['show_public_url'] = !$publicView;
+		$inner['gmb_data'] = $inner['gmb_locs'] = array();
+		$gmb_data = $gmb_locs = array();
+		$gmb_loc_id = '';
+		foreach( $locs as $loc ){
+			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);	
+			foreach ($gmb_rawdata as $key => $value) {
+				if( !$gmb_loc_id ){
+					$gmb_loc_id = $value[ 'location_name' ];
+				}
+				$gmb_locs[ $value[ 'location_name' ] ] = $value[ 'account_page_location_place' ];				
+				$monthRefReport = explode("-", $value[ 'month_ref' ]);
+				$gmb_data[ $value[ 'location_name' ] ][] = 
+				array(
+					$monthRefReport[ 0 ].' '.com_monthName( $monthRefReport[ 1 ] ),	
+					$value[ 'actions_website' ],
+					$value[ 'actions_driving_directions' ],
+					$value[ 'actions_phone' ],
+				);
+			}
+		}		
+		$inner['gmb_data'] = $gmb_data;
+		$inner['gmb_locs'] = $gmb_locs;
+		$inner['gmb_loc_id'] = $gmb_loc_id;
+		$shell['page_title'] = 'Google My Business';
+		$shell['content'] = $this->load->view('gmb_report', $inner, true);
+		$shell['footer_js'] = $this->load->view('gmb_report_js', $inner, true);
+		// $this->load->view(TMP_DASHBOARD, $shell);
+		$temp = TMP_DEFAULT;
+		if( $publicView ){
+			$temp = TMP_PREPORT;
+		}
+		$this->load->view($temp, $shell);
 	}
 }

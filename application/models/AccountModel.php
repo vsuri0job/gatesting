@@ -107,7 +107,7 @@ class AccountModel extends CI_Model {
 					account_url_profiles.profile_id,
 					analytic_profile_property_views.view_id,
 					account_url_profiles.property_id,
-					account_url_profiles.id, account_url_profiles.account_id')
+					account_url_profiles.id, account_url_profiles.*')
 			->from('account_url_profiles')
 			->join('account_url_profiles_social_token', 'account_url_profiles_social_token.profile_id=account_url_profiles.id')
 			->join('analytic_profiles', 'account_url_profiles.profile_id=analytic_profiles.profile_id', 'left')
@@ -189,7 +189,7 @@ class AccountModel extends CI_Model {
 
 	public function addRankinityProjectEngineVisibility($data) {
 		if ($data) {
-			$this->db->insert_batch('rankinity_projects_engine_rank_visibility', $data);
+			$this->db->insert_batch('rankinity_projects_engine_rank_visibility', $data);			
 		}
 	}
 
@@ -219,9 +219,9 @@ class AccountModel extends CI_Model {
 	private function getProjectVisibilityData($projectId, $engineId, $aProfId) {
 		$data = $opt = array();
 		$opt['search_engine_id'] = $engineId;
-		$opt['project_id'] = $projectId;
-		$visibilities = $this->rankinity->getProjectEngineVisibilities($opt);
-		if (isset($visibilities['items'][0])) {
+		$opt['project_id'] = $projectId;		
+		$visibilities = $this->rankinity->getProjectEngineVisibilities($opt);		
+		if (isset($visibilities['items'][0])) {			
 			$visibility = $visibilities['items'][0];
 			$data['url_profile_id'] = $aProfId;
 			$data['visibility_id'] = $visibility['id'];
@@ -229,6 +229,7 @@ class AccountModel extends CI_Model {
 			$data['project_id'] = $visibility['project_id'];
 			$data['project_name'] = $visibility['project_name'];
 			$data['search_engine_id'] = $visibility['search_engine_id'];
+			$data['visibility_created_at'] = $visibility['created_at'];
 			$data['position_updated_at'] = $visibility['position_updated_at'];
 			$data['position_boost'] = $visibility['position_boost'];
 			$data['position_best'] = $visibility['position_best'];
@@ -394,7 +395,7 @@ class AccountModel extends CI_Model {
 			$sday_month = date('Ym01', $mtstamp);
 			$lday_month = date('Ymt', $mtstamp);
 			$gaData = $this->SocialModel->fetchViewAdwordData($month_ref, $log_user_id,
-				com_user_data('google_adwords_accid'), "", $profId);
+				$linked_adword_acc_id, "", $profId);
 			// $gaData = null;
 			$params = array();
 			$params['clientCustomerId'] = $linked_adword_acc_id;
@@ -459,17 +460,24 @@ class AccountModel extends CI_Model {
 		$data['view_id'] = "";
 		$data['profile_id'] = "";
 		$data['property_id'] = "";
-		$data['account_id'] = com_user_data('id');
-		$data['account_url'] = $this->input->post('account_url');
+		$data['share_gmb_link'] = "";
 		$data['linked_account_id'] = 0;
+		$data['share_trello_link'] = "";
 		$data['linked_google_page'] = "";
+		$data['share_adwords_link'] = "";
+		$data['share_analytic_link'] = "";
+		$data['share_citation_link'] = "";
+		$data['share_rankinity_link'] = "";
 		$data['linked_google_page_id'] = "";
 		$data['linked_adwords_acc_id'] = "";
 		$data['linked_google_page_location'] = "";
+		$data['account_id'] = com_user_data('id');
+		$data['account_url'] = $this->input->post('account_url');
 		$this->db->insert('account_url_profiles', $data);
 
+		$profile_id = $this->db->insert_id();
 		$data = [];
-		$data['profile_id'] = $this->db->insert_id();
+		$data['profile_id'] = $profile_id;
 		$data['trello_access_token'] = "";
 		$data['rankinity_access_token'] = "";
 		$data['analytic_access_token'] = "";
@@ -483,6 +491,16 @@ class AccountModel extends CI_Model {
 		$data['gmb_access_token'] = "";
 		$data['gmb_token_expiration_time'] = date("Y-m-d h:i:s", time());
 		$this->db->insert('account_url_profiles_social_token', $data);
+
+		$data = [];
+		$data['share_gmb_link'] = com_b64UrlEncode('gmb/'.$profile_id);
+		$data['share_trello_link'] = com_b64UrlEncode('trello/'.$profile_id);
+		$data['share_adwords_link'] = com_b64UrlEncode('adword/'.$profile_id);
+		$data['share_analytic_link'] = com_b64UrlEncode('analytic/'.$profile_id);
+		$data['share_citation_link'] = com_b64UrlEncode('citation/'.$profile_id);
+		$data['share_rankinity_link'] = com_b64UrlEncode('rankinity/'.$profile_id);
+		$this->db->where( 'id', $profile_id)
+				->update('account_url_profiles', $data);
 	}
 
 	public function getProfiles() {

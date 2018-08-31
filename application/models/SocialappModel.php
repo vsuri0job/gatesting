@@ -18,41 +18,41 @@ class SocialappModel extends CI_Model {
 		$data = $profData;
 		$data[ 'profile_id' ] = $profId;		
 		if( $prodType == 'analytic' && !$reset){
+		 	$pre_exp_time = $data[ 'analytic_token_expiration_time' ];
 		 	$data[ 'analytic_reset_token' ] = 0;
 		 	$data[ 'analytic_refresh_token' ] = $refresh_token;
 		 	$data[ 'analytic_access_token' ] = json_encode( $access_token );
-		 	$pre_exp_time = $data[ 'analytic_token_expiration_time' ];
 		 	$data[ 'analytic_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
  				$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
 		 	$new_exp_time = $data[ 'analytic_token_expiration_time' ];
-		 	$new_exp_timeStamp = strtotime( $new_exp_time );
-		 	if( $new_exp_timeStamp < time() ){
-		 		$data[ 'analytic_reset_token' ] = 1;
-		 	}
+		 	$data[ 'analytic_reset_token' ] = com_compDate($pre_exp_time, $new_exp_time) ? 0 : 1;
 		} else if( $prodType == 'adwords' && !$reset){
+		 	$pre_exp_time = $data[ 'adword_token_expiration_time' ];
 			$data[ 'adword_reset_token' ] = 0;
 		 	$data[ 'adword_refresh_token' ] = $refresh_token;
 		 	$data[ 'adword_access_token' ] = json_encode( $access_token );
-		 	$pre_exp_time = $data[ 'adword_token_expiration_time' ];
 		 	$data[ 'adword_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
 	 			$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
 		 	$new_exp_time = $data[ 'adword_token_expiration_time' ];
-		 	$new_exp_timeStamp = strtotime( $new_exp_time );
-		 	if( $new_exp_timeStamp < time() ){
-		 		$data[ 'adword_reset_token' ] = 1;
-		 	}
+		 	$data[ 'adword_reset_token' ] = com_compDate($pre_exp_time, $new_exp_time) ? 0 : 1;
 		} else if( $prodType == 'mbusiness' && !$reset){
+		 	$pre_exp_time = $data[ 'gmb_token_expiration_time' ];
 			$data[ 'gmb_reset_token' ] = 0;
 		 	$data[ 'gmb_refresh_token' ] = $refresh_token;
 		 	$data[ 'gmb_access_token' ] = json_encode( $access_token );
-		 	$pre_exp_time = $data[ 'gmb_token_expiration_time' ];
 		 	$data[ 'gmb_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
 		 		$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
 		 	$new_exp_time = $data[ 'gmb_token_expiration_time' ];
-		 	$new_exp_timeStamp = strtotime( $new_exp_time );
-		 	if( $new_exp_timeStamp < time() ){
-		 		$data[ 'gmb_reset_token' ] = 1;
-		 	}
+		 	$data[ 'gmb_reset_token' ] = com_compDate($pre_exp_time, $new_exp_time) ? 0 : 1;
+		}  else if( $prodType == 'webmaster' && !$reset){
+		 	$pre_exp_time = $data[ 'gsc_token_expiration_time' ];
+			$data[ 'gsc_reset_token' ] = 0;
+		 	$data[ 'gsc_refresh_token' ] = $refresh_token;
+		 	$data[ 'gsc_access_token' ] = json_encode( $access_token );
+		 	$data[ 'gsc_token_expiration_time' ] = date( 'Y-m-d h:i:s', 
+		 		$access_token[ 'created' ] + $access_token[ 'expires_in' ] - 30 );
+		 	$new_exp_time = $data[ 'gsc_token_expiration_time' ];
+		 	$data[ 'gsc_reset_token' ] = com_compDate($pre_exp_time, $new_exp_time) ? 0 : 1;
 		} else if( $reset ){
 			$fldRef = $prodType == 'mbusiness' ? 'gmb'
 				: ( $prodType == 'adwords' ? 'adword' : (  $prodType == 'analytic' ? 'analytic' : '' ) );
@@ -61,7 +61,7 @@ class SocialappModel extends CI_Model {
 			 	$data[ "$fldRef_access_token" ] = "";
 			 	$data[ "$fldRef_token_expiration_time" ] = date( 'Y-m-d h:i:s', time() );
 			}
-		}
+		}		
         if( !$profData ){
         	$this->db->insert( 'account_url_profiles_social_token', $data);
         } else {
@@ -175,5 +175,11 @@ class SocialappModel extends CI_Model {
 		$data = $udata;
 		return $this->db->where( 'id', $prof_id )
 					->update( 'account_url_profiles', $data );
-	}	
+	}
+
+	public function updateGBuissData( $prof_id, $udata ){
+		$this->db->where( 'url_profile_id', $prof_id )
+					->delete( 'account_url_profile_gmb_data');
+		$this->db->insert_batch( 'account_url_profile_gmb_data', $udata);
+	}
 }

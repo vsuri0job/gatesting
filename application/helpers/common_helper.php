@@ -278,3 +278,49 @@ if (!function_exists('com_makelistElemFromTable')) {
 		}
 	}
 }
+
+if (!function_exists('com_compDate')) {
+	function com_compDate($minDate, $maxDate) {
+		$datetime1 = new DateTime( $minDate );
+		$datetime2 = new DateTime( $maxDate );
+		$interval = $datetime2->diff($datetime1);
+		$out = false;
+		if( $interval->y || $interval->m || $interval->d
+			|| $interval->h || $interval->i || $interval->s){
+			$out = true;
+		}
+		return $out;
+	}
+}
+
+if (!function_exists('com_b64UrlEncode')) {
+	function com_b64UrlEncode($data) {
+	  return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
+	}
+}
+
+if (!function_exists('com_b64UrlDecode')) {
+	function com_b64UrlDecode($data) {
+	  return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT)); 
+	}
+}
+
+if (!function_exists('com_monthName')) {
+	function com_monthName($month) {
+		$months = array();
+		$months[ '01' ] = 'January';
+		$months[ '02' ] = 'February';
+		$months[ '03' ] = 'March';
+		$months[ '04' ] = 'April';
+		$months[ '05' ] = 'May';
+		$months[ '06' ] = 'June';
+		$months[ '07' ] = 'July';
+		$months[ '08' ] = 'August';
+		$months[ '09' ] = 'September';
+		$months[ '10' ] = 'October';
+		$months[ '11' ] = 'November';
+		$months[ '12' ] = 'December';
+		$monthName = com_arrIndex( $months, $month, "");
+		return $monthName;
+	}
+}

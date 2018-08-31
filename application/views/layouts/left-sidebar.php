@@ -22,9 +22,6 @@
             <ul id="sidebarnav">
                 <li class="nav-devider"></li>
                 <li class="">
-                    <a class="" href="<?=base_url()?>" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">My Dashboard</span></a>
-                </li>
-                <li class="">
                     <a class="" href="<?=base_url( 'accounts/list' )?>" aria-expanded="false">
                         <i class="mdi mdi-account-network"></i>
                         <span class="hide-menu">Accounts</span>

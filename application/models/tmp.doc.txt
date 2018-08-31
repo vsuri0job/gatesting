@@ -1,6 +1,68 @@
+https://console.developers.google.com/apis/api/analytics.googleapis.com/overview?project=webstie-portals&duration=PT1H
+https://ga-dev-tools.appspot.com/query-explorer/
+
+AIzaSyCX4IqApFXkbFm22e5f0-xYMC5P1WffqM8
+
+webstie-portals
+webstie-portals
+
+https://benmarshall.me/google-analytics-api-tutorial/
+
+UA-122935284-1
+122935284
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122935284-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122935284-1');
+</script>
+
+
+
+Google
+https://github.com/jayaneetha/GoogleAnalytics-CodeIgniter
+
+https://github.com/renofizaldy/google-analytics-library-codeigniter
+https://github.com/joeauty/Google-API-Client-CodeIgniter-Spark
+https://stackoverflow.com/questions/25668009/google-analytics-api-on-codeigniter-website
+
+Rankinity
+https://github.com/JayBizzle/Rankinity-API
+
+$ga_params = array(
+          'applicationName' => $this->config->item('ga_api_applicationName'),
+           'clientID' => $this->config->item('ga_api_clientId'),
+          'clientSecret' => $this->config->item('ga_api_clientSecret'),
+          'redirectUri' => $this->config->item('ga_api_redirectUri'),
+           'developerKey' => $this->config->item('ga_api_developerKey'),
+           'profileID' => $this->config->item('ga_api_profileId')
+       );
+ $this->load->library('GoogleAnalytics', $ga_params);
+
+https://analytics.google.com/analytics/web/?authuser=0#/report-home/a122935284w181125869p179093056
+  
+
+=========================================
+https://support.google.com/analytics/answer/1009702
+https://developers.google.com/analytics/devguides/platform/
+https://ga-dev-tools.appspot.com/embed-api/basic-dashboard/
+
+https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/web-php
+https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+
+
+
 Gmail Logins:
-51blocks@gmail.com
-R-0-0-0-rg4nW57Q65tG3P5
+51blocks@gmail.com	UTa4xTDQ%kPsdV
+303-349-4233
+
+From:
+Harish Chander
+ga:132440718
 
 
 Credentials for the cablescience.net :-

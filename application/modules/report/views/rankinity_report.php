@@ -76,6 +76,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Visibility history</h4>
+                            <div id="visibility-chart"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="keyword-ranks" class="table m-t-30 table-hover no-wrap contact-list" data-page-size="10">
                         <thead>

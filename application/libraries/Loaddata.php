@@ -65,18 +65,18 @@ class Loaddata {
 		if ($prod == 'analytic') {
 			$rName = "Analytic";
 			$scopes[] = "https://www.googleapis.com/auth/analytics";
-			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.edit";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.provision";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.manage.users";
 		} else if ($prod == 'adwords') {
-			$rName = "Adwords";
-			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
+			$rName = "Adwords";			
 			$scopes[] = "https://www.googleapis.com/auth/adwords";
 		} else if ($prod == 'mbusiness') {
-			$rName = "Google Business";
-			// $scopes[] = "https://www.googleapis.com/auth/gmail.readonly";
+			$rName = "Google Business";			
 			$scopes[] = "https://www.googleapis.com/auth/plus.business.manage";
+		} else if ($prod == 'webmaster') {
+			$rName = "Google Webmaster";
+			$scopes[] = "https://www.googleapis.com/auth/webmasters";
 		}
 		$redirect_uri = base_url('social/verify_google');
 		$state = 'PROD:' . $prod . '|PID:' . $profId;

@@ -12,7 +12,12 @@
 <script type="text/javascript">
 	$( document ).ready( function(){
 
-		$('.google-ad-link').on( 'click', function( event ){			
+		$('.google-ad-link').on( 'click', function( event ){
+			let cus_id = $( this ).data( 'cid' );
+			$( "#customer_id" ).val( "" ).attr( 'readonly', false );
+			if( cus_id ){
+				$( "#customer_id" ).val( cus_id ).attr( 'readonly', true );
+			}
 			$("#adword-cus-id").attr( 'action', $( this ).attr( 'href' ) );
 			$("#link-account-adword").modal();
 			event.preventDefault();

@@ -25,6 +25,15 @@ $currMonthData[ 'goal_conversion_rate' ] = number_format($currMonthData[ 'goal_c
 $currMonthData[ 'avg_session_duration' ] = gmdate("H:i:s", $currMonthData[ 'avg_session_duration' ]);
 $currMonthData[ 'page_view_per_sessions' ] = number_format($currMonthData[ 'page_view_per_sessions' ], 2);
 $currMonthData[ 'avg_page_download_time' ] = number_format($currMonthData[ 'avg_page_download_time' ], 2);
+$kpis = array();
+$kpis[ 'users' ] = array('text' => 'Users', 'skip_icon' => false );
+$kpis[ 'sessions' ] = array('text' => 'Sessions', 'skip_icon' => false );
+$kpis[ 'page_view_per_sessions' ] = array('text' => 'Page / Session', 'skip_icon' => false );
+$kpis[ 'avg_session_duration' ] =  array('text' => 'Avg. Session Duration', 'skip_icon' => true );
+$kpis[ 'bounce_rate' ] =  array('text' => 'Bounce Rate', 'skip_icon' => true );
+$kpis[ 'goal_completion_all' ] = array('text' => 'Goal Completions', 'skip_icon' => false );
+$kpis[ 'goal_conversion_rate' ] = array('text' => 'Goal Coversion Rate', 'skip_icon' => false );
+$kpis[ 'avg_page_download_time' ] = array('text' => 'Page Download Time', 'skip_icon' => false );
 ?>
 <style type="text/css">
 .align-bottom small {
@@ -37,156 +46,34 @@ $currMonthData[ 'avg_page_download_time' ] = number_format($currMonthData[ 'avg_
 }
 </style>
 <div class="row">
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Users</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'users' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'users' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'users' ] ?></h2>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Sessions</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'sessions' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'sessions' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'sessions' ] ?></h2>
+    <?php 
+        foreach ($kpis as $kpKey => $kpValUser) { 
+            $kpVal = $kpValUser[ 'text' ];
+            $kpIcon = $kpValUser[ 'skip_icon' ];
+    ?>
+        <!-- Column -->
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"> 
+                        <img src="<?= base_url( 'img/social/analytic-on.png' ) ?>" width="20px" height="20px"> <?= $kpVal; ?></h4>
+                    <div class="text-left m-l-10">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 kpiText">
+                                <h2 class="font-light m-b-0"><?= $currMonthData[ $kpKey ] ?></h2>
+                                <?php if( !$kpIcon ){ ?>
+                                    <small><i class="<?= $statClasses[ $kpKey ][ 'class' ]; ?>"></i> <?= $statClasses[ $kpKey ][ 'inc' ]; ?></small>
+                                <?php } else {
+                                    echo '<br/>';
+                                }?>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Page / Session</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'page_view_per_sessions' ][ 'class' ]; ?>"></i>  <?= $statClasses[ 'page_view_per_sessions' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'page_view_per_sessions' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Avg. Session Duration</h4>
-                <div class="text-right">                    
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">                            
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'avg_session_duration' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Bounce Rate</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">                            
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'bounce_rate' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Goal Completions</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'goal_completion_all' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'goal_completion_all' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'goal_completion_all' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Goal Coversion Rate</h4>
-                <div class="text-right">                    
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'goal_conversion_rate' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'goal_conversion_rate' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'goal_conversion_rate' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Page Download Time</h4>
-                <div class="text-right">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 align-bottom">
-                            <small><i class="<?= $statClasses[ 'avg_page_download_time' ][ 'class' ]; ?>"></i> <?= $statClasses[ 'avg_page_download_time' ][ 'inc' ]; ?></small>
-                        </div>
-                        <div class="col-lg-6 col-md-6 kpiText">
-                            <h2 class="font-light m-b-0"><?= $currMonthData[ 'avg_page_download_time' ] ?></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
+    <?php } ?>
 </div>
 <!-- Row -->    
 <?php

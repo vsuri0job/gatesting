@@ -39,6 +39,12 @@ class SocialModel extends CI_Model {
 		}
 	}
 
+	public function addUserGoogleMasterSites($webSites) {
+		if ($webSites) {
+			$this->db->insert_batch('google_webmaster_sites', $webSites);			
+		}
+	}
+
 	public function getPropertyDetail($propId) {
 		return $this->db->from('analytic_profile_properties')
 			->where('property_id', $propId)
@@ -157,7 +163,7 @@ class SocialModel extends CI_Model {
 	}
 
 	public function getGbusinessDetail($profId) {
-		return $this->db->select( 'concat(account_page_name_ref, "/", account_page_location_id) as `gpId`, 
+		return $this->db->select( 'account_page_location_name as `gpId`, 
 				account_page_location_place, account_page_name' )
 			->from('google_business_pages')
 			->join('google_business_page_locations', 'account_page_name_id=account_page_name_ref', 'left')
