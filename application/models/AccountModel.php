@@ -44,6 +44,26 @@ class AccountModel extends CI_Model {
 		return $rst;
 	}
 
+	public function getAccountDetailFromServiceUrl($serviceUrl, $agencies = array()) {
+		$rst = array();
+		if ($serviceUrl) {
+			if( $agencies ){
+				$this->db->where_in('agency_id', $agencies);
+			}
+			$rst = $this->db->select('accounts.id, accounts.agency_id, accounts.name,
+						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
+						accounts.account_status, 
+						accounts.status, agencies.name `agency_name`')
+				->from('accounts')
+				->join('agencies', 'agency_id=agencies.id')
+				->join('services', 'services.account_id=accounts.id and services.status = 1' )
+				->where_in('accounts.status', 1)
+				->where('services.url', $serviceUrl)
+				->get()->row_array();
+		}
+		return $rst;
+	}
+
 	public function updateAccount($account, $extra = array()) {
 		$userdata = array();
 		if ($extra) {
@@ -368,26 +388,10 @@ class AccountModel extends CI_Model {
 		$upWhere['account_id'] = $log_user_id;
 		$this->db->where($upWhere)
 			->update('account_url_profiles', $upData);
-		$months_tstamps = array(
-			strtotime("-13 months"),
-			strtotime("-12 months"),
-			strtotime("-11 months"),
-			strtotime("-10 months"),
-			strtotime("-9 months"),
-			strtotime("-8 months"),
-			strtotime("-7 months"),
-			strtotime("-6 months"),
-			strtotime("-5 months"),
-			strtotime("-4 months"),
-			strtotime("-3 months"),
-			strtotime("-2 months"),
-			strtotime("-1 months"),
-			time(),
-		);
-		krsort($months_tstamps);
+		$months_tstamps = com_lastMonths( 13 );
 		$currMonthRef = date('Y-m', time());
 		$lastMonthRef = date('Y-m', strtotime("-1 months"));
-		foreach ($months_tstamps as $mtstamp) {
+		foreach ($months_tstamps as $mtstamp => $mDate) {
 			$profDet = $this->getFetchedAccountDetail($profId);
 			$adw_msm = array();
 			$adw_mdt = array();
@@ -460,8 +464,11 @@ class AccountModel extends CI_Model {
 		$data['view_id'] = "";
 		$data['profile_id'] = "";
 		$data['property_id'] = "";
-		$data['share_gmb_link'] = "";
+		$data['share_gmb_link'] = "";		
+		$data['linked_trello_id'] = "";
+		$data['linked_rankinity_id'] = "";		
 		$data['linked_account_id'] = 0;
+		$data['share_gsc_link'] = "";
 		$data['share_trello_link'] = "";
 		$data['linked_google_page'] = "";
 		$data['share_adwords_link'] = "";
@@ -472,7 +479,10 @@ class AccountModel extends CI_Model {
 		$data['linked_adwords_acc_id'] = "";
 		$data['linked_google_page_location'] = "";
 		$data['account_id'] = com_user_data('id');
-		$data['account_url'] = $this->input->post('account_url');
+		$data['close_rate'] = (float)$this->input->post('close_rate');
+		$data['ltv_amount'] = (float)$this->input->post('ltv_amount');
+		$data['account_url'] = (float)$this->input->post('account_url');
+		$data['avg_sale_amount'] = $this->input->post('avg_sale_amount');
 		$this->db->insert('account_url_profiles', $data);
 
 		$profile_id = $this->db->insert_id();
@@ -493,6 +503,7 @@ class AccountModel extends CI_Model {
 		$this->db->insert('account_url_profiles_social_token', $data);
 
 		$data = [];
+		$data['share_gsc_link'] = com_b64UrlEncode('gsc/'.$profile_id);
 		$data['share_gmb_link'] = com_b64UrlEncode('gmb/'.$profile_id);
 		$data['share_trello_link'] = com_b64UrlEncode('trello/'.$profile_id);
 		$data['share_adwords_link'] = com_b64UrlEncode('adword/'.$profile_id);
@@ -517,5 +528,16 @@ class AccountModel extends CI_Model {
 			->join('account_url_profiles_social_token', 'account_url_profiles.id=account_url_profiles_social_token.profile_id', 'left')
 			->where('account_url_profiles.id', $prof_id)
 			->get()->row_array();
+	}
+
+	public function getAccountServiceUrls( $agencies = array() ){
+		return $this->db->distinct()
+				->select( 'accounts.name, accounts.id, url, concat(url, " ", group_concat( services_master.name ) ) as `services`' )
+				->from( 'accounts' )
+				->join( 'services', 'services.account_id=accounts.id and services.status = 1' )
+				->join( 'services_master', 'service_master_id=services_master.id and services_master.status = 1' )
+				->where_in('agency_id', $agencies)				
+				->where( 'services.url <> ', "" )
+				->group_by( 'url, account_id' )->get()->result_array();
 	}
 }

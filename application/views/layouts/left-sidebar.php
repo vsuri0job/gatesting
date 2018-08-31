@@ -27,46 +27,6 @@
                         <span class="hide-menu">Accounts</span>
                     </a>
                 </li>
-                <li>
-                    <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">SEO</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li><a href="<?=base_url( 'report/citation_and_content' ); ?>">Citation & Content</a></li>                        
-                    </ul>
-                </li>
-                <li class="">
-                    <a class="" href="<?=base_url()?>" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">PPC</span></a>
-                </li>
-                <li class="">
-                    <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">REPORT</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li>
-                            <a  class="" href="<?=base_url('report/ganalyticreport')?>" 
-                                aria-expanded="false"><i class="mdi mdi-bullseye"></i>
-                                <span class="hide-menu">Google Analytic</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a  class="" href="<?=base_url('report/gadwordreport')?>" 
-                                aria-expanded="false"><i class="mdi mdi-bullseye"></i>
-                                <span class="hide-menu">Google Adword</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="">
-                    <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">TRELLO REPORT</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li>
-                            <a  class="" href="<?=base_url('report/tboardreport')?>" 
-                                aria-expanded="false"><i class="mdi mdi-bullseye"></i>
-                                <span class="hide-menu">Boards</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="">
-                    <a class="" href="<?=base_url()?>" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">PPC Report</span></a>
-                </li>
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

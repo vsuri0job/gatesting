@@ -32,12 +32,12 @@
                         				$citAttr = ' class="btn btn-block btn-info disabled" style="width:25%" aria-disabled="true" ';	
                         			}
                                     $contUrl = base_url('report/contentView/'.$cc[ 'stamp' ]);
-                                    if( $account_id ){
-                                        $contUrl = base_url('report/contentView/'.$cc[ 'stamp' ].'/'.$account_id);
+                                    if( $prof_id ){
+                                        $contUrl = base_url('report/contentView/'.$cc[ 'stamp' ].'/'.$prof_id);
                                     }
                                     $citUrl = base_url('report/citationView/'.$cc[ 'stamp' ]);
-                                    if( $account_id ){
-                                        $citUrl = base_url('report/citationView/'.$cc[ 'stamp' ].'/'.$account_id);
+                                    if( $prof_id ){
+                                        $citUrl = base_url('report/citationView/'.$cc[ 'stamp' ].'/'.$prof_id);
                                     }
                     				$ccHtml .= '<tr>
                     								<td>'.$cc[ 'month' ].'</td>

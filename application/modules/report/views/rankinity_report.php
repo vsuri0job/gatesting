@@ -6,12 +6,32 @@
     }
 </style>
 <div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-10 col-10 align-self-center">
+                        <h4 class="m-b-0 text-white"><?= $rankProfile[ 'account_url' ] ?>                        
+                        </h4>
+                    </div>
+                    <div class="col-md-2 col-2 align-self-center">
+                        <?php if( $show_public_url ){
+                            echo anchor( 'publicReport/'.$rankProfile[ 'share_rankinity_link' ], 
+                                'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ' );
+                        } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+<!-- Row -->
+<div class="row">
     <div class="col-12">
         <div class="card">
 
-          <div class="card-body">
-                <h4 class="card-title">Profile Keyword Report</h4>                
-                <div class="row m-t-40">
+          <div class="card-body">                
+                <div class="row m-t-10">
                     <!-- Column -->
                     <div class="col-md-6 col-lg-4 col-xlg-4">
                         <div class="card card-inverse card-info">

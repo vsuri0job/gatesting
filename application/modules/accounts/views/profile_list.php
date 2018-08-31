@@ -14,8 +14,7 @@
                     <table id="accounts" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <th>Account</th>
-                                <th>Full Report</th>
+                                <th>Account</th>                                
                                 <th>SEO</th>
                                 <th>PPC</th>
                                 <th>Local</th>
@@ -23,12 +22,13 @@
                                 <th>Rankinity</th>
                                 <th>Webmaster</th>
                                 <th>Content/Citations</th>
+                                <th>Overview Report</th>
+                                <th>Full Report</th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr>
                                 <th>Account</th>
-                                <th>Full Report</th>
                                 <th>SEO</th>
                                 <th>PPC</th>
                                 <th>Local</th>
@@ -36,6 +36,8 @@
                                 <th>Rankinity</th>
                                 <th>Webmaster</th>
                                 <th>Content/Citations</th>
+                                <th>Overview Report</th>
+                                <th>Full Report</th>
                             </tr>
                         </tfoot>
                         <tbody>

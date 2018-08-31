@@ -179,26 +179,10 @@ class ReportModel extends CI_Model {
 			->update('account_url_profiles', $data);
 	}
 
-	public function getCitationContentCount($account_id = 0) {
-		$months_tstamps = array(
-			strtotime("-13 months"),
-			strtotime("-12 months"),
-			strtotime("-11 months"),
-			strtotime("-10 months"),
-			strtotime("-9 months"),
-			strtotime("-8 months"),
-			strtotime("-7 months"),
-			strtotime("-6 months"),
-			strtotime("-5 months"),
-			strtotime("-4 months"),
-			strtotime("-3 months"),
-			strtotime("-2 months"),
-			strtotime("-1 months"),
-			time(),
-		);
-		krsort($months_tstamps);
+	public function getCitationContentCount($account_id = 0) {		
+		$months_tstamps = com_lastMonths( 13 );
 		$data = array();
-		foreach ($months_tstamps as $month_time) {
+		foreach ($months_tstamps as $month_time => $month_date) {
 			$month = date("Y-m", $month_time);
 			$month_date = date('m/%/Y', $month_time);
 			$month_date2 = date('m/%/y', $month_time);
@@ -319,7 +303,7 @@ class ReportModel extends CI_Model {
 	}
 
 	public function getRankinityProfile($profileId) {
-		return $this->db->select('rankinity_projects.*')
+		return $this->db->select('account_url_profiles.*,rankinity_projects.*')
 			->from('rankinity_projects')
 			->join('account_url_profiles', 'rankinity_projects.rankinity_project_id=linked_rankinity_id', 'left')
 			->where('account_url_profiles.id', $profileId)
@@ -370,8 +354,14 @@ class ReportModel extends CI_Model {
 		}
 	}
 
-	public function getWebmasterData($prof_id, $report_type) {
+	public function getWebmasterData($prof_id, $report_type, $opt = array()) {
 		$profiles = array();
+		if( isset( $opt[ 'order' ] ) ){
+			$this->db->order_by( $opt[ 'order' ] );
+		}
+		if( isset( $opt[ 'limit' ] ) ){
+			$this->db->limit( $opt[ 'limit' ], 0 );
+		}
 		$profiles = $this->db->from('account_url_profile_webmaster_data')
 			->where('report_type', $report_type)
 			->where('url_profile_id', $prof_id)
@@ -380,5 +370,15 @@ class ReportModel extends CI_Model {
 			return $profiles->result_array();
 		}
 		return $profiles->row_array();
+	}
+
+	public function getServiceUrlCost( $service_url, $acc_id ){
+		return $this->db->select( 'url, group_concat( monthly_price ) as `price`, group_concat( services_master.name )  as `services`')
+			->from( 'services' )
+			->from( 'services_master', 'services_master.id=service_master_id' )
+			->where( 'url', $service_url )
+			->where( 'account_id', $acc_id )
+			->group_by( 'url' )
+			->get()->row_array();
 	}
 }

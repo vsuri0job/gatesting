@@ -243,27 +243,9 @@ class Social extends MY_Controller {
 	}
 
 	private function getPropViewAnalyticData($analytics, $viewId) {
-		$months_tstamps = array(
-			strtotime("-13 months"),
-			strtotime("-12 months"),
-			strtotime("-11 months"),
-			strtotime("-10 months"),
-			strtotime("-9 months"),
-			strtotime("-8 months"),
-			strtotime("-7 months"),
-			strtotime("-6 months"),
-			strtotime("-5 months"),
-			strtotime("-4 months"),
-			strtotime("-3 months"),
-			strtotime("-2 months"),
-			strtotime("-1 months"),
-			time(),
-		);
-		/*
-			,
-		*/
+		$months_tstamps = com_lastMonths( 13 );	
 		$ga_data = array();
-		foreach ($months_tstamps as $mtstamp) {
+		foreach ($months_tstamps as $mtstamp => $mDate) {
 			$month_ref = date('Y-m', $mtstamp);
 			$sday_month = date('Y-m-01', $mtstamp);
 			$lday_month = date('Y-m-t', $mtstamp);
@@ -522,8 +504,10 @@ class Social extends MY_Controller {
 		if ($fetchedProfile && !$fetchedProfile['linked_account_id']) {
 			// $this->breadcrumb->addElement( 'Google Analytics', 'report/ganalyticreport' );
 			$agencies = explode(",", com_user_data('agencies'));
-			$accounts = $this->AccountModel->getAgencyAccounts($agencies);
-			$accounts_list = com_makelist($accounts, 'id', 'name');
+			// $accounts = $this->AccountModel->getAgencyAccounts($agencies);
+			// $accounts_list = com_makelist($accounts, 'id', 'name');
+			$serviceUrls = $this->AccountModel->getAccountServiceUrls( $agencies );			
+			$accounts_list = com_makelist($serviceUrls, 'url', 'services', false, "", [], "name");			
 			$inner = array();
 			$shell = array();
 			$log_user_id = com_user_data('id');
@@ -542,10 +526,13 @@ class Social extends MY_Controller {
 	public function updateAdminAccount($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		$adminAccounts = $this->input->post('adminAccounts');
-		$adminAccounts = $this->AccountModel->getAccountDetail($adminAccounts);
+		$accServiceUrl = $this->input->post('adminAccounts');		
+		$adminAccounts = $this->AccountModel->getAccountDetailFromServiceUrl($accServiceUrl);
 		if ($fetchedProfile && !$fetchedProfile['linked_account_id'] && $adminAccounts) {
-			$this->SocialappModel->updateAdminAccount($fetchedProfile['id'], $adminAccounts['id']);
+			$data = array();
+			$data[ 'linked_account_id' ] = $adminAccounts['id'];
+			$data[ 'linked_service_url' ] = $accServiceUrl;
+			$this->SocialappModel->updateAdminAccount($fetchedProfile['id'], $data);
 		}
 		redirect("accounts/list");
 		exit;
@@ -633,25 +620,10 @@ class Social extends MY_Controller {
 			$objOAuthService = new Google_Service_Oauth2($client);
 			$authUrl = $client->createAuthUrl();
 			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
-			$months_tstamps = array(
-				date( "Y-m", strtotime("-13 months")) => strtotime("-13 months"),
-				date( "Y-m", strtotime("-12 months")) => strtotime("-12 months"),
-				date( "Y-m", strtotime("-11 months")) => strtotime("-11 months"),
-				date( "Y-m", strtotime("-10 months")) => strtotime("-10 months"),
-				date( "Y-m", strtotime("-9 months")) => strtotime("-9 months"),
-				date( "Y-m", strtotime("-8 months")) => strtotime("-8 months"),
-				date( "Y-m", strtotime("-7 months")) => strtotime("-7 months"),
-				date( "Y-m", strtotime("-6 months")) => strtotime("-6 months"),
-				date( "Y-m", strtotime("-5 months")) => strtotime("-5 months"),
-				date( "Y-m", strtotime("-4 months")) => strtotime("-4 months"),
-				date( "Y-m", strtotime("-3 months")) => strtotime("-3 months"),
-				date( "Y-m", strtotime("-2 months")) => strtotime("-2 months"),
-				date( "Y-m", strtotime("-1 months")) => strtotime("-1 months"),
-				date( "Y-m", time()) => time(),
-			);
+			$months_tstamps = com_lastMonths( 13 );
 			$gmbData = array();
 			$currTimeStamp = date("Y-m", time());
-			foreach( $months_tstamps as $monthRef => $monthDTime ){
+			foreach( $months_tstamps as $monthDTime => $monthRef ){
 				$monthYearDate = date("Y-m", $monthDTime);
 				$stTime = date('Y-m-01\T00:00:00\Z', $monthDTime);
 				$edTime = date('Y-m-t\T23:59:59\Z', $monthDTime);
@@ -679,7 +651,7 @@ class Social extends MY_Controller {
 					foreach ($gList->locationMetrics as $locKey => $locDet) {
 						$indKey = $monthRef.'-'.$locDet->locationName;
 						$gmbData[ $indKey ] = $flds;
-						$gmbData[ $indKey ][ 'month_ref' ] = $monthRef;
+						$gmbData[ $indKey ][ 'month_ref' ] = date( "Y-m", strtotime($monthRef));
 						$gmbData[ $indKey ][ 'location_name' ] = $locDet->locationName;
 						if( $locDet->metricValues ){
 							foreach ($locDet->metricValues as $metKey => $metDet) {

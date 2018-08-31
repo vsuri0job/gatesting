@@ -1,14 +1,16 @@
 <?php
-$currMonthRef = date('Y-m', strtotime("-1 months"));
-$lastMonthRef = date('Y-m', strtotime("-2 months"));
-$lastMonthData = com_arrIndex($ga_data, $lastMonthRef);
-$currMonthData = com_arrIndex($ga_data, $currMonthRef);
-if( $currMonthData &&  $lastMonthData){
+list( $firMonthDate, $secMonthDate) = com_lastMonths( 2, "", 1, 1 );
+$firMonthData = date('Y-m', strtotime( $firMonthDate ));
+$secMonthData = date('Y-m', strtotime( $secMonthDate ));
+$secMonthData = com_arrIndex($ga_data, $secMonthData);
+$firMonthData = com_arrIndex($ga_data, $firMonthData);
+if( $firMonthData &&  $secMonthData){
 $statClasses = array();
-foreach( $currMonthData as $key => $val ){
+foreach( $firMonthData as $key => $val ){
+    $val = floatval($val);
     if( $key <> 'month_ref' ){
         $statClasses[ $key ][ 'class' ] = 'ti-arrow-up text-success';
-        $lMdata = com_arrIndex($lastMonthData, $key, 0);
+        $lMdata = com_arrIndex($secMonthData, $key, 0);
         $val = str_replace("%", "", $val);
         $val = str_replace("$", "", $val);
         $lMdata = str_replace("%", "", $lMdata);
@@ -17,21 +19,21 @@ foreach( $currMonthData as $key => $val ){
         if(  $val == $lMdata ){
             $statClasses[ $key ][ 'class' ] = 'ti-arrow-up text-info';
         } elseif( $val < $lMdata && $val && $lMdata ) {
-            $statClasses[ $key ][ 'inc' ] = '-'.number_format(($lMdata - $val)/$val * 100, 2).' %';
+            $statClasses[ $key ][ 'inc' ] = '-'.number_format((($lMdata - $val)/$val) * 100, 2).' %';
             $statClasses[ $key ][ 'class' ] = 'ti-arrow-down text-danger';
         } elseif( ($val > $lMdata) && intval( $val ) && intval( $lMdata )  ) {
-            $statClasses[ $key ][ 'inc' ] = number_format(($val-$lMdata)/$lMdata * 100, 2).' %';;
+            $statClasses[ $key ][ 'inc' ] = number_format((($val-$lMdata)/$lMdata) * 100, 2).' %';;
         }
     }
 }
-if( $currMonthData[ 'cost' ] ){
-    $currMonthData[ 'cost' ] = '$'.number_format( $currMonthData[ 'cost' ] / 1000000, 2);
+if( $firMonthData[ 'cost' ] ){
+    $firMonthData[ 'cost' ] = '$'.number_format( $firMonthData[ 'cost' ] / 1000000, 2);
 }
-if( $currMonthData[ 'avg_cpc' ] ){
-    $currMonthData[ 'avg_cpc' ] = '$'.number_format( $currMonthData[ 'avg_cpc' ] / 1000000, 2);
+if( $firMonthData[ 'avg_cpc' ] ){
+    $firMonthData[ 'avg_cpc' ] = '$'.number_format( $firMonthData[ 'avg_cpc' ] / 1000000, 2);
 }
-if( $currMonthData[ 'cost_per_conversion' ] ){
-    $currMonthData[ 'cost_per_conversion' ] = '$'.number_format( $currMonthData[ 'cost_per_conversion' ] / 1000000, 2);
+if( $firMonthData[ 'cost_per_conversion' ] ){
+    $firMonthData[ 'cost_per_conversion' ] = '$'.number_format( $firMonthData[ 'cost_per_conversion' ] / 1000000, 2);
 }
 $kpis = array();
 $kpis[ 'clicks' ] = array('text' => 'Clicks', 'skip_icon' => false );
@@ -69,7 +71,7 @@ $kpis[ 'avg_position' ] = array('text' => 'AVG. POSITION', 'skip_icon' => false 
                     <div class="text-left m-l-10">
                         <div class="row">
                             <div class="col-lg-12 col-md-12 kpiText">
-                                <h2 class="font-light m-b-0"><?= $currMonthData[ $kpKey ] ?></h2>
+                                <h2 class="font-light m-b-0"><?= $firMonthData[ $kpKey ] ?></h2>
                                 <?php if( !$kpIcon ){ ?>
                                     <small><i class="<?= $statClasses[ $kpKey ][ 'class' ]; ?>"></i> <?= $statClasses[ $kpKey ][ 'inc' ]; ?></small>
                                 <?php } else {

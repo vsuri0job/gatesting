@@ -4,11 +4,13 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white">Google Webmaster <small><i><?= $profDet[ 'account_url' ]; ?></i></small></h4>
+                        <h4 class="m-b-0 text-white"><?= $prodDet[ 'account_url' ]; ?></h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
-<!--                         <a href="<?= base_url( 'social/updateGoogleProfiles' ) ?>" 
-                                class="btn pull-right btn-outline-primary">Update Google Profile Pending</a> -->
+                        <?php if( $show_public_url ){
+                            echo anchor( 'publicReport/'.$prodDet[ 'share_gsc_link' ], 
+                                'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ' );
+                        } ?>
                     </div>
                 </div>
             </div>            
@@ -100,12 +102,52 @@
 </div>
 
 <div id="lastMonthsData">
+
+<div class="">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Month Over Month</h4>
+            <div class="table-responsive">
+                <table class="table" id="month-tbl">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Clicks</th>
+                            <th>Impressions</th>
+                            <th>CTR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <?php
+                                $dataHtml = '';
+                                foreach( $months as $data ){
+                                    $data[ 'month_ref' ] = date( "F Y", strtotime( $data[ 'month_ref' ] ) );                                    
+                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2 );
+                                    $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                    $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
+                                    $dataHtml .= '<tr>
+                                                    <td>'.$data[ 'month_ref' ].'</td>
+                                                    <td>'.$data[ 'clicks' ].'</td>
+                                                    <td>'.$data[ 'impressions' ].'</td>
+                                                    <td>'.$data[ 'ctr' ].'%</td>
+                                                </tr>';
+                                }
+                                echo $dataHtml;
+                            ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Queries</h4>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table" id="queries-tbl">
                     <thead>
                         <tr>
                             <th>Query</th>
@@ -120,6 +162,8 @@
                                 $dataHtml = '';
                                 foreach( $queries as $data ){
                                         $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
+                                        $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                        $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'queries' ].'</td>
                                                     <td>'.$data[ 'clicks' ].'</td>
@@ -141,13 +185,13 @@
         <div class="card-body">
             <h4 class="card-title">Pages</h4>
             <div class="table-responsive">
-                <table class="table">
+                <table class="table" id="pages-tbl">
                     <thead>
                         <tr>
                             <th>Page</th>
                             <th>Clicks</th>
                             <th>Impressions</th>
-                            <th>CTR</th>                            
+                            <th>CTR</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -155,46 +199,11 @@
                             <?php
                                 $dataHtml = '';
                                 foreach( $pages as $data ){
-                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );                                    
+                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
+                                    $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                    $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'pages' ].'</td>
-                                                    <td>'.$data[ 'clicks' ].'</td>
-                                                    <td>'.$data[ 'impressions' ].'</td>
-                                                    <td>'.$data[ 'ctr' ].'%</td>
-                                                </tr>';
-                                }
-                                echo $dataHtml;
-                            ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Month Over Month</h4>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Clicks</th>
-                            <th>Impressions</th>
-                            <th>CTR</th>                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                            <?php
-                                $dataHtml = '';
-                                foreach( $months as $data ){
-                                    $data[ 'month_ref' ] = date( "F Y", strtotime( $data[ 'month_ref' ] ) );                                    
-                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
-                                    $dataHtml .= '<tr>
-                                                    <td>'.$data[ 'month_ref' ].'</td>
                                                     <td>'.$data[ 'clicks' ].'</td>
                                                     <td>'.$data[ 'impressions' ].'</td>
                                                     <td>'.$data[ 'ctr' ].'%</td>

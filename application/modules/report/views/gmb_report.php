@@ -3,17 +3,17 @@
         <div class="card card-outline-info">
             <div class="card-header">
                 <div class="row">
-                    <div class="col-md-4 col-4 align-self-center">
-                        <h4 class="m-b-0 text-white">View Google My Business</h4>
-                    </div>
-                    <div class="col-md-6 col-6 align-self-center">
+                    <div class="col-md-10 col-10 align-self-center">
+                        <h4 class="m-b-0 text-white"><?= $prodDet[ 'account_url' ] ?> Locations:                     
                         <?php
-                            echo form_dropdown( 'locations', $gmb_locs, "", ' id="locations" class="form-control" ' );
-                        ?>
+                            echo form_dropdown( 'locations', $gmb_locs, "", 
+                                ' id="locations" class="form-control" style="width:250px"' );
+                        ?>                    
+                        </h4>
                     </div>
                     <div class="col-md-2 col-2 align-self-center">
                         <?php if( $show_public_url ){
-                            echo anchor( 'publicReport/'.$prodDet[ 'share_adwords_link' ], 
+                            echo anchor( 'publicReport/'.$prodDet[ 'share_gmb_link' ], 
                                 'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ' );
                         } ?>
                     </div>
@@ -25,7 +25,7 @@
 <!-- Row -->
 <div class="row">
     <div class="table-responsive">
-        <table id="locations-data" class="table m-t-30 table-hover no-wrap contact-list" data-page-size="10">
+        <table id="locations-data" class="table">
             <thead>
                 <tr>
                     <th>Month</th>
@@ -38,7 +38,10 @@
                 <?php
                     if( $gmb_data ){
                         $loc_data = $gmb_data[ $gmb_loc_id ];                        
-                        foreach ($loc_data as $lData) {                            
+                        foreach ($loc_data as $lData) {
+                            $lData[ 1 ] = number_format( $lData[ 1 ]);
+                            $lData[ 2 ] = number_format( $lData[ 2 ]);
+                            $lData[ 3 ] = number_format( $lData[ 3 ]);
                 ?>
                         <tr>
                             <td class="ucfirst"><?= $lData[ 0 ]; ?></td>

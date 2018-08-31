@@ -324,3 +324,37 @@ if (!function_exists('com_monthName')) {
 		return $monthName;
 	}
 }
+
+if (!function_exists('com_lastMonths')) {
+	function com_lastMonths($limit, $stDate = '', $skipStamp = false, $skipStartDate = false) {
+		/* $stDate = YYYY-MM-01 */
+		if( !$stDate ){
+			$stDate = date("Y-m-01", time());
+		}
+		$stExt = explode('-', $stDate);
+		$stYear = $stExt[ 0 ];
+		$stMonth = intval($stExt[ 1 ]);
+		if( $skipStartDate ){
+			$stMonth--;
+		}
+		$monthStamps = array();
+		$msCount = $limit;
+		while( $msCount ){
+			for( ; $stMonth > 0 && $msCount; $stMonth--){
+				$dateTime = $stYear.'-'.$stMonth.'-01';
+				if( $stMonth < 10 ){
+					$dateTime = $stYear.'-0'.$stMonth.'-01';
+				}
+				if( $skipStamp ){
+					$monthStamps[] = $dateTime;
+				} else {
+					$monthStamps[ strtotime( $dateTime ) ] = $dateTime;
+				}
+				$msCount--;
+			}
+			$stYear--;
+			$stMonth = 12;
+		}
+		return $monthStamps;
+	}
+}

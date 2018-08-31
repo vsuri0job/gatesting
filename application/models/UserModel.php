@@ -4,10 +4,7 @@ class UserModel extends CI_Model {
 
 	public function checkLogin($username, $password) {
 		$rst = $this->db
-			->select('id, username, email, password, role_id, user_image,
-                        status, agencies, report_logo, google_access_token, google_token_expiration_time,
-                        google_refresh_token, trello_access_token, google_adwords_accid,
-                        `google_adword_refresh_token`, `google_adword_access_token`, `google_adword_token_expiration_time`')
+			->select('id, username, email, password, role_id, user_image, status, agencies')
 			->from('users')
 			->where('status', 1)
 			->where('username', $username)
@@ -18,10 +15,7 @@ class UserModel extends CI_Model {
 
 	public function getUserDetail($user_id) {
 		$rst = $this->db
-			->select('id, username, email, password, role_id, user_image,
-                        status, agencies, report_logo, google_access_token, google_token_expiration_time,
-                        google_refresh_token, trello_access_token, google_adwords_accid,
-                        `google_adword_refresh_token`, `google_adword_access_token`, `google_adword_token_expiration_time`')
+			->select('id, username, email, password, role_id, user_image, status, agencies')
 			->from('users')
 			->where('id', $user_id)
 			->get()->row_array();

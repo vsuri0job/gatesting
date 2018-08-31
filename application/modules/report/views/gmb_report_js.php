@@ -26,8 +26,9 @@
     $( document ).ready( function(){
 
         var locTable = $('#locations-data').DataTable({
-                            "order": []
-                        });    	
+                            "order": [],
+                            "bPaginate": false
+                        });
         $( '#locations' ).on( 'change', function( event ){
             let locId = this.value;
             let locData = gmb_data[ locId ];

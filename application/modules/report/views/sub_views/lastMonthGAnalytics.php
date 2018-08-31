@@ -3,7 +3,7 @@
         <div class="card-body">
             <h4 class="card-title">Total Traffic - Month over Month</h4>            
             <div class="table-responsive">
-                <table class="table">                    
+                <table class="table" id="total-traffic">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -47,8 +47,8 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Organic Traffic - Month over Month</h4>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-responsive">                
+                <table class="table" id="organic-traffic">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -92,8 +92,8 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">MEDIUM PERFORMANCE</h4>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-responsive">                
+                <table class="table" id="medium-traffic">
                     <thead>
                         <tr>
                             <th>Medium</th>
@@ -140,8 +140,8 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">SOURCE / MEDIUM PERFORMANCE</h4>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-responsive">                
+                <table class="table" id="source-traffic">
                     <thead>
                         <tr>
                             <th>Source / Medium</th>
@@ -187,8 +187,8 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">LANDING PAGE PERFORMANCE</h4>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-responsive">                
+                <table class="table" id="landing-traffic">                    
                     <thead>
                         <tr>
                             <th>landing page path</th>
@@ -204,12 +204,13 @@
                     <tbody>
                             <?php
                                 $dataHtml = '';                                
-                                foreach( $ga_data_landing_page as $data ){                                    
+                                foreach( $ga_data_landing_page as $data ){
                                     $avSessDur = gmdate("H:i:s", $data[ 'avg_session_duration' ] );
                                     $data[ 'bounce_rate' ] = number_format( $data[ 'bounce_rate' ], 2, '.', '');
                                     $data[ 'per_new_sessions' ] = number_format( $data[ 'per_new_sessions' ], 2, '.', '');
                                     // $data[ 'avg_session_duration' ] = number_format( $data[ 'avg_session_duration' ], 2, '.', '');
                                     $data[ 'page_view_per_sessions' ] = number_format( $data[ 'page_view_per_sessions' ], 2, '.', '');
+                                    $data[ 'landing_page' ] = substr($data[ 'landing_page' ], 0, 100);
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'landing_page' ].'</td>
                                                     <td>'.$data[ 'new_users' ].'</td>

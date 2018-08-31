@@ -1,4 +1,4 @@
-<div class="login-register" style="background-image:url(assets/images/background/login-register.jpg);">        
+<div class="login-register" style="">        
     <div class="login-box card">
         <div class="card-body">
             <form   class="form-horizontal form-material" 

@@ -136,6 +136,9 @@ class Accounts extends MY_Controller {
 	public function addProfileUrl() {
 		$this->form_validation->set_error_delimiters('', '');
 		$this->form_validation->set_rules('account_url', 'Account Url', 'required|is_unique[account_url_profiles.account_url]');
+		$this->form_validation->set_rules( 'close_rate', 'Close Rate', 'required' );
+		$this->form_validation->set_rules( 'avg_sale_amount', 'Avg. Sale Amt.', 'required' );
+		$this->form_validation->set_rules( 'ltv_amount', 'LTV Amt.', 'required' );
 		$inner = array();
 		$shell = array();
 		if ($this->form_validation->run() == FALSE) {

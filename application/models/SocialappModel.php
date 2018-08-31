@@ -164,9 +164,7 @@ class SocialappModel extends CI_Model {
 					->get()->row_array();;
 	}
 
-	public function updateAdminAccount( $prof_id, $admin_account_id ){
-		$data = array();
-		$data[ 'linked_account_id' ] = $admin_account_id;
+	public function updateAdminAccount( $prof_id, $data){
 		return $this->db->where( 'id', $prof_id )
 					->update( 'account_url_profiles', $data );
 	}

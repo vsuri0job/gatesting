@@ -1,23 +1,33 @@
 <?php
 $hasReports = false;
 $attr = array();
-$attr['width'] = '15px';
-$attr['height'] = '15px';
+$attr['width'] = '19px';
+$attr['height'] = '19px';
 $attr['class'] = 'm-l-5';
+$attr['title'] = $attr['alt'] = 'Google My Business';
 $gmbIcon = img(base_url('img/social/gmb-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Google Adwords';
 $ppcIcon = img(base_url('img/social/adwords-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Google Analytics';
 $seoIcon = img(base_url('img/social/analytic-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Trello';
 $trelloIcon = img(base_url('img/social/trello-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Rankings';
 $rankIcon = img(base_url('img/social/rankinity-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Admin';
 $adminIcon = img(base_url('img/social/admin-on.png'), false, $attr);
+$attr['title'] = $attr['alt'] = 'Google Search Console';
 $webMIcon = img(base_url('img/social/search-console-on.png'), false, $attr);
+
 if (!$account['analytic_refresh_token'] || $account['analytic_reset_token']) {
 	$aattr = array();
-	$seoIcon = anchor(base_url('social/google/webmaster/' . $account['id']),
+	$attr['title'] = $attr['alt'] = 'Google Analytics';
+	$seoIcon = anchor(base_url('social/google/analytic/' . $account['id']),
 		img(base_url('img/social/analytic-off.png'), false, $attr), $aattr);
 }
 if (!$account['gsc_refresh_token'] || $account['gsc_reset_token']) {
 	$aattr = array();
+	$attr['title'] = $attr['alt'] = 'Google Search Console';
 	$webMIcon = anchor(base_url('social/google/webmaster/' . $account['id']),
 		img(base_url('img/social/search-console-off.png'), false, $attr), $aattr);
 }
@@ -26,15 +36,18 @@ if (!$account['adword_refresh_token'] || $account['adword_reset_token']) {
 	$aattr['class'] = "google-ad-link";
 	if( $account['adword_customer_id'] ){
 		$aattr[ "data-cid" ] = $account['adword_customer_id'];
-	}	
+	}
+	$attr['title'] = $attr['alt'] = 'Google Adwords';
 	$ppcIcon = anchor(base_url('social/google/adwords/' . $account['id']),
 		img(base_url('img/social/adwords-off.png'), false, $attr), $aattr);
 }
 if (!$account['gmb_refresh_token'] || $account['gmb_reset_token']) {
+	$attr['title'] = $attr['alt'] = 'Google My Business';
 	$gmbIcon = anchor(base_url('social/google/mbusiness/' . $account['id']),
 		img(base_url('img/social/gmb-off.png'), false, $attr));
 }
 if (!$account['trello_access_token']) {
+	$attr['title'] = $attr['alt'] = 'Trello';
 	$attr['class'] = 'm-l-5 trelloAuth';
 	$attr['data-id'] = $account['id'];
 	$attr['style'] = " cursor:pointer; ";
@@ -44,17 +57,19 @@ if (!$account['trello_access_token']) {
 	unset($attr['style']);
 }
 if (!$account['rankinity_access_token']) {
+	$attr['title'] = $attr['alt'] = 'Rankings';
 	$aattr = array();
 	$aattr['class'] = "rankAuth";
 	$rankIcon = anchor(base_url('social/link_rankinity/' . $account['id']),
 		img(base_url('img/social/rankinity-off.png'), false, $attr), $aattr);
 }
 if (!$account['linked_account_id']) {
-    $aattr = array();    
+    $aattr = array();
+    $attr['title'] = $attr['alt'] = 'Admin';
     $adminIcon = anchor(base_url('social/link_account_admin/' . $account['id']),
         img(base_url('img/social/admin-off.png'), false, $attr), $aattr);
 }
-$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $trelloIcon . $rankIcon. $adminIcon . $webMIcon;
+$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon. $adminIcon;
 $rHtml = $viewAll = $seoHtml = $ppcHtml = $localHtml = $ccHtml = $trHtml = $webMHtml = 'N/A';
 // $services = explode(',', $account[ 'services' ]);
 // $services = array_unique($services);
@@ -167,7 +182,6 @@ if ($account['linked_webmaster_site']) {
         	}
         ?>        
     </td>
-    <td><?=$viewAll;?></td>
     <td><?=$seoHtml;?></td>
     <td><?=$ppcHtml;?></td>
     <td><?=$localHtml;?></td>
@@ -175,4 +189,8 @@ if ($account['linked_webmaster_site']) {
     <td><?=$rHtml;?></td>
     <td><?=$webMHtml;?></td>
     <td><?=$ccHtml;?></td>
+    <td> <a href="<?= base_url( 'report/overview/'.$account['id'] ) ?>"
+    	class="btn btn-info m-t-10"
+    	>View</a></td>
+    <td><?=$viewAll;?></td>
 </tr>
