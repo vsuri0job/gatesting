@@ -34,8 +34,8 @@ if (!$account['gsc_refresh_token'] || $account['gsc_reset_token']) {
 if (!$account['adword_refresh_token'] || $account['adword_reset_token']) {
 	$aattr = array();
 	$aattr['class'] = "google-ad-link";
-	if( $account['adword_customer_id'] ){
-		$aattr[ "data-cid" ] = $account['adword_customer_id'];
+	if ($account['adword_customer_id']) {
+		$aattr["data-cid"] = $account['adword_customer_id'];
 	}
 	$attr['title'] = $attr['alt'] = 'Google Adwords';
 	$ppcIcon = anchor(base_url('social/google/adwords/' . $account['id']),
@@ -64,20 +64,20 @@ if (!$account['rankinity_access_token']) {
 		img(base_url('img/social/rankinity-off.png'), false, $attr), $aattr);
 }
 if (!$account['linked_account_id']) {
-    $aattr = array();
-    $attr['title'] = $attr['alt'] = 'Admin';
-    $adminIcon = anchor(base_url('social/link_account_admin/' . $account['id']),
-        img(base_url('img/social/admin-off.png'), false, $attr), $aattr);
+	$aattr = array();
+	$attr['title'] = $attr['alt'] = 'Admin';
+	$adminIcon = anchor(base_url('social/link_account_admin/' . $account['id']),
+		img(base_url('img/social/admin-off.png'), false, $attr), $aattr);
 }
-$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon. $adminIcon;
+$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon . $adminIcon;
 $rHtml = $viewAll = $seoHtml = $ppcHtml = $localHtml = $ccHtml = $trHtml = $webMHtml = 'N/A';
 // $services = explode(',', $account[ 'services' ]);
 // $services = array_unique($services);
 $seoHtml = 'N/A';
-if($account['analytic_refresh_token']) {
+if ($account['analytic_refresh_token']) {
 	$seoHtml = '<a href="' . base_url('report/link_analytic/' . $account['id']) . '"
 	                class="btn btn-primary m-t-10">Link</a>';
-	if( $account['analytic_reset_token'] ){
+	if ($account['analytic_reset_token']) {
 		$seoHtml = '<a href="' . base_url('report/link_analytic/' . $account['id']) . '"
 		                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 	}
@@ -86,7 +86,7 @@ if ($account['view_id']) {
 	$hasReports = true;
 	$seoHtml = '<a href=' . base_url('report/fetchedAnalytic/' . $account['id'])
 		. ' class="btn btn-info m-t-10">View</a>';
-	if( $account['analytic_reset_token'] ){
+	if ($account['analytic_reset_token']) {
 		$seoHtml = '<a href=' . base_url('report/fetchedAnalytic/' . $account['id'])
 			. ' class="btn btn-primary disabled m-t-10" aria-disabled="true"  >View</a>';
 	}
@@ -95,16 +95,16 @@ if ($account['view_id']) {
 if ($account['adword_customer_id']) {
 	$ppcHtml = '<a href="' . base_url('social/link_adwords/' . $account['id']) . '"
                     class="btn btn-primary m-t-10">Link</a>';
-	if( $account['adword_reset_token'] ){
-	$ppcHtml = '<a href="' . base_url('social/link_adwords/' . $account['id']) . '"
+	if ($account['adword_reset_token']) {
+		$ppcHtml = '<a href="' . base_url('social/link_adwords/' . $account['id']) . '"
 	                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 	}
 	if ($account['linked_adwords_acc_id']) {
 		$hasReports = true;
 		$ppcHtml = '<a href="' . base_url('report/fetchedAdwords/' . $account['id']) . '"
                         class="btn btn-info m-t-10">View</a>';
-		if( $account['adword_reset_token'] ){
-		$ppcHtml = '<a href="' . base_url('report/fetchedAdwords/' . $account['id']) . '"
+		if ($account['adword_reset_token']) {
+			$ppcHtml = '<a href="' . base_url('report/fetchedAdwords/' . $account['id']) . '"
 		                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 		}
 	}
@@ -127,37 +127,37 @@ if ($account['rankinity_access_token']) {
 }
 
 if ($account['linked_account_id']) {
-    $hasReports = true;
-    $ccHtml = '<a href="' . base_url('report/citation_and_content/' . $account['id']) . '"
+	$hasReports = true;
+	$ccHtml = '<a href="' . base_url('report/citation_and_content/' . $account['id']) . '"
                     class="btn btn-info m-t-10">View</a>';
 }
 
 if ($account['gmb_refresh_token']) {
-    $localHtml = '<a href="' . base_url('social/link_gbusiness/' . $account['id']) . '"
-                    class="btn btn-primary  m-t-10">Link</a>';
-	if( $account['gmb_reset_token'] ){
 	$localHtml = '<a href="' . base_url('social/link_gbusiness/' . $account['id']) . '"
+                    class="btn btn-primary  m-t-10">Link</a>';
+	if ($account['gmb_reset_token']) {
+		$localHtml = '<a href="' . base_url('social/link_gbusiness/' . $account['id']) . '"
 	                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 	}
-    if ($account['linked_google_page_location']) {
-        $hasReports = true;
-        $localHtml = '<a href="' . base_url('report/fetchedGMB/' . $account['id']) . '"
+	if ($account['linked_google_page_location']) {
+		$hasReports = true;
+		$localHtml = '<a href="' . base_url('report/fetchedGMB/' . $account['id']) . '"
                         class="btn btn-info m-t-10" >View</a>';
-		if( $account['gmb_reset_token'] ){
+		if ($account['gmb_reset_token']) {
 			$localHtml = '<a href="' . base_url('report/fetchedGMB/' . $account['id']) . '"
 		                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >View</a>';
 		}
-    }
+	}
 }
 $reloginGoogle = "";
-if( $account['gmb_reset_token'] || $account['analytic_reset_token'] || $account['adword_reset_token']){
+if ($account['gmb_reset_token'] || $account['analytic_reset_token'] || $account['adword_reset_token']) {
 	$reloginGoogle = "Google token expired, please relogin";
 }
 
-if($account['gsc_refresh_token']) {
+if ($account['gsc_refresh_token']) {
 	$webMHtml = '<a href="' . base_url('report/link_webmaster/' . $account['id']) . '"
 	                class="btn btn-primary m-t-10">Link</a>';
-	if( $account['gsc_reset_token'] ){
+	if ($account['gsc_reset_token']) {
 		$webMHtml = '<a href="' . base_url('report/link_webmaster/' . $account['id']) . '"
 		                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 	}
@@ -166,21 +166,26 @@ if ($account['linked_webmaster_site']) {
 	$hasReports = true;
 	$webMHtml = '<a href=' . base_url('report/fetchedWebmaster/' . $account['id'])
 		. ' class="btn btn-info m-t-10">View</a>';
-	if( $account['gsc_reset_token'] ){
+	if ($account['gsc_reset_token']) {
 		$webMHtml = '<a href=' . base_url('report/fetchedWebmaster/' . $account['id'])
 			. ' class="btn btn-primary disabled m-t-10" aria-disabled="true"  >View</a>';
 	}
+}
+$viewAll = '<a href=' . base_url('report/complete_full/' . $account['id'])
+	. ' class="btn btn-info m-t-10">View</a>';
+if ($viewAll) {
+
 }
 ?>
 <tr>
     <td>
         <?=$account['account_url'];?><br/>
-        <?=$iconsHtml.'<br/>';?>
+        <?=$iconsHtml . '<br/>';?>
         <?php
-        	if( $reloginGoogle ){
-        		echo '<small>'.$reloginGoogle.'</small>';
-        	}
-        ?>        
+if ($reloginGoogle) {
+	echo '<small>' . $reloginGoogle . '</small>';
+}
+?>
     </td>
     <td><?=$seoHtml;?></td>
     <td><?=$ppcHtml;?></td>
@@ -189,7 +194,7 @@ if ($account['linked_webmaster_site']) {
     <td><?=$rHtml;?></td>
     <td><?=$webMHtml;?></td>
     <td><?=$ccHtml;?></td>
-    <td> <a href="<?= base_url( 'report/overview/'.$account['id'] ) ?>"
+    <td> <a href="<?=base_url('report/overview/' . $account['id'])?>"
     	class="btn btn-info m-t-10"
     	>View</a></td>
     <td><?=$viewAll;?></td>

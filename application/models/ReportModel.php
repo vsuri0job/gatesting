@@ -49,21 +49,38 @@ class ReportModel extends CI_Model {
 
 	public function fetchUrlGoogleMyBusiness($profId, $locationss, $limit = 0) {
 		$profiles = array();
-		if( $limit ){
-			$this->db->limit( $limit, 0 );
+		if ($limit) {
+			$this->db->limit($limit, 0);
 		}
-		$profiles = $this->db->select( 'account_url_profile_gmb_data.*, account_page_location_place' )
+		$profiles = $this->db->select('account_url_profile_gmb_data.*, account_page_location_place')
 			->from('account_url_profile_gmb_data')
-			->join( 'google_business_page_locations', 
-			'account_page_location_name=location_name 
-			and account_url_profile_gmb_data.url_profile_id=google_business_page_locations.url_profile_id' )
+			->join('google_business_page_locations',
+				'account_page_location_name=location_name
+			and account_url_profile_gmb_data.url_profile_id=google_business_page_locations.url_profile_id')
 			->where('account_url_profile_gmb_data.url_profile_id', $profId)
 			->where('location_name', $locationss)
-			->order_by('month_ref desc, location_name' )
+			->order_by('month_ref desc, location_name')
 			->get()
-			->result_array();		
+			->result_array();
 		return $profiles;
 	}
+
+	public function fetchUrlGoogleMyBusinessMonthData($profId, $locationss, $limit = 0) {
+		$profiles = array();
+		if ($limit) {
+			$this->db->limit($limit, 0);
+		}
+		$profiles = $this->db->select('month_ref, sum( `actions_website` ) `clicks`, sum(`actions_phone`) `calls`, sum(`actions_driving_directions`) `direc`')
+			->from('account_url_profile_gmb_data')
+			->where('account_url_profile_gmb_data.url_profile_id', $profId)
+			->where_in('location_name', $locationss)
+			->order_by('month_ref desc')
+			->group_by('month_ref')
+			->get()
+			->result_array();
+		return $profiles;
+	}
+
 	public function fetchViewAnalyticData($monthRef, $viewId, $profId) {
 		return $this->db->select('month_ref, sessions, users, page_view_per_sessions, avg_session_duration, bounce_rate,
 						avg_page_download_time, goal_conversion_rate, goal_completion_all, page_views, per_new_sessions')
@@ -152,9 +169,9 @@ class ReportModel extends CI_Model {
 		if ($orderBy) {
 			$this->db->order_by($orderBy);
 		}
-		$limit = com_arrIndex( $opt, 'limit', 0 );
-		$offset = com_arrIndex( $opt, 'offset', 0 );
-		if( $limit ){
+		$limit = com_arrIndex($opt, 'limit', 0);
+		$offset = com_arrIndex($opt, 'offset', 0);
+		if ($limit) {
 			$this->db->limit($limit, $offset);
 		}
 		return $this->db->where($whereArr)
@@ -179,8 +196,8 @@ class ReportModel extends CI_Model {
 			->update('account_url_profiles', $data);
 	}
 
-	public function getCitationContentCount($account_id = 0) {		
-		$months_tstamps = com_lastMonths( 13 );
+	public function getCitationContentCount($account_id = 0) {
+		$months_tstamps = com_lastMonths(13);
 		$data = array();
 		foreach ($months_tstamps as $month_time => $month_date) {
 			$month = date("Y-m", $month_time);
@@ -344,41 +361,41 @@ class ReportModel extends CI_Model {
 			->get()->result_array();
 	}
 
-	public function updateWebmasterData( $data, $where, $rowData = true ){
-		$this->db->where( $where )
-				->delete( 'account_url_profile_webmaster_data' );
-		if( $rowData ){
-			$this->db->insert( 'account_url_profile_webmaster_data', $data);
-		} else {			
-			$this->db->insert_batch( 'account_url_profile_webmaster_data', $data);
+	public function updateWebmasterData($data, $where, $rowData = true) {
+		$this->db->where($where)
+			->delete('account_url_profile_webmaster_data');
+		if ($rowData) {
+			$this->db->insert('account_url_profile_webmaster_data', $data);
+		} else {
+			$this->db->insert_batch('account_url_profile_webmaster_data', $data);
 		}
 	}
 
 	public function getWebmasterData($prof_id, $report_type, $opt = array()) {
 		$profiles = array();
-		if( isset( $opt[ 'order' ] ) ){
-			$this->db->order_by( $opt[ 'order' ] );
+		if (isset($opt['order'])) {
+			$this->db->order_by($opt['order']);
 		}
-		if( isset( $opt[ 'limit' ] ) ){
-			$this->db->limit( $opt[ 'limit' ], 0 );
+		if (isset($opt['limit'])) {
+			$this->db->limit($opt['limit'], 0);
 		}
 		$profiles = $this->db->from('account_url_profile_webmaster_data')
 			->where('report_type', $report_type)
 			->where('url_profile_id', $prof_id)
-			->get();		
-		if( $profiles->num_rows() > 1 ){
+			->get();
+		if ($profiles->num_rows() > 1) {
 			return $profiles->result_array();
 		}
 		return $profiles->row_array();
 	}
 
-	public function getServiceUrlCost( $service_url, $acc_id ){
-		return $this->db->select( 'url, group_concat( monthly_price ) as `price`, group_concat( services_master.name )  as `services`')
-			->from( 'services' )
-			->from( 'services_master', 'services_master.id=service_master_id' )
-			->where( 'url', $service_url )
-			->where( 'account_id', $acc_id )
-			->group_by( 'url' )
+	public function getServiceUrlCost($service_url, $acc_id) {
+		return $this->db->select('url, group_concat( monthly_price ) as `price`, group_concat( services_master.name )  as `services`')
+			->from('services')
+			->from('services_master', 'services_master.id=service_master_id')
+			->where('url', $service_url)
+			->where('account_id', $acc_id)
+			->group_by('url')
 			->get()->row_array();
 	}
 }

@@ -1,27 +1,30 @@
+<?php if (!isset($full_report_show) || !$full_report_show) {
+	?>
 <div class="row">
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-8 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white"><?= $linked_adwords[ 'account_name' ] ?></h4>
+                        <h4 class="m-b-0 text-white"><?=$linked_adwords['account_name']?></h4>
                     </div>
                     <div class="col-md-4 col-4 align-self-center">
-                        <?php if( $show_public_url ){
-                            echo anchor( 'publicReport/'.$prodDet[ 'share_adwords_link' ], 
-                                'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ' );
-                        } ?>
+                        <?php if ($show_public_url) {
+		echo anchor('publicReport/' . $prodDet['share_adwords_link'],
+			'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ');
+	}?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<?php }?>
 <!-- Row -->
-<div id="currentMonthData">
-    <?= $currMonthHtml; ?>
+<div id="currentMonthDataAdwords">
+    <?=$currMonthHtml;?>
 </div>
 
-<div id="lastMonthsData">
-    <?= $lastMonthHtml; ?>
+<div id="lastMonthsDataAdwords">
+    <?=$lastMonthHtml;?>
 </div>

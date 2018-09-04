@@ -9,14 +9,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/favicon.png'); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?=base_url('assets/images/favicon.png');?>">
     <title>Monster Admin Template - The Most Complete & Trusted Bootstrap 4 Admin Template</title>
     <!-- Bootstrap Core CSS -->
-    <link href="<?= base_url('assets/plugins/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="<?=base_url('assets/plugins/bootstrap/css/bootstrap.min.css');?>" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="<?= base_url('css/style.css'); ?>" rel="stylesheet">
+    <link href="<?=base_url('css/style.css');?>" rel="stylesheet">
     <!-- You can change the theme colors from here -->
-    <link href="<?= base_url('css/colors/default-dark.css'); ?>" id="theme" rel="stylesheet">
+    <link href="<?=base_url('css/colors/default-dark.css');?>" id="theme" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -39,10 +39,10 @@
     <div id="main-wrapper">
         <!-- ============================================================== -->
         <!-- Topbar header - style you can find in pages.scss -->
-        <!-- ============================================================== -->        
+        <!-- ============================================================== -->
         <?php
-            $this->view( 'layouts/header' );
-        ?>
+$this->view('layouts/header');
+?>
         <!-- ============================================================== -->
         <!-- End Topbar header -->
         <!-- ============================================================== -->
@@ -50,8 +50,8 @@
         <!-- Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
         <?php
-            $this->view( 'layouts/left-sidebar' );
-        ?>
+$this->view('layouts/left-sidebar');
+?>
         <!-- ============================================================== -->
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
@@ -67,8 +67,8 @@
                 <!-- Bread crumb and right sidebar toggle -->
                 <!-- ============================================================== -->
                 <?php
-                    $this->view( 'layouts/breadcrumb-sidebar' );
-                ?>
+$this->view('layouts/breadcrumb-sidebar');
+?>
                 <!-- ============================================================== -->
                 <!-- End Bread crumb and right sidebar toggle -->
                 <!-- ============================================================== -->
@@ -76,8 +76,8 @@
                 <!-- Start Page Content -->
                 <!-- ============================================================== -->
                 <?php
-                    echo $content;
-                ?>
+echo $content;
+?>
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->
                 <!-- ============================================================== -->
@@ -86,8 +86,8 @@
                 <!-- ============================================================== -->
                 <!-- .right-sidebar -->
                 <?php
-                    $this->view( 'layouts/right-sidebar' );
-                ?>
+$this->view('layouts/right-sidebar');
+?>
                 <!-- ============================================================== -->
                 <!-- End Right sidebar -->
                 <!-- ============================================================== -->
@@ -99,8 +99,8 @@
             <!-- footer -->
             <!-- ============================================================== -->
             <?php
-                $this->view( 'layouts/footer' );
-            ?>
+$this->view('layouts/footer');
+?>
             <!-- ============================================================== -->
             <!-- End footer -->
             <!-- ============================================================== -->
@@ -115,29 +115,29 @@
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
-    <script src="<?= base_url('assets/plugins/jquery/jquery.min.js'); ?>"></script>
+    <script src="<?=base_url('assets/plugins/jquery/jquery.min.js');?>"></script>
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="<?= base_url('assets/plugins/bootstrap/js/popper.min.js'); ?>"></script>
-    <script src="<?= base_url('assets/plugins/bootstrap/js/bootstrap.min.js'); ?>"></script>
+    <script src="<?=base_url('assets/plugins/bootstrap/js/popper.min.js');?>"></script>
+    <script src="<?=base_url('assets/plugins/bootstrap/js/bootstrap.min.js');?>"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
-    <script src="<?= base_url('js/jquery.slimscroll.js'); ?>"></script>
+    <script src="<?=base_url('js/jquery.slimscroll.js');?>"></script>
     <!--Wave Effects -->
-    <script src="<?= base_url('js/waves.js'); ?>"></script>
+    <script src="<?=base_url('js/waves.js');?>"></script>
     <!--Menu sidebar -->
-    <script src="<?= base_url('js/sidebarmenu.js'); ?>"></script>
+    <script src="<?=base_url('js/sidebarmenu.js');?>"></script>
     <!--stickey kit -->
-    <script src="<?= base_url('assets/plugins/sticky-kit-master/dist/sticky-kit.min.js'); ?>"></script>
+    <script src="<?=base_url('assets/plugins/sticky-kit-master/dist/sticky-kit.min.js');?>"></script>
     <!--Custom JavaScript -->
-    <script src="<?= base_url('js/custom.min.js'); ?>"></script>
+    <script src="<?=base_url('js/custom.min.js');?>"></script>
     <!-- ============================================================== -->
     <?php
-        if( isset( $footer_js ) ){
-            echo $footer_js;
-        }
-    ?>
+if (isset($footer_js)) {
+	echo $footer_js;
+}
+?>
     <!-- Style switcher -->
     <!-- ============================================================== -->
-    <script src="<?= base_url('assets/plugins/styleswitcher/jQuery.style.switcher.js'); ?>"></script>
+    <script src="<?=base_url('assets/plugins/styleswitcher/jQuery.style.switcher.js');?>"></script>
 </body>
 
 </html>
