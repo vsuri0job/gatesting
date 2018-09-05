@@ -1,3 +1,12 @@
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Days Traffic</h4>
+            <div id="session-day-chart"></div>
+        </div>
+    </div>
+</div>
+
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -24,12 +33,12 @@
                                     $month = date('F Y', strtotime( $data[ 'month_ref' ].'-01' ));
                                     $dataHtml .= '<tr>
                                                     <td>'.$month.'</td>
-                                                    <td>'.$data[ 'users' ].'</td>
-                                                    <td>'.$data[ 'sessions' ].'</td>
+                                                    <td>'.number_format($data[ 'users' ]).'</td>
+                                                    <td>'.number_format($data[ 'sessions' ]).'</td>
                                                     <td>'.number_format( $data[ 'bounce_rate' ], 2, '.', '' ).'% </td>
                                                     <td>'.gmdate("H:i:s", $data[ 'avg_session_duration' ] ).' </td>
                                                     <td>'.number_format( $data[ 'page_view_per_sessions' ], 2, '.', '' ).'</td>
-                                                    <td>'.$data[ 'goal_completion_all' ].'</td>
+                                                    <td>'.number_format($data[ 'goal_completion_all' ]).'</td>
                                                     <td>'.number_format( $data[ 'goal_conversion_rate' ], 2, '.', '' ).'% </td>
                                                 </tr>';
                                 }
@@ -69,12 +78,12 @@
                                     $avSessDur = gmdate("H:i:s", $data[ 'avg_session_duration' ] );
                                     $dataHtml .= '<tr>
                                                     <td>'.$month.'</td>
-                                                    <td>'.$data[ 'users' ].'</td>
-                                                    <td>'.$data[ 'sessions' ].'</td>
+                                                    <td>'.number_format($data[ 'users' ]).'</td>
+                                                    <td>'.number_format($data[ 'sessions' ]).'</td>
                                                     <td>'.number_format( $data[ 'bounce_rate' ], 2, '.', '').'% </td>
                                                     <td>'.$avSessDur.' </td>
                                                     <td>'.number_format( $data[ 'page_view_per_sessions' ], 2, '.', '').'</td>
-                                                    <td>'.$data[ 'goal_completion_all' ].'</td>
+                                                    <td>'.number_format($data[ 'goal_completion_all' ]).'</td>
                                                     <td>'.number_format( $data[ 'goal_conversion_rate' ], 2, '.', '' ).'% </td>
                                                 </tr>';
                                 }
@@ -117,12 +126,12 @@
                                     $data[ 'page_view_per_sessions' ] = number_format( $data[ 'page_view_per_sessions' ], 2, '.', '');
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'medium' ].'</td>
-                                                    <td>'.$data[ 'users' ].'</td>
-                                                    <td>'.$data[ 'sessions' ].'</td>
+                                                    <td>'.number_format($data[ 'users' ]).'</td>
+                                                    <td>'.number_format($data[ 'sessions' ]).'</td>
                                                     <td>'.$data[ 'bounce_rate' ].'</td>
                                                     <td>'.$avSessDur.'</td>
                                                     <td>'.$data[ 'page_view_per_sessions' ].'</td>
-                                                    <td>'.$data[ 'goal_completion_all' ].'</td>
+                                                    <td>'.number_format($data[ 'goal_completion_all' ]).'</td>
                                                     <td>'.number_format( $data[ 'goal_conversion_rate' ], 2, '.', '' ).'% </td>
                                                 </tr>';
                                 }
@@ -165,12 +174,12 @@
                                     $data[ 'page_view_per_sessions' ] = number_format( $data[ 'page_view_per_sessions' ], 2, '.', '');
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'source_medium' ].'</td>
-                                                    <td>'.$data[ 'users' ].'</td>
-                                                    <td>'.$data[ 'sessions' ].'</td>
+                                                    <td>'.number_format($data[ 'users' ]).'</td>
+                                                    <td>'.number_format($data[ 'sessions' ]).'</td>
                                                     <td>'.$data[ 'bounce_rate' ].'</td>
                                                     <td>'.$avSessDur.'</td>
                                                     <td>'.$data[ 'page_view_per_sessions' ].'</td>
-                                                    <td>'.$data[ 'goal_completion_all' ].'</td>
+                                                    <td>'.number_format($data[ 'goal_completion_all' ]).'</td>
                                                     <td>'.number_format( $data[ 'goal_conversion_rate' ], 2, '.', '' ).'% </td>
                                                 </tr>';
                                 }
@@ -213,10 +222,10 @@
                                     $data[ 'landing_page' ] = substr($data[ 'landing_page' ], 0, 100);
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'landing_page' ].'</td>
-                                                    <td>'.$data[ 'new_users' ].'</td>
-                                                    <td>'.$data[ 'users' ].'</td>
+                                                    <td>'.number_format($data[ 'new_users' ]).'</td>
+                                                    <td>'.number_format($data[ 'users' ]).'</td>
                                                     <td>'.$data[ 'per_new_sessions' ].'</td>
-                                                    <td>'.$data[ 'sessions' ].'</td>
+                                                    <td>'.number_format($data[ 'sessions' ]).'</td>
                                                     <td>'.$data[ 'bounce_rate' ].'</td>
                                                     <td>'.$avSessDur.'</td>
                                                     <td>'.$data[ 'page_view_per_sessions' ].' </td>

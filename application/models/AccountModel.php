@@ -465,8 +465,8 @@ class AccountModel extends CI_Model {
 		$data['profile_id'] = "";
 		$data['property_id'] = "";
 		$data['share_gmb_link'] = "";		
-		$data['linked_trello_id'] = "";
 		$data['linked_rankinity_id'] = "";		
+		$data['linked_trello_board_id'] = "";
 		$data['linked_account_id'] = 0;
 		$data['share_gsc_link'] = "";
 		$data['share_trello_link'] = "";
@@ -481,8 +481,8 @@ class AccountModel extends CI_Model {
 		$data['account_id'] = com_user_data('id');
 		$data['close_rate'] = (float)$this->input->post('close_rate');
 		$data['ltv_amount'] = (float)$this->input->post('ltv_amount');
-		$data['account_url'] = (float)$this->input->post('account_url');
-		$data['avg_sale_amount'] = $this->input->post('avg_sale_amount');
+		$data['account_url'] = $this->input->post('account_url');
+		$data['avg_sale_amount'] = (float)$this->input->post('avg_sale_amount');
 		$this->db->insert('account_url_profiles', $data);
 
 		$profile_id = $this->db->insert_id();
@@ -514,6 +514,12 @@ class AccountModel extends CI_Model {
 				->update('account_url_profiles', $data);
 	}
 
+	
+	public function updateProfile( $profId, $data ){
+		return $this->db->where( 'id', $profId)
+					->update('account_url_profiles', $data);
+	}
+
 	public function getProfiles() {
 		return $this->db->select('account_url_profiles_social_token.*, account_url_profiles.*')
 			->from('account_url_profiles')
@@ -539,5 +545,14 @@ class AccountModel extends CI_Model {
 				->where_in('agency_id', $agencies)				
 				->where( 'services.url <> ', "" )
 				->group_by( 'url, account_id' )->get()->result_array();
+	}
+
+	public function getAgencies(){
+		return 	$this->db->from( 'agencies' )
+					->get()->result_array();
+	}
+
+	public function addAgencies( $data ){
+		return 	$this->db->insert( 'agencies', $data );
 	}
 }

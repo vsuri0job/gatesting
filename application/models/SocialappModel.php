@@ -105,9 +105,9 @@ class SocialappModel extends CI_Model {
 		}
 	}
 
-	public function getTrelloBoards(){
+	public function getTrelloBoards( $profId ){
 		return $this->db->from( 'trello_boards' )
-					->where( 'account_id', com_user_data( 'id' ) )
+					->where( 'url_profile_id', $profId )
 					->get()->result_array();
 	}
 

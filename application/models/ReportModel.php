@@ -174,9 +174,14 @@ class ReportModel extends CI_Model {
 		if ($limit) {
 			$this->db->limit($limit, $offset);
 		}
+		$rst_func = 'result_array';
+		if( isset($opt[ 'row_only' ]) ){
+			$rst_func = 'row_array';
+		}
+		
 		return $this->db->where($whereArr)
 			->get('analytic_profile_property_view_data_detail')
-			->result_array();
+			->$rst_func();
 	}
 
 	public function getTrelloBoards() {
@@ -392,10 +397,16 @@ class ReportModel extends CI_Model {
 	public function getServiceUrlCost($service_url, $acc_id) {
 		return $this->db->select('url, group_concat( monthly_price ) as `price`, group_concat( services_master.name )  as `services`')
 			->from('services')
-			->from('services_master', 'services_master.id=service_master_id')
+			->join('services_master', 'services_master.id=service_master_id')
 			->where('url', $service_url)
 			->where('account_id', $acc_id)
 			->group_by('url')
 			->get()->row_array();
+	}
+
+	public function getBoardDetail( $boardId ){
+		return $this->db->from( 'trello_boards' )
+				->where( 'board_id', $boardId)
+				->get()->row_array();
 	}
 }

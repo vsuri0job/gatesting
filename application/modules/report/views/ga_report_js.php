@@ -50,11 +50,16 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
         });
 
         $("#getGoogleData").on( 'submit', function( event ){
+            event.preventDefault();            
             let profile = $( "#profile" ).val();
             let prop = $( "#prop" ).val();
-            let view = $( "#view" ).val();            
+            let view = $( "#view" ).val();
+            $( "#prop" ).attr('disabled', true);
+            $( "#view" ).attr('disabled', true);
+            $( "#profile" ).attr('disabled', true);
+            $( "#link_update").hide();
             $("#lastMonthsData").html("");
-            $("#currentMonthData").html("");            
+            $("#currentMonthData").html("");
             // $("#lastMonthsData").html('<img src="<?=base_url('img/spinner.gif');?>"> loading...');            
             // $.post("<?= base_url( 'report/getViewData' ) ?>",{
             //     profile: profile,
@@ -65,72 +70,71 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
             //     $("#lastMonthsData").html( data.lastMonthHtml );
             //     $("#currentMonthData").html( data.currMonthHtml );
             // }, 'json');
-let pData = {
-    profile: profile,
-    prop: prop,
-    view: view,
-    prof_id: "<?= $profDet[ 'id' ]; ?>",
-    webmaster_site: webmaster_site
-};
-$('#progress-bar').removeClass('hide');
-$.ajax({
-    xhr: function () {        
-        var xhr = new window.XMLHttpRequest();
-        xhr.upload.addEventListener("progress", function (evt) {            
-            if (evt.lengthComputable) {                
-                var percentComplete = evt.loaded / evt.total;                
-                $('#progress-bar')
-                .css( { width: percentComplete + '%' } )
-                .html( percentComplete + '%' );
-                // $('.progress').css({
-                //     width: percentComplete * 100 + '%'
-                // });
-                if (percentComplete === 1) {
-                    $('#progress-bar')
-                    .css( { width: '50%' } )
-                    .html( '50%' );
-                    // $('#progress-bar').addClass('hide');
-                    // $('#progress-bar')
-                    // .css( { width: percentComplete * 0 + '%' } )
-                    // .html( percentComplete * 0 + '%' );                    
+            let pData = {
+                profile: profile,
+                prop: prop,
+                view: view,
+                prof_id: "<?= $profDet[ 'id' ]; ?>"    
+            };
+            $('#progress-bar').removeClass('hide');
+            $.ajax({
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {            
+                        if (evt.lengthComputable) {                
+                            var percentComplete = evt.loaded / evt.total;                
+                            $('#progress-bar')
+                            .css( { width: percentComplete + '%' } )
+                            .html( percentComplete + '%' );
+                            // $('.progress').css({
+                            //     width: percentComplete * 100 + '%'
+                            // });
+                            if (percentComplete === 1) {
+                                $('#progress-bar')
+                                .css( { width: '50%' } )
+                                .html( '50%' );
+                                // $('#progress-bar').addClass('hide');
+                                // $('#progress-bar')
+                                // .css( { width: percentComplete * 0 + '%' } )
+                                // .html( percentComplete * 0 + '%' );                    
+                            }
+                        }
+                    }, false);
+                    xhr.addEventListener("progress", function (evt) {            
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;                
+                            // $('.progress').css({
+                            //     width: percentComplete * 100 + '%'
+                            // });
+                            $('#progress-bar')
+                            .css( { width: 100 + '100%' } )
+                            .html( '100%' );
+                            $('#progress-bar').addClass('hide')
+                            .css( { width: '0%' } )
+                            .html( '0%' );
+                        } else {                
+                            $('#progress-bar')
+                            .css( { width: 70 + '%' } )
+                            .html( 70 + '%' );
+                            $('#progress-bar').addClass('hide')
+                            .css( { width: '0%' } )
+                            .html( '0%' );
+                        }
+                    }, false);
+                    return xhr;
+                },
+                type: 'POST',
+                url: "<?= base_url( 'report/getViewData' ) ?>",
+                data: pData,
+                success: function (data) {        
+                    $('#progress-bar').addClass('hide')
+                    .css( { width: '0%' } )
+                    .html( '0%' );
+                    data = JSON.parse( data );
+                    $("#lastMonthsData").html( data.lastMonthHtml );
+                    $("#currentMonthData").html( data.currMonthHtml );        
                 }
-            }
-        }, false);
-        xhr.addEventListener("progress", function (evt) {            
-            if (evt.lengthComputable) {
-                var percentComplete = evt.loaded / evt.total;                
-                // $('.progress').css({
-                //     width: percentComplete * 100 + '%'
-                // });
-                $('#progress-bar')
-                .css( { width: 100 + '100%' } )
-                .html( '100%' );
-                $('#progress-bar').addClass('hide')
-                .css( { width: '0%' } )
-                .html( '0%' );
-            } else {                
-                $('#progress-bar')
-                .css( { width: 70 + '%' } )
-                .html( 70 + '%' );
-                $('#progress-bar').addClass('hide')
-                .css( { width: '0%' } )
-                .html( '0%' );
-            }
-        }, false);
-        return xhr;
-    },
-    type: 'POST',
-    url: "<?= base_url( 'report/getViewData' ) ?>",
-    data: pData,
-    success: function (data) {        
-        $('#progress-bar').addClass('hide')
-        .css( { width: '0%' } )
-        .html( '0%' );
-        data = JSON.parse( data );
-        $("#lastMonthsData").html( data.lastMonthHtml );
-        $("#currentMonthData").html( data.currMonthHtml );        
-    }
-},'json');
+            },'json');
             event.preventDefault();
             return false;
         });

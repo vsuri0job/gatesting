@@ -4,7 +4,7 @@ class UserModel extends CI_Model {
 
 	public function checkLogin($username, $password) {
 		$rst = $this->db
-			->select('id, username, email, password, role_id, user_image, status, agencies')
+			->select('*')
 			->from('users')
 			->where('status', 1)
 			->where('username', $username)
@@ -15,7 +15,7 @@ class UserModel extends CI_Model {
 
 	public function getUserDetail($user_id) {
 		$rst = $this->db
-			->select('id, username, email, password, role_id, user_image, status, agencies')
+			->select('*')
 			->from('users')
 			->where('id', $user_id)
 			->get()->row_array();
@@ -45,7 +45,16 @@ class UserModel extends CI_Model {
 			$userdata['password'] = $password;
 		}
 		if ($extra) {
-			$userdata = array_merge($userdata, $extra);
+			$userDet = $this->db->from('user_settings')
+					->where('user_id', com_user_data('id'))
+					->get()->row_array();
+			if( $userDet ){
+				$this->db->where('user_id', $userDet[ 'id' ] )
+						->update('user_settings', $extra);
+			} else {
+				$extra[ 'user_id' ] = com_user_data('id');
+				$this->db->insert('user_settings', $extra);
+			}
 		}
 		$this->db->where('id', com_user_data('id'))
 			->update('users', $userdata);

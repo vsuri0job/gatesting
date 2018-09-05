@@ -151,8 +151,42 @@ class Accounts extends MY_Controller {
 			$shell['content'] = $this->load->view('accounts/add_prof', $inner, true);
 			$shell['footer_js'] = $this->load->view('accounts/add_prof_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
-		} else {
+		} else {			
 			$this->AccountModel->addProfile();
+			redirect('accounts/list');
+			exit;
+		}
+	}
+	
+	public function editProfileUrl( $profId ) {
+		$profDet = $this->AccountModel->getFetchedAccountDetail($profId);
+		if( !$profDet ){
+			redirect( 'dashboard' );
+			exit;
+		}
+		$this->form_validation->set_error_delimiters('', '');		
+		$this->form_validation->set_rules( 'close_rate', 'Close Rate', 'required' );
+		$this->form_validation->set_rules( 'avg_sale_amount', 'Avg. Sale Amt.', 'required' );
+		$this->form_validation->set_rules( 'ltv_amount', 'LTV Amt.', 'required' );
+		$inner = array();
+		$shell = array();
+		if ($this->form_validation->run() == FALSE) {
+			$val_errors = "";
+			if ($this->form_validation->error_array()) {
+				$val_errors = implode("\n", $this->form_validation->error_array());
+			}			
+			$inner['profDet'] = $profDet;
+			$inner['validation_errors'] = $val_errors;
+			$shell['page_title'] = 'Edit Account url:- '.$profDet[ 'account_url' ];
+			$shell['content'] = $this->load->view('accounts/edit_prof', $inner, true);
+			$shell['footer_js'] = $this->load->view('accounts/edit_prof_js', $inner, true);
+			$this->load->view(TMP_DEFAULT, $shell);
+		} else {
+			$data = array();
+			$data[ 'close_rate' ] = $this->input->post( 'close_rate' );;
+			$data[ 'ltv_amount' ] = $this->input->post( 'ltv_amount' );;
+			$data[ 'avg_sale_amount' ] = $this->input->post( 'avg_sale_amount' );;
+			$this->AccountModel->updateProfile( $profDet[ 'id' ], $data );
 			redirect('accounts/list');
 			exit;
 		}

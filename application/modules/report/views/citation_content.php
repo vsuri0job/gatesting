@@ -39,17 +39,25 @@
                                     if( $prof_id ){
                                         $citUrl = base_url('report/citationView/'.$cc[ 'stamp' ].'/'.$prof_id);
                                     }
-                    				$ccHtml .= '<tr>
-                    								<td>'.$cc[ 'month' ].'</td>
-                    								<td>'.anchor( $contUrl, 
-                										$cc[ 'contents' ], 
-                										$contAttr )
-                    								.'</td>
-                    								<td>'.anchor( $citUrl, 
-                										$cc[ 'citation' ], 
-                										$citAttr )
-                    								.'</td>
-                    							</tr>';
+                                    if( isset($skip_det_link) ){
+                                        $ccHtml .= '<tr>
+                                                        <td>'.$cc[ 'month' ].'</td>
+                                                        <td>'.$cc[ 'contents' ].'</td>
+                                                        <td>'.$cc[ 'citation' ].'</td>
+                                                    </tr>';
+                                    } else {
+                        				$ccHtml .= '<tr>
+                        								<td>'.$cc[ 'month' ].'</td>
+                        								<td>'.anchor( $contUrl, 
+                    										$cc[ 'contents' ], 
+                    										$contAttr )
+                        								.'</td>
+                        								<td>'.anchor( $citUrl, 
+                    										$cc[ 'citation' ], 
+                    										$citAttr )
+                        								.'</td>
+                        							</tr>';
+                                    }
       	                  		}
                         		echo $ccHtml;
                         	?>

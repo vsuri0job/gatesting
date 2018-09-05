@@ -22,10 +22,13 @@
                             <?php
                                 $dataHtml = '';
                                 foreach( $ga_data as $data ){
+                                    $data[ 'clicks' ] = number_format( $data[ 'clicks' ] );
+                                    $data[ 'impressions' ] = number_format( $data[ 'impressions' ] );
                                     $data[ 'cost' ] =  number_format( $data[ 'cost' ] ? ( $data[ 'cost' ] / 1000000) : 0, 2 ); 
                                     $data[ 'avg_cpc' ] = number_format( $data[ 'avg_cpc' ] ? ( $data[ 'avg_cpc' ] / 1000000) : 0, 2 ); 
                                     $data[ 'cost_per_conversion' ] = number_format( $data[ 'cost_per_conversion' ] 
-                                    ? ( $data[ 'cost_per_conversion' ] / 1000000) : 0, 2 ); 
+                                    ? ( $data[ 'cost_per_conversion' ] / 1000000) : 0, 2 );
+                                    $data[ 'month_ref' ] = date("F Y", strtotime( $data[ 'month_ref' ].'-01' ));
                                     $dataHtml .= '<tr>
                                                     <td>'.$data[ 'month_ref' ].'</td>
                                                     <td>'.$data[ 'clicks' ].'</td>

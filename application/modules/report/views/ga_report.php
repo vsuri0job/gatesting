@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <form action="#" class="form-horizontal" id="getGoogleData">
+                <form action="#" class="form-horizontal" id="getGoogleData" method="POST">
                     <input type="hidden" name="prof_id" value="<?= $profDet[ 'id' ]; ?>">
                     <div class="form-body">
                         <div class="row">
@@ -68,7 +68,8 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn btn-success">Link and Update Data</button>
+                                        <button type="submit" id="link_update"
+                                                class="btn btn-success">Link and Update Data</button>
                                     </div>
                                 </div>
                             </div>

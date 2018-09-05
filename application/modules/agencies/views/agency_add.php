@@ -4,29 +4,23 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white">Link Adwords</h4>
+                        <h4 class="m-b-0 text-white">Add new agency</h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
-                        <a href="<?= base_url( 'social/resetAdwordList' ) ?>" class="btn pull-right btn-outline-primary">Update Adwords Projects</a>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <form action="<?= base_url( 'social/updateAccountAdwords' ) ?>" class="form-horizontal" 
-                    id="getGoogleData" method="POST">
-                    <input type="hidden" name="fetched_profile" value="<?= $profile[ 'id' ]; ?>">
+                <form action="<?= base_url( 'agencies/add' ) ?>" class="form-horizontal" 
+                    id="add_agency" method="POST">
                     <div class="form-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group row">
-                                    <label class="control-label text-right col-md-2">Adwords Projects</label>
-                                    <div class="col-md-10">
-                                        <select name="adwordProject" id="adwordProject" class="form-control" required>
-                                            <option>Select</option>
-                                            <?php                                                
-                                                echo $projects;
-                                            ?>
-                                        </select>
+                                    <label class="control-label text-right col-md-2">Name</label>
+                                    <div class="col-md-10">                                        
+                                        <input  type="text" name="agency_name" 
+                                                id="agency_name" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -38,7 +32,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn btn-success" id="update_adwords">Update Account</button>
+                                        <button type="submit" class="btn btn-success">Submit</button>
                                     </div>
                                 </div>
                             </div>

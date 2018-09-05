@@ -9,6 +9,7 @@ class Social extends MY_Controller {
 		$this->load->library('Loaddata');
 		$this->load->library('Adwords');
 		$this->load->model('SocialModel');
+		$this->load->model('ReportModel');		
 	}
 
 	public function google($prod, $profId) {
@@ -489,7 +490,7 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profile_id);
 		$adwordProj = $this->SocialModel->getAdwordProjDetail($adword_proj);
-		if ($fetchedProfile && !$fetchedProfile['linked_adwords_acc_id'] && $adwordProj) {
+		if ($fetchedProfile && !$fetchedProfile['linked_adwords_acc_id'] && $adwordProj) {			
 			// rankinity_project_url
 			// $anl_prof_id, $adword_prj_id
 			$this->AccountModel->updateGoogleAdwordsData($fetchedProfile['id'], $adwordProj);
@@ -608,7 +609,7 @@ class Social extends MY_Controller {
 				$locRef = $pageLoc;
 				$pageLoc = explode("/", $pageLoc);
 				$pageLocPrep[ $pageLoc[ 0 ].'/'.$pageLoc[ 1 ] ][] = $locRef;
-			}			
+			}
 			$opt = array();
 			$opt['prod'] = 'mbusiness';
 			$opt['profId'] = $profId;
@@ -620,7 +621,7 @@ class Social extends MY_Controller {
 			$objOAuthService = new Google_Service_Oauth2($client);
 			$authUrl = $client->createAuthUrl();
 			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
-			$months_tstamps = com_lastMonths( 13 );
+			$months_tstamps = com_lastMonths( 13, '', false, true );
 			$gmbData = array();
 			$currTimeStamp = date("Y-m", time());
 			foreach( $months_tstamps as $monthDTime => $monthRef ){
@@ -628,9 +629,9 @@ class Social extends MY_Controller {
 				$stTime = date('Y-m-01\T00:00:00\Z', $monthDTime);
 				$edTime = date('Y-m-t\T23:59:59\Z', $monthDTime);
 				if( $monthYearDate == $currTimeStamp ){
-					$edTime = date('Y-m-d\Th:i:s\Z', $monthDTime);
+					$edTime = date('Y-m-d\Th:i:s\Z', time());
 				}
-				foreach ($pageLocPrep as $pageRef => $pageLocRef) {
+				foreach ($pageLocPrep as $pageRef => $pageLocRef) {					
 					$trange = new Google_Service_MyBusiness_TimeRange();
 					$trange->setStartTime($stTime);
 					$trange->setEndTime($edTime);
@@ -682,6 +683,170 @@ class Social extends MY_Controller {
 				$web_urls_data[ $siteKey ][ 'url_profile_id' ] = $profId;
 			}
 			$this->SocialModel->addUserGoogleMasterSites( $web_urls_data );
+		}
+	}
+
+	public function link_trello($profId) {		
+		$this->load->model('AccountModel');
+		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		if ($fetchedProfile && !$fetchedProfile['linked_trello_board_id']) {
+			$this->form_validation->set_rules( 'board', 'Boards', 'required' );
+			if( $this->form_validation->run() == false ){
+				// $this->breadcrumb->addElement( 'Google Analytics', 'report/ganalyticreport' );
+				$boards = $this->SocialappModel->getTrelloBoards($profId);
+				// $this->breadcrumb->addElement('Trello Boards', 'report/tboardreport/' . $prof_id);
+				$inner = array();
+				$shell = array();
+				$log_user_id = com_user_data('id');
+				$boards = com_makelist($boards, 'board_id', 'board_name', 1);			
+				$inner['boards'] = $boards;
+				$inner['profDet'] = $fetchedProfile;
+				$shell['page_title'] = 'Link Trello Boards';
+				$shell['content'] = $this->load->view('link_tboard', $inner, true);
+				$shell['footer_js'] = $this->load->view('link_tboard_js', $inner, true);
+				$this->load->view(TMP_DEFAULT, $shell);
+			} else {
+				$board = $this->input->post( 'board' );
+				$data = array();
+				$data[ 'linked_trello_board_id' ] = $board;
+				$this->SocialappModel->updateAdminAccount( $profId, $data);
+				redirect("/");
+				exit;
+			}
+		} else {
+			redirect("/");
+			exit;
+		}
+	}
+
+	public function link_webmaster($prof_id) {
+		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
+		if (!$prodDet) {
+			redirect('accounts/list');
+			exit;
+		}
+		// $this->breadcrumb->addElement('Google Webmaster', 'report/link_webmaster/' . $prof_id);
+		$this->form_validation->set_rules('webmaster_sites', 'Webmaster Site', 'required');
+		if ($this->form_validation->run() == false) {
+			$inner = array();
+			$shell = array();
+			$profile_id = $prodDet['id'];
+			$inner['profDet'] = $prodDet;
+			$inner['webmaster_sites'] = com_makelist($this->ReportModel->getAccountWebmasterProfiles($profile_id),
+				'site_url', 'site_url', false);
+			$shell['page_title'] = 'Google Search Console';
+			$shell['content'] = $this->load->view('link_gwmaster', $inner, true);
+			$shell['footer_js'] = $this->load->view('link_gwmaster_js', $inner, true);
+			$this->load->view(TMP_DEFAULT, $shell);
+		} else {
+			$webmaster_site = $this->input->post('webmaster_sites');
+			$data = array();
+			$data['linked_webmaster_site'] = $webmaster_site;
+			$this->ReportModel->updateProfileAnalytic($prof_id, $data);
+			$opt = array();
+			$opt['prod'] = 'webmaster';
+			$opt['profId'] = $prodDet['id'];
+			$opt['log_user_id'] = com_user_data('id');
+			$opt['refresh_token'] = $prodDet['gsc_refresh_token'];
+			$opt['access_token'] = $prodDet['gsc_access_token'];
+			$client_token = $this->loaddata->updateGoogleTokens(true, $opt);
+			$client = $client_token['client'];
+			$webMaster = new Google_Service_Webmasters($client);
+			$prodDet = $this->AccountModel->getProfileDetail($prof_id);
+
+			$flds = array('month_ref' => '', 'queries' => '', 'pages' => '', 'report_type' => '',
+				'clicks' => '', 'ctr' => '', 'impressions' => '', 'server_error' => '', 'url_profile_id' => '',
+				'soft_404' => '', 'not_found' => '', 'other' => '', 'total_pages' => '', 'total_links' => '',
+			);
+			// webmasters.urlcrawlerrorscounts.query
+
+			$wmKpi = $flds;
+			$wmKpi['report_type'] = 'kpi';
+			$wmKpi['url_profile_id'] = $prof_id;
+			$kpiStack = array();
+			$kpiStack['other'] = 'other';
+			$kpiStack['soft404'] = 'soft_404';
+			$kpiStack['notFound'] = 'not_found';
+			$kpiStack['serverError'] = 'server_error';
+			foreach ($kpiStack as $kKey => $kVal) {
+				$opts = array();
+				$opts['platform'] = 'web';
+				$opts['category'] = $kKey;
+				$webResult = $webMaster->urlcrawlerrorscounts->query($webmaster_site, $opts);
+				if ($webResult && isset($webResult->countPerTypes)) {
+					if (isset($webResult->countPerTypes[0])) {
+						$typeDet = $webResult->countPerTypes[0];
+						if ($typeDet->entries && isset($typeDet->entries[0])) {
+							$wmKpi[$kVal] = $typeDet->entries[0]->count;
+						}
+					}
+				}
+			}
+			$sday_month = date('Y-m-01', time());
+			$lday_month = date('Y-m-t', time());
+			// webmasters.searchanalytics.query
+			$queries = $pages = array();
+			$kTopFilter = array('query' => array('limit' => 50, 'fld' => 'queries'),
+				'page' => array('limit' => 20, 'fld' => 'pages'));
+			foreach ($kTopFilter as $Kfilter => $filterDet) {
+				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+				// responseAggregationType,rows
+				$reqObj->setRowLimit($filterDet['limit']);
+				$reqObj->setDimensions(array($Kfilter));
+				$reqObj->setEndDate($lday_month);
+				$reqObj->setStartDate($sday_month);
+				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
+				if ($webResult && $webResult->rows) {
+					foreach ($webResult->rows as $rKey => $rData) {
+						${$filterDet['fld']}[$rKey] = $flds;
+						$keyRef = implode(",", $rData->keys);
+						${$filterDet['fld']}[$rKey]['report_type'] = $Kfilter;
+						${$filterDet['fld']}[$rKey]['url_profile_id'] = $prof_id;
+						${$filterDet['fld']}[$rKey][$filterDet['fld']] = $keyRef;
+						${$filterDet['fld']}[$rKey]['clicks'] = $rData->clicks;
+						${$filterDet['fld']}[$rKey]['ctr'] = $rData->ctr;
+						${$filterDet['fld']}[$rKey]['impressions'] = $rData->impressions;
+					}
+				}
+			}
+			$months_tstamps = com_lastMonths(13);
+			$web_month_data = array();
+			foreach ($months_tstamps as $mtstamp => $mDate) {
+				$month_ref = date('Y-m-t', $mtstamp);
+				$lday_month = date('Y-m-t', $mtstamp);
+				$sday_month = date('Y-m-01', $mtstamp);
+				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+				$reqObj->setEndDate($lday_month);
+				$reqObj->setStartDate($sday_month);
+				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
+				if ($webResult && $webResult->rows) {
+					foreach ($webResult->rows as $rKey => $rData) {
+						$web_month_data[$month_ref] = $flds;
+						$web_month_data[$month_ref]['month_ref'] = $month_ref;
+						$web_month_data[$month_ref]['report_type'] = 'month';
+						$web_month_data[$month_ref]['url_profile_id'] = $prof_id;
+						$web_month_data[$month_ref]['clicks'] = $rData->clicks;
+						$web_month_data[$month_ref]['ctr'] = $rData->ctr;
+						$web_month_data[$month_ref]['impressions'] = $rData->impressions;
+					}
+				}
+			}
+			$where = array();
+			$where['report_type'] = 'kpi';
+			$where['url_profile_id'] = $prof_id;
+			$this->ReportModel->updateWebmasterData($wmKpi, $where);
+			$where['report_type'] = 'query';
+			$where['url_profile_id'] = $prof_id;
+			$this->ReportModel->updateWebmasterData($queries, $where, false);
+			$where['report_type'] = 'page';
+			$where['url_profile_id'] = $prof_id;
+			$this->ReportModel->updateWebmasterData($pages, $where, false);
+			$where['report_type'] = 'month';
+			$where['url_profile_id'] = $prof_id;
+			$this->ReportModel->updateWebmasterData($web_month_data, $where, false);
+
+			redirect('dashboard');
+			exit;
 		}
 	}
 }

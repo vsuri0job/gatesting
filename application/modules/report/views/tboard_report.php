@@ -2,41 +2,39 @@
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
-                <h4 class="m-b-0 text-white">View Board Card</h4>
+                <h4 class="m-b-0 text-white">Board <small><?= $board[ 'board_name' ] ?></small></h4>
             </div>
             <div class="card-body">
-                <form name="searchBoard" id="searchBoard" action="#">
-                    <input type="hidden" name="profId" value="<?= $prodDet[ 'id' ]; ?>">
-                    <div class="form-body">
-                        <h3 class="card-title">View Cards</h3>
-                        <hr>
-                        <div class="row p-t-20">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="control-label">Boards</label>
-                                    <select name="board" id="board" class="form-control">
-                                        <?php
-                                            $liHtml = '';
-                                            foreach( $boards as $board_id => $board_name ){
-                                                $liHtml .= '<option value="'.$board_id.'">'.$board_name.'</option>';
-                                            }
-                                            echo $liHtml;
-                                        ?>
-                                    </select>
+                <div class="col-lg-12" id="cardResult">
+                    <div class="row">
+                        <!-- Column -->
+                        <?php        
+                            if( isset( $cards ) && $cards  ){
+                                foreach( $cards as $cIndex => $card ){
+                        ?>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body" style="background-color: <? $cardsColor[ $cIndex ]; ?>">
+                                    <h3 class="font-normal"><?= $card->name ?></h3>
+                                    <p class="m-b-0 m-t-10"><?= $card->url ?></p>
+                                    <p class="m-b-0 m-t-10">Closed <?= ($card->closed ? 'Yes' : 'No'); ?></p>
+                                    <p class="m-b-0 m-t-10"><?= $card->desc ?></p>
                                 </div>
                             </div>
                         </div>
-                        <!--/row-->
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-info"> <i class="fa fa-check"></i>Fetch Cards</button>
-                    </div>
-                </form>
+                        <?php
+                                }
+                            } else {
+                        ?>
+                        <div class="col-lg-12">
+                            No record found!     
+                        </div>
+                        <?php
+                            }
+                        ?>
+                    </div>     
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12" id="cardResult">
     </div>
 </div>

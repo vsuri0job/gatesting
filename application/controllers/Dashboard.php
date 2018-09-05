@@ -5,7 +5,7 @@ class Dashboard extends MY_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->isLogin();
+		$this->isLogin();		
 	}
 
 	public function validate_email($str, $id) {
@@ -26,7 +26,7 @@ class Dashboard extends MY_Controller {
 		return TRUE;
 	}
 
-	public function index() {
+	public function index() {		
 		$inner = array();
 		$shell = array();
 		$shell['page_title'] = 'Dashboard';
@@ -71,9 +71,6 @@ class Dashboard extends MY_Controller {
 			// gadword
 			$socialTabActive = $this->input->get('sac');
 		}
-		$inner['socialTabActive'] = $socialTabActive;
-		$inner['linked_adword_account'] = "";
-		$inner['adwords_accounts'] = "";
 		$shell['page_title'] = 'Profile';
 		$shell['content'] = $this->load->view('dashboard/profile', $inner, true);
 		$shell['footer_js'] = $this->load->view('dashboard/profile_js', $inner, true);

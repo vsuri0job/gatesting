@@ -18,6 +18,12 @@ $attr['title'] = $attr['alt'] = 'Admin';
 $adminIcon = img(base_url('img/social/admin-on.png'), false, $attr);
 $attr['title'] = $attr['alt'] = 'Google Search Console';
 $webMIcon = img(base_url('img/social/search-console-on.png'), false, $attr);
+$icon = array();
+$icon['width'] = '19px';
+$icon['height'] = '19px';
+$icon['class'] = 'm-l-5';
+$profIcon = anchor( base_url('accounts/editProfileUrl/' . $account['id']), 
+	'<i class="mdi mdi-settings"></i>', $icon );
 
 if (!$account['analytic_refresh_token'] || $account['analytic_reset_token']) {
 	$aattr = array();
@@ -69,7 +75,9 @@ if (!$account['linked_account_id']) {
 	$adminIcon = anchor(base_url('social/link_account_admin/' . $account['id']),
 		img(base_url('img/social/admin-off.png'), false, $attr), $aattr);
 }
-$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon . $adminIcon;
+
+$profHtml = '';
+$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon . $adminIcon. $profIcon;
 $rHtml = $viewAll = $seoHtml = $ppcHtml = $localHtml = $ccHtml = $trHtml = $webMHtml = 'N/A';
 // $services = explode(',', $account[ 'services' ]);
 // $services = array_unique($services);
@@ -110,10 +118,14 @@ if ($account['adword_customer_id']) {
 	}
 }
 
-if ($account['trello_access_token']) {
-	$hasReports = true;
-	$trHtml = '<a href="' . base_url('report/tboardreport/' . $account['id']) . '"
-                    class="btn btn-info m-t-10">View</a>';
+if ($account['trello_access_token']) {	
+	$trHtml = '<a href="' . base_url('social/link_trello/' . $account['id']) . '"
+                    class="btn btn-primary m-t-10">Link</a>';	
+	if ($account['linked_trello_board_id']) {
+		$hasReports = true;
+		$trHtml = '<a href="' . base_url('report/tboardreport/' . $account['id']) . '"
+	                    class="btn btn-info m-t-10">View</a>';
+	}
 }
 
 if ($account['rankinity_access_token']) {
@@ -155,10 +167,10 @@ if ($account['gmb_reset_token'] || $account['analytic_reset_token'] || $account[
 }
 
 if ($account['gsc_refresh_token']) {
-	$webMHtml = '<a href="' . base_url('report/link_webmaster/' . $account['id']) . '"
+	$webMHtml = '<a href="' . base_url('social/link_webmaster/' . $account['id']) . '"
 	                class="btn btn-primary m-t-10">Link</a>';
 	if ($account['gsc_reset_token']) {
-		$webMHtml = '<a href="' . base_url('report/link_webmaster/' . $account['id']) . '"
+		$webMHtml = '<a href="' . base_url('social/link_webmaster/' . $account['id']) . '"
 		                class="btn btn-primary disabled m-t-10" aria-disabled="true"  >Link</a>';
 	}
 }

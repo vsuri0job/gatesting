@@ -22,11 +22,15 @@ foreach( $firMonthData as $key => $val ){
         }
     }
 }
+$firMonthData[ 'users' ] = number_format($firMonthData[ 'users' ], 2);
+$firMonthData[ 'sessions' ] = number_format($firMonthData[ 'sessions' ], 2);
 $firMonthData[ 'bounce_rate' ] = number_format($firMonthData[ 'bounce_rate' ], 2).'%';
 $firMonthData[ 'goal_conversion_rate' ] = number_format($firMonthData[ 'goal_conversion_rate' ], 2).'%';
 $firMonthData[ 'avg_session_duration' ] = gmdate("H:i:s", $firMonthData[ 'avg_session_duration' ]);
 $firMonthData[ 'page_view_per_sessions' ] = number_format($firMonthData[ 'page_view_per_sessions' ], 2);
 $firMonthData[ 'avg_page_download_time' ] = number_format($firMonthData[ 'avg_page_download_time' ], 2);
+$firMonthData[ 'goal_completion_all' ] = number_format($firMonthData[ 'goal_completion_all' ], 2);
+
 $kpis = array();
 $kpis[ 'users' ] = array('text' => 'Users', 'skip_icon' => false );
 $kpis[ 'sessions' ] = array('text' => 'Sessions', 'skip_icon' => false );

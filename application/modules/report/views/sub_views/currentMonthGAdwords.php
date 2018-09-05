@@ -35,6 +35,8 @@ if( $firMonthData[ 'avg_cpc' ] ){
 if( $firMonthData[ 'cost_per_conversion' ] ){
     $firMonthData[ 'cost_per_conversion' ] = '$'.number_format( $firMonthData[ 'cost_per_conversion' ] / 1000000, 2);
 }
+$firMonthData[ 'clicks' ] = number_format( $firMonthData[ 'clicks' ], 2);
+$firMonthData[ 'impressions' ] = number_format( $firMonthData[ 'impressions' ], 2);
 $kpis = array();
 $kpis[ 'clicks' ] = array('text' => 'Clicks', 'skip_icon' => false );
 $kpis[ 'impressions' ] = array('text' => 'Impressions', 'skip_icon' => false );

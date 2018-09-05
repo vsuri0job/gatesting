@@ -27,6 +27,14 @@
                         <span class="hide-menu">Accounts</span>
                     </a>
                 </li>
+                <?php if( com_user_data('is_super_admin') ) { ?>
+                <li class="">
+                    <a class="" href="<?=base_url( 'agencies' )?>" aria-expanded="false">
+                        <i class="mdi mdi-account-network"></i>
+                        <span class="hide-menu">Agencies</span>
+                    </a>
+                </li>
+                <?php } ?>
             </ul>
         </nav>
         <!-- End Sidebar navigation -->

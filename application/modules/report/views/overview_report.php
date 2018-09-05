@@ -26,15 +26,20 @@ $gmb_price = com_arrIndex($servicePrices, 'Local SEO', 0);
 list($firMonthDate) = com_lastMonths(1, "", 1, 1);
 $firMonthData = date('Y-m', strtotime($firMonthDate));
 $cost = $seo_price + $ppc_price + $gmb_price;
-$lm_ga_data = $ga_data[$firMonthData];
+$lm_gan_data = $ga_data[$firMonthData];
 $lm_gmb_data = $gmb_data[$firMonthData];
 $lm_gad_data = $gad_data[$firMonthData];
 
+$avg_sale = $prodDet['avg_sale_amount'];
 $ltv_amount = $prodDet['ltv_amount'];
 $closing_rate = $prodDet['close_rate'];
-$avg_sale = $prodDet['avg_sale_amount'];
-$lm_ttl_clicks = $lm_gmb_data["clicks"];
-$lm_ttl_leads = $lm_gmb_data["calls"] + $lm_ga_data["conversion"] + $lm_gad_data["goal_completion_all"];
+$lm_ttl_clicks = com_arrIndex( $lm_gmb_data, "clicks", 0);
+$lm_gmb_leads = com_arrIndex( $lm_gmb_data, "calls", 0);
+$lm_ga_leads = com_arrIndex( $lm_gad_data, "conversion", 0);
+$lm_gad_leads = com_arrIndex( $lm_gan_data, "goal_completion_all", 0);
+$lm_ttl_leads = $lm_gmb_leads + $lm_ga_leads + $lm_gad_leads;
+
+
 $lm_ttl_closed_leads = ($lm_ttl_leads * $prodDet['close_rate']) / 100;
 $lm_avg_sale_revenue = $lm_ttl_closed_leads * $prodDet['avg_sale_amount'];
 $lm_ttl_ltv = $lm_avg_sale_revenue * $ltv_amount;
@@ -43,13 +48,14 @@ if ($lm_ttl_ltv && $cost) {
 	$lm_ttl_roas = $lm_ttl_ltv / $cost;
 }
 
-$seo_closed_leads = ($lm_ga_data["conversion"] * $prodDet['close_rate']) / 100;
-$ppc_closed_leads = ($lm_gad_data["goal_completion_all"] * $prodDet['close_rate']) / 100;
+$ppc_closed_leads = ($lm_gad_data["conversion"] * $prodDet['close_rate']) / 100;
+$seo_closed_leads = ($lm_gan_data["goal_completion_all"] * $prodDet['close_rate']) / 100;
 $gmb_closed_leads = ($lm_gmb_data["calls"] * $prodDet['close_rate']) / 100;
 
 $seo_avg_sale_revenue = $seo_closed_leads * $prodDet['avg_sale_amount'];
 $ppc_avg_sale_revenue = $ppc_closed_leads * $prodDet['avg_sale_amount'];
-$ppc_avg_sale_revenue = $gmb_closed_leads * $prodDet['avg_sale_amount'];
+$gmb_avg_sale_revenue = $gmb_closed_leads * $prodDet['avg_sale_amount'];
+
 
 $seo_ltv = $seo_avg_sale_revenue * $ltv_amount;
 $ppc_ltv = $ppc_avg_sale_revenue * $ltv_amount;
@@ -57,15 +63,16 @@ $gmb_ltv = $gmb_avg_sale_revenue * $ltv_amount;
 
 $seo_price = floatval($seo_price);
 if ($seo_price) {
-	$roas_seo = $ltv_seo / $seo_price;
+	$seo_roas = $seo_ltv / $seo_price;
 }
+
 $ppc_price = floatval($ppc_price);
 if ($ppc_price) {
-	$roas_seo = $ltv_seo / $ppc_price;
+	$ppc_roas = $ppc_ltv / $ppc_price;
 }
 $gmb_price = floatval($gmb_price);
 if ($gmb_price) {
-	$roas_gmb = $ltv_gmb / $gmb_price;
+	$gmb_roas = $gmb_ltv / $gmb_price;
 }
 ?>
 <!-- Row -->
@@ -93,7 +100,7 @@ if ($gmb_price) {
                     <td><?=number_format($lm_ttl_clicks);?></td>
                     <td><?=number_format($lm_ttl_leads);?></td>
                     <td><?=number_format($closing_rate);?>%</td>
-                    <td><?=number_format($lm_ttl_closed_leads);?></td>
+                    <td><?=number_format($lm_ttl_closed_leads, 2);?></td>
                     <td>$<?=number_format($avg_sale);?></td>
                     <td>$<?=number_format($lm_avg_sale_revenue);?></td>
                     <td>$<?=number_format($ltv_amount);?></td>
@@ -143,9 +150,9 @@ if ($gmb_price) {
             <tbody>
                 <tr>
                     <td>SEO</td>
-                    <td>$<?=number_format($seo_cost);?></td>
+                    <td>$<?=number_format($seo_price);?></td>
                     <td><?=number_format($lm_ttl_clicks);?></td>
-                    <td><?=number_format($lm_ga_data["conversion"]);?></td>
+                    <td><?=number_format($lm_gan_data["goal_completion_all"]);?></td>
                     <td><?=number_format($closing_rate);?>%</td>
                     <td><?=number_format($seo_closed_leads);?></td>
                     <td>$<?=number_format($avg_sale);?></td>
@@ -156,9 +163,9 @@ if ($gmb_price) {
                 </tr>
                 <tr>
                     <td>PPC</td>
-                    <td>$<?=number_format($ppc_cost);?></td>
-                    <td><?=number_format($lm_ttl_clicks);?></td>
-                    <td><?=number_format($lm_gad_data["goal_completion_all"]);?></td>
+                    <td>$<?=number_format($ppc_price);?></td>
+                    <td><?=number_format($lm_ttl_clicks);?></td>                    
+                    <td><?=number_format($lm_gad_data["conversion"]);?></td>
                     <td><?=number_format($closing_rate);?>%</td>
                     <td><?=number_format($ppc_closed_leads);?></td>
                     <td>$<?=number_format($avg_sale);?></td>
@@ -169,7 +176,7 @@ if ($gmb_price) {
                 </tr>
                 <tr>
                     <td>GMB</td>
-                    <td>$<?=number_format($gmb_cost);?></td>
+                    <td>$<?=number_format($gmb_price);?></td>
                     <td><?=number_format($lm_ttl_clicks);?></td>
                     <td><?=number_format($lm_gmb_data["calls"]);?></td>
                     <td><?=number_format($closing_rate);?>%</td>
@@ -225,12 +232,17 @@ if ($gmb_price) {
 foreach ($monthStamp as $timeStamp => $monthDate) {
 		$month_txt = date("F Y", $timeStamp);
 		$month_ref = date("Y-m", $timeStamp);
+        
 		$tm_ga_data = $ga_data[$month_ref];
 		$tm_gmb_data = $gmb_data[$month_ref];
 		$tm_gad_data = $gad_data[$month_ref];
+        
 		$tm_ttl_clicks = com_arrIndex($tm_gmb_data, "clicks", 0);
-		$tm_ttl_leads = com_arrIndex($tm_gmb_data, "calls", 0) + com_arrIndex($tm_ga_data, "conversion", 0) + com_arrIndex($tm_gad_data, "goal_completion_all", 0);
-		$tm_ttl_closed_leads = ($tm_ttl_leads * $prodDet['close_rate']) / 100;
+		$tm_ttl_leads = com_arrIndex($tm_gmb_data, "calls", 0) + 
+                        com_arrIndex($tm_gad_data, "conversion", 0) + 
+                        com_arrIndex($tm_ga_data, "goal_completion_all", 0);
+        
+		$tm_ttl_closed_leads = ($tm_ttl_leads * $prodDet['close_rate']) / 100;        
 		$tm_avg_sale_revenue = $tm_ttl_closed_leads * $prodDet['avg_sale_amount'];
 		$tm_ttl_ltv = $tm_avg_sale_revenue * $ltv_amount;
 		$tm_ttl_roas = 0;
@@ -244,12 +256,12 @@ foreach ($monthStamp as $timeStamp => $monthDate) {
                     <td><?=number_format($tm_ttl_clicks);?></td>
                     <td><?=number_format($tm_ttl_leads);?></td>
                     <td><?=number_format($closing_rate);?>%</td>
-                    <td><?=number_format($tm_ttl_closed_leads);?></td>
+                    <td><?=number_format($tm_ttl_closed_leads, 2);?></td>
                     <td>$<?=number_format($avg_sale);?></td>
-                    <td>$<?=number_format($tm_avg_sale_revenue);?></td>
-                    <td>$<?=number_format($ltv_amount);?></td>
-                    <td>$<?=number_format($tm_ttl_ltv);?></td>
-                    <td>$<?=number_format($tm_ttl_roas);?></td>
+                    <td>$<?=number_format($tm_avg_sale_revenue, 2);?></td>
+                    <td>$<?=number_format($ltv_amount, 2);?></td>
+                    <td>$<?=number_format($tm_ttl_ltv, 2);?></td>
+                    <td>$<?=number_format($tm_ttl_roas, 2);?></td>
                 </tr>
 <?php }?>
             </tbody>

@@ -4,29 +4,27 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h4 class="m-b-0 text-white">Link Adwords</h4>
+                        <h4 class="m-b-0 text-white">Link <?= $profDet[ 'account_url' ]; ?></h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
-                        <a href="<?= base_url( 'social/resetAdwordList' ) ?>" class="btn pull-right btn-outline-primary">Update Adwords Projects</a>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <form action="<?= base_url( 'social/updateAccountAdwords' ) ?>" class="form-horizontal" 
+                <form action="<?= base_url( 'social/link_webmaster/'.$profDet[ 'id' ] ) ?>" class="form-horizontal" 
                     id="getGoogleData" method="POST">
-                    <input type="hidden" name="fetched_profile" value="<?= $profile[ 'id' ]; ?>">
+                    <input type="hidden" name="fetched_profile" value="<?= $profDet[ 'id' ]; ?>">
                     <div class="form-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group row">
-                                    <label class="control-label text-right col-md-2">Adwords Projects</label>
-                                    <div class="col-md-10">
-                                        <select name="adwordProject" id="adwordProject" class="form-control" required>
-                                            <option>Select</option>
-                                            <?php                                                
-                                                echo $projects;
+                                    <label class="control-label text-right col-md-2">Site Url</label>
+                                    <div class="col-md-10">                                        
+                                            <?php
+                                                echo form_dropdown( 'webmaster_sites', $webmaster_sites, [], 
+                                                    ' id="webmaster_sites" class="form-control" 
+                                                        required data-placeholder="Choose" ' );
                                             ?>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -38,7 +36,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn btn-success" id="update_adwords">Update Account</button>
+                                        <button type="submit" class="btn btn-success">Update Account</button>
                                     </div>
                                 </div>
                             </div>

@@ -137,6 +137,27 @@ class Report extends MY_Controller {
 		$opt['offset'] = 0;
 		$opt['limit'] = 15;
 		$inner['ga_data_landing_page'] = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);
+		$whereStack = array();
+		$whereStack['view_id'] = $viewId;
+		$whereStack['month_ref'] = $month_ref;
+		$whereStack['url_profile_id'] = $prof_id;
+		$whereStack['report_type'] = 'session_graph';
+		$whereStack['account_id'] = $log_user_id;		
+		$opt = array();
+		$opt['row_only'] = 1;
+		$graph_data = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);		
+		$graph_data = json_decode( $graph_data[ 'session_data' ] );				
+		$chart_graph = array();
+		if( $graph_data ){
+			foreach ($graph_data as $key => $value) {
+				$year = substr($value[0], 0, 4);
+				$month = substr($value[0], 4, 2);
+				$day = substr($value[0], 6, 2);
+				$chart_graph[ $key ][ 'date' ] = date('d-M-y', strtotime($year.'-'.$month.'-'.$day));
+				$chart_graph[ $key ][ 'sess' ] = $value[1];
+			}
+		}		
+	 	$inner['chart_graph'] = $chart_graph;
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
 		$inner['prodDet'] = $prodDet;
@@ -229,137 +250,6 @@ class Report extends MY_Controller {
 			$temp = TMP_PREPORT;
 		}
 		$this->load->view($temp, $shell);
-	}
-
-	public function link_webmaster($prof_id) {
-		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
-		if (!$prodDet) {
-			redirect('accounts/list');
-			exit;
-		}
-		$this->breadcrumb->addElement('Google Webmaster', 'report/link_webmaster/' . $prof_id);
-		$this->form_validation->set_rules('webmaster_sites', 'Webmaster Site', 'required');
-		if ($this->form_validation->run() == false) {
-			$inner = array();
-			$shell = array();
-			$profile_id = $prodDet['id'];
-			$inner['profDet'] = $prodDet;
-			$inner['webmaster_sites'] = com_makelist($this->ReportModel->getAccountWebmasterProfiles($profile_id),
-				'site_url', 'site_url', false);
-			$shell['page_title'] = 'Google Analytic';
-			$shell['content'] = $this->load->view('gwmaster_report', $inner, true);
-			$shell['footer_js'] = $this->load->view('gwmaster_report_js', $inner, true);
-			$this->load->view(TMP_DEFAULT, $shell);
-		} else {
-			$webmaster_site = $this->input->post('webmaster_sites');
-			$data = array();
-			$data['linked_webmaster_site'] = $webmaster_site;
-			$this->ReportModel->updateProfileAnalytic($prof_id, $data);
-			$opt = array();
-			$opt['prod'] = 'webmaster';
-			$opt['profId'] = $prodDet['id'];
-			$opt['log_user_id'] = com_user_data('id');
-			$opt['refresh_token'] = $prodDet['gsc_refresh_token'];
-			$opt['access_token'] = $prodDet['gsc_access_token'];
-			$client_token = $this->loaddata->updateGoogleTokens(true, $opt);
-			$client = $client_token['client'];
-			$webMaster = new Google_Service_Webmasters($client);
-			$prodDet = $this->AccountModel->getProfileDetail($prof_id);
-
-			$flds = array('month_ref' => '', 'queries' => '', 'pages' => '', 'report_type' => '',
-				'clicks' => '', 'ctr' => '', 'impressions' => '', 'server_error' => '', 'url_profile_id' => '',
-				'soft_404' => '', 'not_found' => '', 'other' => '', 'total_pages' => '', 'total_links' => '',
-			);
-			// webmasters.urlcrawlerrorscounts.query
-
-			$wmKpi = $flds;
-			$wmKpi['report_type'] = 'kpi';
-			$wmKpi['url_profile_id'] = $prof_id;
-			$kpiStack = array();
-			$kpiStack['other'] = 'other';
-			$kpiStack['soft404'] = 'soft_404';
-			$kpiStack['notFound'] = 'not_found';
-			$kpiStack['serverError'] = 'server_error';
-			foreach ($kpiStack as $kKey => $kVal) {
-				$opts = array();
-				$opts['platform'] = 'web';
-				$opts['category'] = $kKey;
-				$webResult = $webMaster->urlcrawlerrorscounts->query($webmaster_site, $opts);
-				if ($webResult && isset($webResult->countPerTypes)) {
-					if (isset($webResult->countPerTypes[0])) {
-						$typeDet = $webResult->countPerTypes[0];
-						if ($typeDet->entries && isset($typeDet->entries[0])) {
-							$wmKpi[$kVal] = $typeDet->entries[0]->count;
-						}
-					}
-				}
-			}
-			$sday_month = date('Y-m-01', time());
-			$lday_month = date('Y-m-t', time());
-			// webmasters.searchanalytics.query
-			$queries = $pages = array();
-			$kTopFilter = array('query' => array('limit' => 50, 'fld' => 'queries'),
-				'page' => array('limit' => 20, 'fld' => 'pages'));
-			foreach ($kTopFilter as $Kfilter => $filterDet) {
-				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
-				// responseAggregationType,rows
-				$reqObj->setRowLimit($filterDet['limit']);
-				$reqObj->setDimensions(array($Kfilter));
-				$reqObj->setEndDate($lday_month);
-				$reqObj->setStartDate($sday_month);
-				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
-				if ($webResult && $webResult->rows) {
-					foreach ($webResult->rows as $rKey => $rData) {
-						${$filterDet['fld']}[$rKey] = $flds;
-						$keyRef = implode(",", $rData->keys);
-						${$filterDet['fld']}[$rKey]['report_type'] = $Kfilter;
-						${$filterDet['fld']}[$rKey]['url_profile_id'] = $prof_id;
-						${$filterDet['fld']}[$rKey][$filterDet['fld']] = $keyRef;
-						${$filterDet['fld']}[$rKey]['clicks'] = $rData->clicks;
-						${$filterDet['fld']}[$rKey]['ctr'] = $rData->ctr;
-						${$filterDet['fld']}[$rKey]['impressions'] = $rData->impressions;
-					}
-				}
-			}
-			$months_tstamps = com_lastMonths(13);
-			$web_month_data = array();
-			foreach ($months_tstamps as $mtstamp => $mDate) {
-				$month_ref = date('Y-m-t', $mtstamp);
-				$lday_month = date('Y-m-t', $mtstamp);
-				$sday_month = date('Y-m-01', $mtstamp);
-				$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
-				$reqObj->setEndDate($lday_month);
-				$reqObj->setStartDate($sday_month);
-				$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
-				if ($webResult && $webResult->rows) {
-					foreach ($webResult->rows as $rKey => $rData) {
-						$web_month_data[$month_ref] = $flds;
-						$web_month_data[$month_ref]['month_ref'] = $month_ref;
-						$web_month_data[$month_ref]['report_type'] = 'month';
-						$web_month_data[$month_ref]['url_profile_id'] = $prof_id;
-						$web_month_data[$month_ref]['clicks'] = $rData->clicks;
-						$web_month_data[$month_ref]['ctr'] = $rData->ctr;
-						$web_month_data[$month_ref]['impressions'] = $rData->impressions;
-					}
-				}
-			}
-			$where = array();
-			$where['report_type'] = 'kpi';
-			$where['url_profile_id'] = $prof_id;
-			$this->ReportModel->updateWebmasterData($wmKpi, $where);
-			$where['report_type'] = 'query';
-			$where['url_profile_id'] = $prof_id;
-			$this->ReportModel->updateWebmasterData($queries, $where, false);
-			$where['report_type'] = 'page';
-			$where['url_profile_id'] = $prof_id;
-			$this->ReportModel->updateWebmasterData($pages, $where, false);
-			$where['report_type'] = 'month';
-			$where['url_profile_id'] = $prof_id;
-			$this->ReportModel->updateWebmasterData($web_month_data, $where, false);
-
-			redirect('dashboard');
-			exit;
-		}
 	}
 
 	public function getViewData() {
@@ -460,10 +350,52 @@ class Report extends MY_Controller {
 		$out = array();
 		$out['ga_data'] = $ga_data;
 		$out['ga_data_organic'] = $ga_data_organic;
+		$out['ga_data_graph_data'] = $this->fetchViewGraphData($analytics, $viewId, $profId);
 		$out['ga_data_medium'] = $this->fetchMediumPerformance($analytics, $viewId, $profId);
 		$out['ga_data_source_medium'] = $this->fetchSourMediumPerformance($analytics, $viewId, $profId);
 		$out['ga_data_landing_page'] = $this->fetchLandingPagePerformance($analytics, $viewId, $profId);
 		return $out;
+	}
+
+	private function fetchViewGraphData($analytics, $viewId, $profId){
+		$logUserId = com_user_data('id');
+		$sday_month = date('Y-m-01', strtotime('-30 days'));
+		$lday_month = date('Y-m-d', time());
+		$month_ref = date('Y-m', time());
+		$opt = array();
+		$opt['dimensions'] = 'ga:date';
+		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+			$sday_month, $lday_month,'ga:sessions', $opt);		
+		$detailData = array();
+		$rIndex = 0;		
+		$detailData[$rIndex]['view_id'] = $viewId;
+		$detailData[$rIndex]['report_type'] = 'session_graph';
+		$detailData[$rIndex]['month_ref'] = $month_ref;
+		$detailData[$rIndex]['account_id'] = $logUserId;
+		$detailData[$rIndex]['url_profile_id'] = $profId;
+		$detailData[$rIndex]['medium'] = '';
+		$detailData[$rIndex]['source_medium'] = '';
+		$detailData[$rIndex]['landing_page'] = '';
+		$detailData[$rIndex]['sessions'] = "";
+		$detailData[$rIndex]['users'] = "";
+		$detailData[$rIndex]['new_users'] = "";
+		$detailData[$rIndex]['per_new_sessions'] = "";
+		$detailData[$rIndex]['page_views'] = "";
+		$detailData[$rIndex]['page_view_per_sessions'] = "";
+		$detailData[$rIndex]['avg_session_duration'] = "";
+		$detailData[$rIndex]['bounce_rate'] = "";
+		$detailData[$rIndex]['avg_page_download_time'] = "";
+		$detailData[$rIndex]['goal_conversion_rate'] = "";
+		$detailData[$rIndex]['goal_completion_all'] = "";
+		$detailData[$rIndex]['session_data'] = json_encode( $ga_rstdata->rows );
+		$whereStack = array();
+		$whereStack['view_id'] = $viewId;
+		$whereStack['month_ref'] = $month_ref;
+		$whereStack['account_id'] = $logUserId;
+		$whereStack['report_type'] = 'session_graph';
+		$whereStack['url_profile_id'] = $profId;
+		$this->ReportModel->updateGAdataDetail($whereStack, $detailData);
+		return $detailData;
 	}
 
 	private function fetchTotalTraffic($analytics, $month_ref, $viewId, $profId) {
@@ -785,20 +717,31 @@ class Report extends MY_Controller {
 	}
 
 	public function tboardreport($prof_id) {
-		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
-		$trelloToken = com_arrIndex($prodDet, 'trello_access_token', '');
-		if (!$prodDet || !$trelloToken) {
+		$profDet = $this->AccountModel->getProfileDetail($prof_id);
+		$trelloToken = com_arrIndex($profDet, 'trello_access_token', '');
+		$trello_board_id = com_arrIndex($profDet, 'linked_trello_board_id', '');
+		if (!$profDet || !$trelloToken || !$trello_board_id) {
 			redirect('accounts/list');
 			exit;
+		}		
+		$inner = $shell = $cards = array();
+		if ($trelloToken) {
+			$query = http_build_query([
+				'key' => TRELLO_DEV_KEY,
+				'token' => $trelloToken,
+			]);
+			$opt = array();
+			$opt['url'] = "https://api.trello.com/1/boards/" . $trello_board_id . '/cards?' . $query;
+			$cards = $this->curlRequest($opt);
+			$cards = json_decode($cards);
 		}
-		$boards = $this->updateTrelloBoards($trelloToken, $prof_id);
-		$this->breadcrumb->addElement('Trello Boards', 'report/tboardreport/' . $prof_id);
-		$inner = array();
-		$shell = array();
-		$log_user_id = com_user_data('id');
-		$inner['boards'] = $boards;
-		$inner['prodDet'] = $prodDet;
-		$shell['page_title'] = 'Trello Boards';
+		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);
+		$log_user_id = com_user_data('id');	
+		$inner['board'] = $this->ReportModel->getBoardDetail( $trello_board_id );		
+		$inner['cards'] = $cards;
+		$inner['cardsColor'] = RandomColor::many(count($inner['cards']));
+		$inner['profDet'] = $profDet;
+		$shell['page_title'] = 'Trello Cards';
 		$shell['content'] = $this->load->view('tboard_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('tboard_report_js', $inner, true);
 		$this->load->view(TMP_DEFAULT, $shell);
@@ -817,21 +760,7 @@ class Report extends MY_Controller {
 		$prodDet = $this->AccountModel->getProfileDetail($profId);
 		$out = array();
 		$out['cardsHtml'] = "";
-		$trello_token = com_arrIndex($prodDet, 'trello_access_token', '');
-		if ($trello_token) {
-			$query = http_build_query([
-				'key' => TRELLO_DEV_KEY,
-				'token' => $trello_token,
-			]);
-			$opt = array();
-			$opt['url'] = "https://api.trello.com/1/boards/" . $fdata['board'] . '/cards?' . $query;
-			$inner = array();
-			$cards = $this->curlRequest($opt);
-			$inner['cards'] = json_decode($cards);
-			$inner['cardsColor'] = RandomColor::many(count($inner['cards']));
-			$out = array();
-			$out['cardsHtml'] = $this->load->view('sub_views/boardCard', $inner, true);
-		}
+
 		echo json_encode($out);
 		exit;
 	}
@@ -1095,8 +1024,10 @@ class Report extends MY_Controller {
 				exit;
 			}
 		}
+		
+		$linkAccId = $prodDet['linked_account_id'];
 		$linkServUrl = $prodDet['linked_service_url'];
-		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $log_user_id);
+		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $linkAccId);		
 		$inner = array();
 		$shell = array();
 		$inner['prodDet'] = $prodDet;
@@ -1306,9 +1237,33 @@ class Report extends MY_Controller {
 
 		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');
 		$cc_repo['cc_counts'] = $this->ReportModel->getCitationContentCount($linked_account_id);
+		$cc_repo['skip_det_link'] = 1;
+		$inner['citation_content'] = $this->load->view('citation_content', $cc_repo, true);
+		$inner['citation_content_js'] = $this->load->view('citation_content_js', $cc_repo, true);
 
-		$inner['citation_content'] = $this->load->view('citation_content', $inner, true);
-		$inner['citation_content_js'] = $this->load->view('citation_content_js', $inner, true);
+		$trello = array();
+		$trelloToken = com_arrIndex($prodDet, 'trello_access_token', '');
+		$trello_board_id = com_arrIndex($prodDet, 'linked_trello_board_id', '');
+		$trello['board'] = $trello['cards'] = array();
+		if ($trelloToken && $trello_board_id && 1 == 0) {
+			$inner = $shell = $cards = array();
+			if ($trelloToken) {
+				$query = http_build_query([
+					'key' => TRELLO_DEV_KEY,
+					'token' => $trelloToken,
+				]);
+				$opt = array();
+				$opt['url'] = "https://api.trello.com/1/boards/" . $trello_board_id . '/cards?' . $query;
+				$cards = $this->curlRequest($opt);
+				$cards = json_decode($cards);
+			}
+			$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);			
+			$trello['board'] = $this->ReportModel->getBoardDetail( $trello_board_id );		
+			$trello['cards'] = $cards;
+		}
+
+		// $inner['tboard_report'] = $this->load->view('tboard_report', $trello, true);
+		// $inner['tboard_report_js'] = $this->load->view('tboard_report_js', $trello, true);
 
 		$inner['prodDet'] = $prodDet;
 		$shell['content'] = $this->load->view('fullreport_report', $inner, true);
