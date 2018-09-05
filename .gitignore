@@ -8,3 +8,4 @@ application/config/config.php
 application/config/database.php
 otherTemp.txt
 application/custom_libraries/*
+application/logs/*

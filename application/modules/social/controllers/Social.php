@@ -9,7 +9,7 @@ class Social extends MY_Controller {
 		$this->load->library('Loaddata');
 		$this->load->library('Adwords');
 		$this->load->model('SocialModel');
-		$this->load->model('ReportModel');		
+		$this->load->model('ReportModel');
 	}
 
 	public function google($prod, $profId) {
@@ -18,22 +18,22 @@ class Social extends MY_Controller {
 		$ex_state = "";
 		$fldCheck = "";
 		switch ($prod) {
-			case 'adwords':
-				$fldCheck = "adword_";
-			break;
-			
-			case 'analytic':
-				$fldCheck = "analytic_";
+		case 'adwords':
+			$fldCheck = "adword_";
 			break;
 
-			case 'mbusiness':
-				$fldCheck = "gmb_";
+		case 'analytic':
+			$fldCheck = "analytic_";
 			break;
 
-			case 'webmaster':
-				$fldCheck = "gsc_";
+		case 'mbusiness':
+			$fldCheck = "gmb_";
 			break;
-		}		
+
+		case 'webmaster':
+			$fldCheck = "gsc_";
+			break;
+		}
 		if ($fldCheck && $fetchedProfile[$fldCheck . 'reset_token']) {
 			$ex_state .= '|RESET_TOKEN:1';
 		}
@@ -117,7 +117,7 @@ class Social extends MY_Controller {
 			$authentication = $client->authenticate($ret_code);
 			$access_token = $client->getAccessToken();
 			$refresh_token = $client->getRefreshToken();
-			if ($access_token) {				
+			if ($access_token) {
 				$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID']);
 				if (!$ex["RESET_TOKEN"]) {
 					if ($sD['PROD'] == 'analytic') {
@@ -240,11 +240,11 @@ class Social extends MY_Controller {
 		$this->SocialModel->addUserGoogleAnalyticsProfileProperties($profile_properties);
 		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyView($profile_property_views);
 		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyAdwordAssoc($profile_property_adass);
-		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);		
+		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);
 	}
 
 	private function getPropViewAnalyticData($analytics, $viewId) {
-		$months_tstamps = com_lastMonths( 13 );	
+		$months_tstamps = com_lastMonths(13);
 		$ga_data = array();
 		foreach ($months_tstamps as $mtstamp => $mDate) {
 			$month_ref = date('Y-m', $mtstamp);
@@ -490,7 +490,7 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profile_id);
 		$adwordProj = $this->SocialModel->getAdwordProjDetail($adword_proj);
-		if ($fetchedProfile && !$fetchedProfile['linked_adwords_acc_id'] && $adwordProj) {			
+		if ($fetchedProfile && !$fetchedProfile['linked_adwords_acc_id'] && $adwordProj) {
 			// rankinity_project_url
 			// $anl_prof_id, $adword_prj_id
 			$this->AccountModel->updateGoogleAdwordsData($fetchedProfile['id'], $adwordProj);
@@ -507,8 +507,8 @@ class Social extends MY_Controller {
 			$agencies = explode(",", com_user_data('agencies'));
 			// $accounts = $this->AccountModel->getAgencyAccounts($agencies);
 			// $accounts_list = com_makelist($accounts, 'id', 'name');
-			$serviceUrls = $this->AccountModel->getAccountServiceUrls( $agencies );			
-			$accounts_list = com_makelist($serviceUrls, 'url', 'services', false, "", [], "name");			
+			$serviceUrls = $this->AccountModel->getAccountServiceUrls($agencies);
+			$accounts_list = com_makelist($serviceUrls, 'url', 'services', false, "", [], "name");
 			$inner = array();
 			$shell = array();
 			$log_user_id = com_user_data('id');
@@ -527,12 +527,12 @@ class Social extends MY_Controller {
 	public function updateAdminAccount($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		$accServiceUrl = $this->input->post('adminAccounts');		
+		$accServiceUrl = $this->input->post('adminAccounts');
 		$adminAccounts = $this->AccountModel->getAccountDetailFromServiceUrl($accServiceUrl);
 		if ($fetchedProfile && !$fetchedProfile['linked_account_id'] && $adminAccounts) {
 			$data = array();
-			$data[ 'linked_account_id' ] = $adminAccounts['id'];
-			$data[ 'linked_service_url' ] = $accServiceUrl;
+			$data['linked_account_id'] = $adminAccounts['id'];
+			$data['linked_service_url'] = $accServiceUrl;
 			$this->SocialappModel->updateAdminAccount($fetchedProfile['id'], $data);
 		}
 		redirect("accounts/list");
@@ -544,7 +544,7 @@ class Social extends MY_Controller {
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page']) {
 			$gList = $this->SocialModel->getGbusinessDetail($fetchedProfile['id']);
-			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");			
+			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");
 			$inner = array();
 			$shell = array();
 			$inner['gList'] = $gList;
@@ -564,7 +564,7 @@ class Social extends MY_Controller {
 	public function updateGbusinessAccount($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
-		$gBusinessAccounts = $this->input->post('gbuissAccounts');		
+		$gBusinessAccounts = $this->input->post('gbuissAccounts');
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page'] && $gBusinessAccounts) {
 			$udata = array();
 			$gPages = '';
@@ -584,36 +584,36 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile) {
-			$flds = array();			
-			$flds[ 'month_ref' ] = "";
-			$flds[ 'url_profile_id' ] = $profId;
-			$flds[ 'location_name' ] = "";
-			$flds[ 'views_maps' ] = '0';
-			$flds[ 'views_search' ] = '0';
-			$flds[ 'queries_chain' ] = '0';
-			$flds[ 'actions_phone' ] = '0';
-			$flds[ 'queries_direct' ] = '0';
-			$flds[ 'actions_website' ] = '0';
-			$flds[ 'queries_indirect' ] = '0';
-			$flds[ 'actions_driving_directions' ] = '0';
-			$flds[ 'photos_views_merchant' ] = '0';
-			$flds[ 'photos_views_customers' ] = '0';
-			$flds[ 'photos_count_merchant' ] = '0';
-			$flds[ 'photos_count_customers' ] = '0';
-			$flds[ 'local_post_views_search' ] = '0';
-			$flds[ 'local_post_actions_call_to_action' ] = '0';
-			
+			$flds = array();
+			$flds['month_ref'] = "";
+			$flds['url_profile_id'] = $profId;
+			$flds['location_name'] = "";
+			$flds['views_maps'] = '0';
+			$flds['views_search'] = '0';
+			$flds['queries_chain'] = '0';
+			$flds['actions_phone'] = '0';
+			$flds['queries_direct'] = '0';
+			$flds['actions_website'] = '0';
+			$flds['queries_indirect'] = '0';
+			$flds['actions_driving_directions'] = '0';
+			$flds['photos_views_merchant'] = '0';
+			$flds['photos_views_customers'] = '0';
+			$flds['photos_count_merchant'] = '0';
+			$flds['photos_count_customers'] = '0';
+			$flds['local_post_views_search'] = '0';
+			$flds['local_post_actions_call_to_action'] = '0';
+
 			$gPageLocs = explode(',', $fetchedProfile['linked_google_page_location']);
 			$pageLocPrep = array();
 			foreach ($gPageLocs as $pageLoc) {
 				$locRef = $pageLoc;
 				$pageLoc = explode("/", $pageLoc);
-				$pageLocPrep[ $pageLoc[ 0 ].'/'.$pageLoc[ 1 ] ][] = $locRef;
+				$pageLocPrep[$pageLoc[0] . '/' . $pageLoc[1]][] = $locRef;
 			}
 			$opt = array();
 			$opt['prod'] = 'mbusiness';
 			$opt['profId'] = $profId;
-			$opt['log_user_id'] = $fetchedProfile[ 'account_id' ];
+			$opt['log_user_id'] = $fetchedProfile['account_id'];
 			$opt['access_token'] = $fetchedProfile['gmb_access_token'];
 			$opt['refresh_token'] = $fetchedProfile['gmb_refresh_token'];
 			$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
@@ -621,17 +621,17 @@ class Social extends MY_Controller {
 			$objOAuthService = new Google_Service_Oauth2($client);
 			$authUrl = $client->createAuthUrl();
 			$this->load->library('Google_Service_MyBusiness', $client, 'GMBS');
-			$months_tstamps = com_lastMonths( 13, '', false, true );
+			$months_tstamps = com_lastMonths(13, '', false, false);
 			$gmbData = array();
 			$currTimeStamp = date("Y-m", time());
-			foreach( $months_tstamps as $monthDTime => $monthRef ){
+			foreach ($months_tstamps as $monthDTime => $monthRef) {
 				$monthYearDate = date("Y-m", $monthDTime);
 				$stTime = date('Y-m-01\T00:00:00\Z', $monthDTime);
 				$edTime = date('Y-m-t\T23:59:59\Z', $monthDTime);
-				if( $monthYearDate == $currTimeStamp ){
-					$edTime = date('Y-m-d\Th:i:s\Z', time());
+				if ($monthYearDate == $currTimeStamp) {
+					$edTime = date('Y-m-d\T00:00:00\Z', time());
 				}
-				foreach ($pageLocPrep as $pageRef => $pageLocRef) {					
+				foreach ($pageLocPrep as $pageRef => $pageLocRef) {
 					$trange = new Google_Service_MyBusiness_TimeRange();
 					$trange->setStartTime($stTime);
 					$trange->setEndTime($edTime);
@@ -648,57 +648,61 @@ class Social extends MY_Controller {
 					$repoInsight->locationNames = $pageLocRef;
 					$repoInsight->setBasicRequest($bMetric);
 
-					$gList = $this->GMBS->accounts_locations->reportInsights($pageRef, $repoInsight);
-					foreach ($gList->locationMetrics as $locKey => $locDet) {
-						$indKey = $monthRef.'-'.$locDet->locationName;
-						$gmbData[ $indKey ] = $flds;
-						$gmbData[ $indKey ][ 'month_ref' ] = date( "Y-m", strtotime($monthRef));
-						$gmbData[ $indKey ][ 'location_name' ] = $locDet->locationName;
-						if( $locDet->metricValues ){
-							foreach ($locDet->metricValues as $metKey => $metDet) {
-								$metricKet = strtolower( $metDet->metric );
-								$gmbData[ $indKey ][ $metricKet ] = $metDet->totalValue->value;
+					try {
+						$gList = $this->GMBS->accounts_locations->reportInsights($pageRef, $repoInsight);
+						foreach ($gList->locationMetrics as $locKey => $locDet) {
+							$indKey = $monthRef . '-' . $locDet->locationName;
+							$gmbData[$indKey] = $flds;
+							$gmbData[$indKey]['month_ref'] = date("Y-m", strtotime($monthRef));
+							$gmbData[$indKey]['location_name'] = $locDet->locationName;
+							if ($locDet->metricValues) {
+								foreach ($locDet->metricValues as $metKey => $metDet) {
+									$metricKet = strtolower($metDet->metric);
+									$gmbData[$indKey][$metricKet] = $metDet->totalValue->value;
+								}
 							}
 						}
+					} catch (Exception $ex) {
+						continue;
 					}
 				}
 			}
-			/* Loop End */			
+			/* Loop End */
 			$this->SocialappModel->updateGBuissData($profId, $gmbData);
 		}
 	}
 
-	public function update_google_website_list( $opt ){
+	public function update_google_website_list($opt) {
 		$profId = $opt['profId'];
-		$log_user_id = $opt['log_user_id'];		
+		$log_user_id = $opt['log_user_id'];
 		$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
 		$client = $ctoken['client'];
-		$webMaster = new Google_Service_Webmasters($client);		
-	  	$web_urls = $webMaster->sites->listSites();	
+		$webMaster = new Google_Service_Webmasters($client);
+		$web_urls = $webMaster->sites->listSites();
 		$web_urls_data = array();
-		if( $web_urls->siteEntry ){
-			foreach( $web_urls->siteEntry as $siteKey => $siteDetail ){
-				$web_urls_data[ $siteKey ][ 'site_url' ] = $siteDetail->siteUrl;
-				$web_urls_data[ $siteKey ][ 'permission_level' ] = $siteDetail->permissionLevel;
-				$web_urls_data[ $siteKey ][ 'url_profile_id' ] = $profId;
+		if ($web_urls->siteEntry) {
+			foreach ($web_urls->siteEntry as $siteKey => $siteDetail) {
+				$web_urls_data[$siteKey]['site_url'] = $siteDetail->siteUrl;
+				$web_urls_data[$siteKey]['permission_level'] = $siteDetail->permissionLevel;
+				$web_urls_data[$siteKey]['url_profile_id'] = $profId;
 			}
-			$this->SocialModel->addUserGoogleMasterSites( $web_urls_data );
+			$this->SocialModel->addUserGoogleMasterSites($web_urls_data);
 		}
 	}
 
-	public function link_trello($profId) {		
+	public function link_trello($profId) {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_trello_board_id']) {
-			$this->form_validation->set_rules( 'board', 'Boards', 'required' );
-			if( $this->form_validation->run() == false ){
+			$this->form_validation->set_rules('board', 'Boards', 'required');
+			if ($this->form_validation->run() == false) {
 				// $this->breadcrumb->addElement( 'Google Analytics', 'report/ganalyticreport' );
 				$boards = $this->SocialappModel->getTrelloBoards($profId);
 				// $this->breadcrumb->addElement('Trello Boards', 'report/tboardreport/' . $prof_id);
 				$inner = array();
 				$shell = array();
 				$log_user_id = com_user_data('id');
-				$boards = com_makelist($boards, 'board_id', 'board_name', 1);			
+				$boards = com_makelist($boards, 'board_id', 'board_name', 1);
 				$inner['boards'] = $boards;
 				$inner['profDet'] = $fetchedProfile;
 				$shell['page_title'] = 'Link Trello Boards';
@@ -706,10 +710,10 @@ class Social extends MY_Controller {
 				$shell['footer_js'] = $this->load->view('link_tboard_js', $inner, true);
 				$this->load->view(TMP_DEFAULT, $shell);
 			} else {
-				$board = $this->input->post( 'board' );
+				$board = $this->input->post('board');
 				$data = array();
-				$data[ 'linked_trello_board_id' ] = $board;
-				$this->SocialappModel->updateAdminAccount( $profId, $data);
+				$data['linked_trello_board_id'] = $board;
+				$this->SocialappModel->updateAdminAccount($profId, $data);
 				redirect("/");
 				exit;
 			}
