@@ -107,8 +107,10 @@ $selectedEngineRank = $profileEnginesRanks[$engineId];
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table id="keyword-ranks" class="table m-t-30 table-hover no-wrap contact-list" data-page-size="10">
+                <div class="table-responsive">                   
+                    <table id="keyword-ranks"
+                        class="display nowrap table table-hover table-striped table-bordered contact-list" 
+                        cellspacing="0" width="100%" data-page-size="10">
                         <thead>
                             <tr>
                                 <th>Keyword</th>

@@ -11,7 +11,8 @@
 	$( document ).ready( function(){	    
         $("#webmaster_sites").select2();
 		$('#month-tbl').DataTable({
-            "order": []
+            "order": [],
+            "paging": false
         }); 
 		$('#queries-tbl').DataTable({
             "order": []

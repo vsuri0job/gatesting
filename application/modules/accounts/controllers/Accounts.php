@@ -191,4 +191,15 @@ class Accounts extends MY_Controller {
 			exit;
 		}
 	}
+
+	public function deleteProfileUrl( $profId ) {
+		$profDet = $this->AccountModel->getFetchedAccountDetail($profId);
+		if( !$profDet ){
+			redirect( 'dashboard' );
+			exit;
+		}		
+		$this->AccountModel->removeAccountDetail($profDet[ 'id' ]);
+		redirect('accounts/list');
+		exit;
+	}
 }

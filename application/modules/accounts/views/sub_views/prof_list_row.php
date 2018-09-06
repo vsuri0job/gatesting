@@ -5,19 +5,28 @@ $attr['width'] = '19px';
 $attr['height'] = '19px';
 $attr['class'] = 'm-l-5';
 $attr['title'] = $attr['alt'] = 'Google My Business';
-$gmbIcon = img(base_url('img/social/gmb-on.png'), false, $attr);
+$iconConf = array();
+$iconConf[ 'onclick' ] = "return confirm('Are you sure, you want to reset account?')";
+$gmbIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/mbusiness' ), 
+			img(base_url('img/social/gmb-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Adwords';
-$ppcIcon = img(base_url('img/social/adwords-on.png'), false, $attr);
+$ppcIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/adwords' ), 
+			img(base_url('img/social/adwords-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Analytics';
-$seoIcon = img(base_url('img/social/analytic-on.png'), false, $attr);
+$seoIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/analytic' ), 
+			img(base_url('img/social/analytic-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Trello';
-$trelloIcon = img(base_url('img/social/trello-on.png'), false, $attr);
+$trelloIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/trello' ), 
+			img(base_url('img/social/trello-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Rankings';
-$rankIcon = img(base_url('img/social/rankinity-on.png'), false, $attr);
+$rankIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/rankinity' ), 
+			img(base_url('img/social/rankinity-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Admin';
-$adminIcon = img(base_url('img/social/admin-on.png'), false, $attr);
+$adminIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/admin' ), 
+			img(base_url('img/social/admin-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Search Console';
-$webMIcon = img(base_url('img/social/search-console-on.png'), false, $attr);
+$webMIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/webmaster' ), 
+			img(base_url('img/social/search-console-on.png'), false, $attr), $iconConf);
 $icon = array();
 $icon['width'] = '19px';
 $icon['height'] = '19px';

@@ -7,8 +7,8 @@
                         <h4 class="m-b-0 text-white">Link and Update Account <small><i><?= $profDet[ 'account_url' ]; ?></i></small></h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
-                        <a href="<?= base_url( 'social/updateGoogleProfiles' ) ?>" 
-                                class="btn pull-right btn-outline-primary">Update Google Profile Pending</a>
+                        <a href="<?= base_url( 'social/updateGoogle/analytic/'.$profDet[ 'id' ] ) ?>" 
+                                class="btn pull-right btn-outline-primary">Update Google Profile</a>
                     </div>
                 </div>
             </div>

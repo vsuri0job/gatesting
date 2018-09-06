@@ -7,6 +7,8 @@
                         <h4 class="m-b-0 text-white">Link Google My Business</h4>
                     </div>
                     <div class="col-md-6 col-4 align-self-center">
+                        <a href="<?= base_url( 'social/updateGoogle/mbusiness/'.$profile[ 'id' ] ) ?>" 
+                                class="btn pull-right btn-outline-primary">Update Adwords Projects</a>
                     </div>
                 </div>
             </div>

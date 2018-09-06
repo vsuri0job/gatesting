@@ -22,8 +22,8 @@ foreach( $firMonthData as $key => $val ){
         }
     }
 }
-$firMonthData[ 'users' ] = number_format($firMonthData[ 'users' ], 2);
-$firMonthData[ 'sessions' ] = number_format($firMonthData[ 'sessions' ], 2);
+$firMonthData[ 'users' ] = number_format($firMonthData[ 'users' ]);
+$firMonthData[ 'sessions' ] = number_format($firMonthData[ 'sessions' ]);
 $firMonthData[ 'bounce_rate' ] = number_format($firMonthData[ 'bounce_rate' ], 2).'%';
 $firMonthData[ 'goal_conversion_rate' ] = number_format($firMonthData[ 'goal_conversion_rate' ], 2).'%';
 $firMonthData[ 'avg_session_duration' ] = gmdate("H:i:s", $firMonthData[ 'avg_session_duration' ]);

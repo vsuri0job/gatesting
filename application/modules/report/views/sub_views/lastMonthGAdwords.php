@@ -2,8 +2,9 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">YEAR-TO-DATE TABLE</h4>
-            <div class="table-responsive">
-                <table class="table">
+            <div class="table-responsive">                
+                <table
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Month</th>

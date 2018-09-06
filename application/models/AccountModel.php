@@ -555,4 +555,26 @@ class AccountModel extends CI_Model {
 	public function addAgencies( $data ){
 		return 	$this->db->insert( 'agencies', $data );
 	}
+
+	public function removeAccountDetail( $profId ){
+		$this->db->where( 'id', $profId)
+				->delete( 'account_url_profiles' );
+	}
+
+	public function getAgencyData( $agencyId ){
+		return 	$this->db->where('id', $agencyId)
+					->from( 'agencies' )
+					->get()->row_array();
+	}
+
+	public function getAgencyUsers( $agencyId ){
+		return 	$this->db->where('agency_id', $agencyId)
+					->from( 'agency_users' )
+					->get()->result_array();
+	}
+
+	public function addAgencyUser( $agencyData ){
+		$this->db->insert( 'agency_users', $agencyData );
+	}
+	
 }

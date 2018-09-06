@@ -121,17 +121,19 @@
                         
                             <?php
                                 $dataHtml = '';
-                                foreach( $months as $data ){
-                                    $data[ 'month_ref' ] = date( "F Y", strtotime( $data[ 'month_ref' ] ) );                                    
-                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2 );
-                                    $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
-                                    $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
-                                    $dataHtml .= '<tr>
-                                                    <td>'.$data[ 'month_ref' ].'</td>
-                                                    <td>'.$data[ 'clicks' ].'</td>
-                                                    <td>'.$data[ 'impressions' ].'</td>
-                                                    <td>'.$data[ 'ctr' ].'%</td>
-                                                </tr>';
+                                if( $months ){                                    
+                                    foreach( $months as $data ){
+                                        $data[ 'month_ref' ] = date( "F Y", strtotime( $data[ 'month_ref' ] ) );
+                                        $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2 );
+                                        $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                        $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
+                                        $dataHtml .= '<tr>
+                                                        <td>'.$data[ 'month_ref' ].'</td>
+                                                        <td>'.$data[ 'clicks' ].'</td>
+                                                        <td>'.$data[ 'impressions' ].'</td>
+                                                        <td>'.$data[ 'ctr' ].'%</td>
+                                                    </tr>';
+                                    }
                                 }
                                 echo $dataHtml;
                             ?>
@@ -160,16 +162,18 @@
                         
                             <?php
                                 $dataHtml = '';
-                                foreach( $queries as $data ){
-                                        $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
-                                        $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
-                                        $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
-                                    $dataHtml .= '<tr>
-                                                    <td>'.$data[ 'queries' ].'</td>
-                                                    <td>'.$data[ 'clicks' ].'</td>
-                                                    <td>'.$data[ 'impressions' ].'</td>
-                                                    <td>'.$data[ 'ctr' ].'%</td>
-                                                </tr>';
+                                if( $queries ){                                    
+                                    foreach( $queries as $data ){                                        
+                                            $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
+                                            $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                            $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
+                                        $dataHtml .= '<tr>
+                                                        <td>'.$data[ 'queries' ].'</td>
+                                                        <td>'.$data[ 'clicks' ].'</td>
+                                                        <td>'.$data[ 'impressions' ].'</td>
+                                                        <td>'.$data[ 'ctr' ].'%</td>
+                                                    </tr>';
+                                    }
                                 }
                                 echo $dataHtml;
                             ?>
@@ -198,16 +202,18 @@
                         
                             <?php
                                 $dataHtml = '';
-                                foreach( $pages as $data ){
-                                    $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
-                                    $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
-                                    $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
-                                    $dataHtml .= '<tr>
-                                                    <td>'.$data[ 'pages' ].'</td>
-                                                    <td>'.$data[ 'clicks' ].'</td>
-                                                    <td>'.$data[ 'impressions' ].'</td>
-                                                    <td>'.$data[ 'ctr' ].'%</td>
-                                                </tr>';
+                                if( $pages ){                                    
+                                    foreach( $pages as $data ){
+                                        $data[ 'ctr' ] = number_format( $data[ 'ctr' ] * 100, 2  );
+                                        $data[ 'clicks' ] = number_format( $data[ 'clicks' ]);
+                                        $data[ 'impressions' ] = number_format( $data[ 'impressions' ]);
+                                        $dataHtml .= '<tr>
+                                                        <td>'.$data[ 'pages' ].'</td>
+                                                        <td>'.$data[ 'clicks' ].'</td>
+                                                        <td>'.$data[ 'impressions' ].'</td>
+                                                        <td>'.$data[ 'ctr' ].'%</td>
+                                                    </tr>';
+                                    }
                                 }
                                 echo $dataHtml;
                             ?>

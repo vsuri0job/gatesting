@@ -1,4 +1,4 @@
-<div class="col-lg-12">
+<div class="">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Days Traffic</h4>
@@ -12,7 +12,8 @@
         <div class="card-body">
             <h4 class="card-title">Total Traffic - Month over Month</h4>            
             <div class="table-responsive">
-                <table class="table" id="total-traffic">
+                <table id="total-traffic"
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -56,8 +57,9 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Organic Traffic - Month over Month</h4>
-            <div class="table-responsive">                
-                <table class="table" id="organic-traffic">
+            <div class="table-responsive">
+                <table id="organic-traffic"
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -102,7 +104,8 @@
         <div class="card-body">
             <h4 class="card-title">MEDIUM PERFORMANCE</h4>
             <div class="table-responsive">                
-                <table class="table" id="medium-traffic">
+                <table id="medium-traffic"
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Medium</th>
@@ -149,8 +152,9 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">SOURCE / MEDIUM PERFORMANCE</h4>
-            <div class="table-responsive">                
-                <table class="table" id="source-traffic">
+            <div class="table-responsive">
+                <table id="source-traffic"
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">                    
                     <thead>
                         <tr>
                             <th>Source / Medium</th>
@@ -196,8 +200,9 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">LANDING PAGE PERFORMANCE</h4>
-            <div class="table-responsive">                
-                <table class="table" id="landing-traffic">                    
+            <div class="table-responsive">
+                <table id="landing-traffic"
+                class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">                    
                     <thead>
                         <tr>
                             <th>landing page path</th>

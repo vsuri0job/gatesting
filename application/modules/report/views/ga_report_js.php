@@ -13,14 +13,28 @@ if ($props) {
 }
 if ($views) {
 	foreach ($views as $view) {
-		$viewStack[$view['property_id']][$view['view_id']] = $view['view_name'];
+		$viewStack[$view['property_id']][$view['view_id']] = $view['view_name'].'        '.$view['property_id'];
 	}
 }
 echo 'var propStack = ' . json_encode($propStack) . ';';
 echo 'var viewStack = ' . json_encode($viewStack) . ';';
 ?>
+    var processCounter = "";
+    function updateProcess() {
+        let pro_txt = $('#progress-bar').html();
+        pro_txt = parseInt( pro_txt.trim() );
+        if( pro_txt < 92 ){
+            pro_txt = pro_txt + 2;
+            pro_txt = pro_txt+"%";
+            $('#progress-bar')
+                .css( { width: pro_txt } )
+                .html( pro_txt );
+        }
+    }
     $( document ).ready( function(){
-        $("#webmaster_sites").select2();
+        $("#prop").select2();
+        $("#view").select2();
+        $("#profile").select2();
         $("#profile").on( 'change', function( event ){
             let props = propStack[ this.value ];
             $("#lastMonthsData").html("");
@@ -91,8 +105,9 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                             // });
                             if (percentComplete === 1) {
                                 $('#progress-bar')
-                                .css( { width: '50%' } )
-                                .html( '50%' );
+                                .css( { width: '15%' } )
+                                .html( '15%' );                                
+                                processCounter = setInterval(updateProcess, 3000);
                                 // $('#progress-bar').addClass('hide');
                                 // $('#progress-bar')
                                 // .css( { width: percentComplete * 0 + '%' } )
@@ -126,10 +141,11 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                 type: 'POST',
                 url: "<?= base_url( 'report/getViewData' ) ?>",
                 data: pData,
-                success: function (data) {        
+                success: function (data) {
                     $('#progress-bar').addClass('hide')
                     .css( { width: '0%' } )
                     .html( '0%' );
+                    clearInterval( processCounter );
                     data = JSON.parse( data );
                     $("#lastMonthsData").html( data.lastMonthHtml );
                     $("#currentMonthData").html( data.currMonthHtml );        

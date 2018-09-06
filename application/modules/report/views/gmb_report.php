@@ -38,44 +38,39 @@ echo form_dropdown('locations', $gmb_locs, "",
                 </div>
 <?php }?>
 <!-- Row -->
-<div class="row">
-    <div class="table-responsive">
-        <table id="locations-data" class="table">
-            <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Clicks to Site</th>
-                    <th>Driving Direction Requests</th>
-                    <th>Calls</th>
-                </tr>
-            </thead>
-            <tbody id="locationsData">
-                <?php
-if ($gmb_data) {
-	$loc_data = $gmb_data[$gmb_loc_id];
-	foreach ($loc_data as $lData) {
-		$lData[1] = number_format($lData[1]);
-		$lData[2] = number_format($lData[2]);
-		$lData[3] = number_format($lData[3]);
-		?>
-                        <tr>
-                            <td class="ucfirst"><?=$lData[0];?></td>
-                            <td ><?=$lData[1];?></td>
-                            <td ><?=$lData[2];?></td>
-                            <td ><?=$lData[3];?></td>
-                        </tr>
-                <?php }
-}
-?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Month</th>
-                    <th>Clicks to Site</th>
-                    <th>Driving Direction Requests</th>
-                    <th>Calls</th>
-                </tr>
-            </tfoot>
-        </table>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="locations-data" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Clicks to Site</th>
+                        <th>Driving Direction Requests</th>
+                        <th>Calls</th>
+                    </tr>
+                </thead>
+                <tbody id="locationsData">
+                    <?php
+    if ($gmb_data) {
+    	$loc_data = $gmb_data[$gmb_loc_id];
+    	foreach ($loc_data as $lData) {
+    		$lData[1] = number_format($lData[1]);
+    		$lData[2] = number_format($lData[2]);
+    		$lData[3] = number_format($lData[3]);
+    		?>
+                            <tr>
+                                <td class="ucfirst"><?=$lData[0];?></td>
+                                <td ><?=$lData[1];?></td>
+                                <td ><?=$lData[2];?></td>
+                                <td ><?=$lData[3];?></td>
+                            </tr>
+                    <?php }
+    }
+    ?>
+                </tbody>                
+            </table>
+        </div>
     </div>
 </div>

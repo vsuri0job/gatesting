@@ -34,6 +34,7 @@ class ReportModel extends CI_Model {
 		$profiles = $this->db
 			->from('google_webmaster_sites')
 			->where('url_profile_id', $profile_id)
+			->where('permission_level <> ', 'siteUnverifiedUser')
 			->get()->result_array();
 		return $profiles;
 	}
@@ -395,13 +396,15 @@ class ReportModel extends CI_Model {
 	}
 
 	public function getServiceUrlCost($service_url, $acc_id) {
-		return $this->db->select('url, group_concat( monthly_price ) as `price`, group_concat( services_master.name )  as `services`')
+		$service_url = com_get_domain( $service_url );
+		return $this->db->select('SUBSTR(`url`, POSITION("'.$service_url.'" IN `url`), '.strlen( $service_url ).' ) `url`, 
+			sum( monthly_price ) as `price`, services_master.name `services`')
 			->from('services')
 			->join('services_master', 'services_master.id=service_master_id')
-			->where('url', $service_url)
 			->where('account_id', $acc_id)
-			->group_by('url')
-			->get()->row_array();
+			->like('url', $service_url)
+			->group_by('SUBSTR(`url`, POSITION("'.$service_url.'" IN `url`), '.strlen( $service_url ).' ), services')
+			->get()->result_array();
 	}
 
 	public function getBoardDetail( $boardId ){
