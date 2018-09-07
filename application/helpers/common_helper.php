@@ -95,7 +95,21 @@ if (!function_exists('com_update_session')) {
 	function com_update_session() {
 		$CI = &get_instance();
 		$user_data = $CI->UserModel->getUserDetail(com_user_data('id'));
+		$user_setting = $CI->UserModel->getUserSettingDetail(com_user_data('id'));
+		$user_setting = com_makelist( $user_setting, 'setting_name', 'setting_det', false );		
+		$user_data = array_merge($user_data, $user_setting);		
 		$CI->session->set_userdata($user_data);
+	}
+}
+
+if (!function_exists('com_get_user_data')) {
+	function com_get_user_data( $user_id ) {
+		$CI = &get_instance();
+		$user_data = $CI->UserModel->getUserDetail($user_id);
+		$user_setting = $CI->UserModel->getUserSettingDetail($user_id);
+		$user_setting = com_makelist( $user_setting, 'setting_name', 'setting_det', false );		
+		$user_data = array_merge($user_data, $user_setting);
+		return $user_data;
 	}
 }
 

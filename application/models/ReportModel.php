@@ -372,7 +372,7 @@ class ReportModel extends CI_Model {
 			->delete('account_url_profile_webmaster_data');
 		if ($rowData) {
 			$this->db->insert('account_url_profile_webmaster_data', $data);
-		} else {
+		} else if( $data ){
 			$this->db->insert_batch('account_url_profile_webmaster_data', $data);
 		}
 	}
@@ -388,11 +388,11 @@ class ReportModel extends CI_Model {
 		$profiles = $this->db->from('account_url_profile_webmaster_data')
 			->where('report_type', $report_type)
 			->where('url_profile_id', $prof_id)
-			->get();
-		if ($profiles->num_rows() > 1) {
-			return $profiles->result_array();
+			->get();		
+		if ( isset( $opt[ 'row_only' ] ) ) {
+			return $profiles->row_array();
 		}
-		return $profiles->row_array();
+		return $profiles->result_array();
 	}
 
 	public function getServiceUrlCost($service_url, $acc_id) {

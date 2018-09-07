@@ -162,13 +162,16 @@ class Report extends MY_Controller {
 				$day = substr($value[0], 6, 2);
 				$chart_graph[ $key ][ 'date' ] = date('d-M-y', strtotime($year.'-'.$month.'-'.$day));
 				$chart_graph[ $key ][ 'sess' ] = $value[1];
+				$chart_graph[ $key ][ 'user' ] = $value[2];
 			}
 		}		
 	 	$inner['chart_graph'] = $chart_graph;
+	 	$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($prof_id, com_user_data( 'id' ));
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
 		$inner['prodDet'] = $prodDet;
 		$inner['show_public_url'] = !$publicView;
+		$inner['log_user_det'] = com_get_user_data( $log_user_id );
 		$shell['page_title'] = 'Google Analytics';
 		$shell['content'] = $this->load->view('ganalytic_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('ganalytic_report_js', $inner, true);
@@ -207,6 +210,7 @@ class Report extends MY_Controller {
 		$inner['assoc_links'] = $this->ReportModel->getAccountGoogleAnalyticProfileAssos($log_user_id);
 		$ga_data = $this->ReportModel->getAccAdwordsData($log_user_id, $adword_acc_id, "", $fetch_prof_id);
 		$inner['ga_data'] = com_make2dArray($ga_data, 'month_ref');
+		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data( 'id' ));
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAdwords', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAdwords', $inner, true);
 		$shell['page_title'] = 'Google Adwords';
@@ -253,6 +257,7 @@ class Report extends MY_Controller {
 		$opt['limit'] = '13';
 		$opt['order'] = 'month_ref desc';
 		$inner['months'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'month', $opt);
+		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data( 'id' ));
 		$shell['page_title'] = 'Google Search Console';
 		$shell['content'] = $this->load->view('gwmaster_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('gwmaster_report_js', $inner, true);
@@ -377,7 +382,7 @@ class Report extends MY_Controller {
 		$opt = array();
 		$opt['dimensions'] = 'ga:date';
 		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month,'ga:sessions', $opt);		
+			$sday_month, $lday_month,'ga:sessions, ga:users', $opt);		
 		$detailData = array();
 		$rIndex = 0;		
 		$detailData[$rIndex]['view_id'] = $viewId;
@@ -1163,6 +1168,7 @@ class Report extends MY_Controller {
 		$gmb_data = $gmb_locs = array();
 		$gmb_data = $this->ReportModel->fetchUrlGoogleMyBusinessMonthData($profId, $locs, 13);
 		$gmb_data = com_make2dArray($gmb_data, 'month_ref');
+		$inner['report_setting'] = [];
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
 		$inner['overview_report'] = $this->load->view('overview_report', $inner, true);
@@ -1237,7 +1243,8 @@ class Report extends MY_Controller {
 				$chart_graph[ $key ][ 'date' ] = date('d-M-y', strtotime($year.'-'.$month.'-'.$day));
 				$chart_graph[ $key ][ 'sess' ] = $value[1];
 			}
-		}		
+		}
+		$anly_repo['report_setting'] = [];
 	 	$anly_repo['chart_graph'] = $chart_graph;
 		$anly_repo['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $anly_repo, true);
 		$anly_repo['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $anly_repo, true);
@@ -1282,7 +1289,7 @@ class Report extends MY_Controller {
 		$gmb_repo['gmb_data'] = $gmb_data;
 		$gmb_repo['gmb_locs'] = $gmb_locs;
 		$gmb_repo['gmb_loc_id'] = $gmb_loc_id;
-
+		$gmb_repo['report_setting'] = [];
 		$inner['gmb_report'] = $this->load->view('gmb_report', $gmb_repo, true);
 		$inner['gmb_report_js'] = $this->load->view('gmb_report_js', $gmb_repo, true);
 
@@ -1369,6 +1376,23 @@ class Report extends MY_Controller {
 			$inner['tboard_report'] = $this->load->view('tboard_report', $trello, true);
 			$inner['tboard_report_js'] = $this->load->view('tboard_report_js', $trello, true);
 		}
+				
+		$webmaster['full_report_show'] = true;
+		$opt = array();
+		$opt['row_only'] = 1;
+		$webmaster['kpis'] = $this->ReportModel->getWebmasterData($profId, 'kpi', $opt);
+		$opt = array();
+		$opt['limit'] = '25';
+		$webmaster['queries'] = $this->ReportModel->getWebmasterData($profId, 'query', $opt);
+		$webmaster['pages'] = $this->ReportModel->getWebmasterData($profId, 'page');
+		$opt = array();
+		$opt['limit'] = '13';
+		$opt['order'] = 'month_ref desc';
+		$webmaster['months'] = $this->ReportModel->getWebmasterData($profId, 'month', $opt);
+		$webmaster['report_setting'] = [];
+		$inner['gwmaster_report'] = $this->load->view('gwmaster_report', $webmaster, true);
+		$inner['gwmaster_report_js'] = $this->load->view('gwmaster_report_js', $webmaster, true);
+
 		$inner['show_public_url'] = !$publicView;
 		$inner['profDet'] = $prodDet;
 		$shell['content'] = $this->load->view('fullreport_report', $inner, true);

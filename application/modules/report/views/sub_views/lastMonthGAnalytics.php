@@ -1,3 +1,20 @@
+<?php    
+    $s_total = $s_organic = $s_medium = 
+    $s_source_medium = $s_landing = 1;
+    if( $report_setting ){
+        $s_total = $s_organic = $s_medium = 
+        $s_source_medium = $s_landing = 0;
+        $settings = array( 'total', 'organic', 'medium', 'source_medium', 'landing' );
+        $report_setting[ 'seo' ] = json_decode( $report_setting[ 'seo' ] );
+        $enSettings = array_intersect($settings, $report_setting[ 'seo' ]);
+        if( $enSettings ){
+            foreach ($enSettings as $enSetting) {
+                $setRef = 's_'.$enSetting;
+                ${$setRef} = 1;
+            }
+        }
+    }    
+?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -7,6 +24,7 @@
     </div>
 </div>
 
+<?php if( $s_total ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -51,8 +69,8 @@
         </div>
     </div>
 </div>
-<div>
-    
+<?php } 
+if( $s_organic ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -97,8 +115,8 @@
         </div>
     </div>
 </div>
-<div>
-
+<?php } 
+if( $s_medium ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -146,8 +164,8 @@
         </div>
     </div>
 </div>
-<div>
-
+<?php } 
+if( $s_source_medium ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -195,7 +213,8 @@
         </div>
     </div>
 </div>
-
+<?php } 
+if( $s_landing ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -244,4 +263,4 @@
         </div>
     </div>
 </div>
-<div>
+<?php } ?>

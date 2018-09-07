@@ -60,7 +60,9 @@ class Dashboard extends MY_Controller {
 					$inner['file_error'] = array('error' => $this->upload->display_errors());
 				} else {
 					$data = array('upload_data' => $this->upload->data());
-					$extra['report_logo'] = $data['upload_data']['file_name'];
+					$extra[0][ 'user_id' ] = com_user_data('id');
+					$extra[0]['setting_name'] = 'report_logo';
+					$extra[0]['setting_det'] = $data['upload_data']['file_name'];
 				}
 			}
 			$this->UserModel->updateUserProfile($extra);

@@ -38,7 +38,9 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-offset-3 col-md-9">
-                                        <button type="submit" class="btn btn-success">Update Account</button>
+                                        <button type="submit" 
+                                            id="update-webmaster"
+                                            class="btn btn-success">Update Account</button>
                                     </div>
                                 </div>
                             </div>
@@ -46,6 +48,14 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="hide" id="progressBar">
+            <div class="progress-bar bg-success" role="progressbar" id="progress-bar" 
+                style="width: 15%;height:15px;" 
+                role="progressbar"> 15% </div>
+            <div class="font-weight-bold">
+                Gathering Google Search Console data for the last 13 months, this will take a bit.  Please do not close this screen while magic happens
             </div>
         </div>
     </div>

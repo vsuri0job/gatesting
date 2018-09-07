@@ -39,9 +39,13 @@ class SocialModel extends CI_Model {
 		}
 	}
 
-	public function addUserGoogleMasterSites($webSites) {
+	public function addUserGoogleMasterSites($webSites, $resetWhere) {
+		if( $resetWhere ){
+			$this->db->where( $resetWhere  )
+					->delete('google_webmaster_sites');
+		}
 		if ($webSites) {
-			$this->db->insert_batch('google_webmaster_sites', $webSites);			
+			$this->db->insert_batch('google_webmaster_sites', $webSites);
 		}
 	}
 

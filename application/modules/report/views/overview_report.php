@@ -27,6 +27,7 @@ $monthStamp = com_lastMonths(13);
 $seo_price = com_arrIndex($service_url_data, 'SEO', 0);
 $ppc_price = com_arrIndex($service_url_data, 'PPC', 0);
 $gmb_price = com_arrIndex($service_url_data, 'Local SEO', 0);
+$gmb_price += com_arrIndex($service_url_data, 'GMB', 0);
 list($firMonthDate) = com_lastMonths(1, "", 1, 1);
 $firMonthData = date('Y-m', strtotime($firMonthDate));
 $lm_gan_data = $ga_data[$firMonthData];
@@ -130,13 +131,16 @@ if( $cost && $lm_ttl_leads ){
 
 <?php if (!isset($full_report_show) || !$full_report_show) {
     $gmb_cost_per_lead = $seo_cost_per_lead = $ppc_cost_per_lead = 0;
+    $lm_gan_data["goal_completion_all"] = (float)$lm_gan_data["goal_completion_all"];
     if( $seo_price && $lm_gan_data["goal_completion_all"]){
         $seo_cost_per_lead = $seo_price / $lm_gan_data["goal_completion_all"];
     }
     $ppc_ad_price = (float)($ppc_price + $lmAdwordCost);
+    $lm_gad_data["conversion"] = (float)$lm_gad_data["conversion"]; 
     if( $ppc_ad_price && $lm_gad_data["conversion"]){
         $ppc_cost_per_lead = $ppc_ad_price / $lm_gad_data["conversion"];
     }
+    $lm_gmb_data["calls"] = (float)$lm_gmb_data["calls"];
     if( $gmb_price && $lm_gmb_data["calls"]){
         $gmb_cost_per_lead = $gmb_price / $lm_gmb_data["calls"];
     }
@@ -311,6 +315,7 @@ if( $cost && $lm_ttl_leads ){
     if($sum_cost && $sum_leads){
         $cost_per_lead = $sum_cost/$sum_leads;
     }
+    $sum_revenue_amt = $sum_revenue_amt/$ttlRows;
     ?>
                     <tr>
                         <td class="font-weight-bold">Total</td>
@@ -321,7 +326,7 @@ if( $cost && $lm_ttl_leads ){
                         <td class="font-weight-bold"><?=number_format($closing_rate);?>%</td>
                         <td class="font-weight-bold"><?=number_format($sum_sales, 2);?></td>
                         <td class="font-weight-bold">$<?=number_format($avg_sale);?></td>
-                        <td class="font-weight-bold">$<?=number_format($sum_revenue_amt/$ttlRows, 2);?></td>
+                        <td class="font-weight-bold">$<?=number_format($sum_revenue_amt, 2);?></td>
                         <td class="font-weight-bold"><?=number_format($ltv_amount, 2);?></td>
                         <td class="font-weight-bold">$<?=number_format($sum_ltv, 2);?></td>
                         <td class="font-weight-bold">$<?=number_format($sum_roas, 2);?></td>

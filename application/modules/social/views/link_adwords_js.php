@@ -8,17 +8,20 @@
         let pro_txt = $('#progress-bar').html();
         pro_txt = parseInt( pro_txt.trim() );
         if( pro_txt < 92 ){
-            pro_txt = pro_txt + 2;
+            pro_txt = pro_txt + 1;
             pro_txt = pro_txt+"%";
             $('#progress-bar')
                 .css( { width: pro_txt } )
                 .html( pro_txt );
         }
     }
-    $("#adwordProject").select2();
+    $("#adwordProject").select2();    
     $("#getGoogleData").on( 'submit', function( event ){
+        
+        $("#adwordProject").val();
     	// $("#adwordProject").attr('disabled', true);
-    	// processCounter = setInterval(updateProcess, 3000);
+        $("#progressBar").removeClass('hide');
+    	processCounter = setInterval(updateProcess, 2000);
     	$("#update_adwords").attr('disabled', true);
     });
 </script>

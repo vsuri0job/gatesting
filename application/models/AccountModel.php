@@ -140,6 +140,13 @@ class AccountModel extends CI_Model {
 			->get()->row_array();
 	}
 
+	public function getFetchedAccountDetailSetting($aId, $account_id) {
+		return $this->db->from('account_url_profile_settings')
+				->where( 'profile_id', $aId )
+				->where( 'account_id', $account_id )
+				->get()->row_array();
+	}
+
 	public function linkAnalyticAccount($analytic_id, $account_id) {
 		$data = array();
 		$data['linked_account_id'] = $account_id;
@@ -469,9 +476,11 @@ class AccountModel extends CI_Model {
 		$data['linked_trello_board_id'] = "";
 		$data['linked_account_id'] = 0;
 		$data['share_gsc_link'] = "";
+		$data['share_full_link'] = "";		
 		$data['share_trello_link'] = "";
 		$data['linked_google_page'] = "";
 		$data['share_adwords_link'] = "";
+		$data['share_overview_link'] = "";
 		$data['share_analytic_link'] = "";
 		$data['share_citation_link'] = "";
 		$data['share_rankinity_link'] = "";
@@ -503,11 +512,14 @@ class AccountModel extends CI_Model {
 		$this->db->insert('account_url_profiles_social_token', $data);
 
 		$data = [];
+		
 		$data['share_gsc_link'] = com_b64UrlEncode('gsc/'.$profile_id);
 		$data['share_gmb_link'] = com_b64UrlEncode('gmb/'.$profile_id);
+		$data['share_full_link'] = com_b64UrlEncode('full/'.$profile_id);
 		$data['share_trello_link'] = com_b64UrlEncode('trello/'.$profile_id);
 		$data['share_adwords_link'] = com_b64UrlEncode('adword/'.$profile_id);
 		$data['share_analytic_link'] = com_b64UrlEncode('analytic/'.$profile_id);
+		$data['share_overview_link'] = com_b64UrlEncode('overview/'.$profile_id);
 		$data['share_citation_link'] = com_b64UrlEncode('citation/'.$profile_id);
 		$data['share_rankinity_link'] = com_b64UrlEncode('rankinity/'.$profile_id);
 		$this->db->where( 'id', $profile_id)
@@ -518,6 +530,19 @@ class AccountModel extends CI_Model {
 	public function updateProfile( $profId, $data ){
 		return $this->db->where( 'id', $profId)
 					->update('account_url_profiles', $data);
+	}
+
+	public function updateProfileSetting($where, $data){
+		$profSetting = $this->db->select( 'id' )
+							->from( 'account_url_profile_settings' )
+							->where( $where )
+							->get()->row_array();
+		if( $profSetting ){
+			$this->db->where( 'id', $profSetting[ 'id' ] )
+					->update( 'account_url_profile_settings', $data);
+		} else {
+			$this->db->insert( 'account_url_profile_settings', $data);
+		}
 	}
 
 	public function getProfiles() {
@@ -576,5 +601,41 @@ class AccountModel extends CI_Model {
 	public function addAgencyUser( $agencyData ){
 		$this->db->insert( 'agency_users', $agencyData );
 	}
-	
+
+	public function resetLinkedData($id, $ref){
+		switch ($ref) {
+			case 'adwords':
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'account_url_profile_adword_data');
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'account_url_profile_adword_data_detail');
+			break;
+			
+			case 'analytic':
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'analytic_profile_property_view_data');
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'analytic_profile_property_view_data_detail');
+			break;
+
+			case 'mbusiness':
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'account_url_profile_gmb_data');
+			break;
+
+			case 'webmaster':
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'account_url_profile_webmaster_data');
+			break;
+
+			case 'rankinity':
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'rankinity_projects_engines');
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'rankinity_projects_engine_rank');
+				$this->db->where( 'url_profile_id', $id)
+						->delete( 'rankinity_projects_engine_rank_visibility');
+			break;
+		}
+	}	
 }

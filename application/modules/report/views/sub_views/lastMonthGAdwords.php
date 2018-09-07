@@ -1,7 +1,23 @@
+<?php    
+    $s_month = 1;
+    if( $report_setting ){
+        $s_month = 0;
+        $settings = array( 'month' );
+        $report_setting[ 'ppc' ] = json_decode( $report_setting[ 'ppc' ] );
+        $enSettings = array_intersect($settings, $report_setting[ 'ppc' ]);
+        if( $enSettings ){
+            foreach ($enSettings as $enSetting) {
+                $setRef = 's_'.$enSetting;
+                ${$setRef} = 1;
+            }
+        }
+    }    
+    if( $s_month ){
+?>
 <div class="">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">YEAR-TO-DATE TABLE</h4>
+            <h4 class="card-title">Month Over Month</h4>
             <div class="table-responsive">                
                 <table
                 class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
@@ -50,4 +66,4 @@
         </div>
     </div>
 </div>
-<div>
+<?php } ?>

@@ -36,6 +36,7 @@ class Welcome extends MY_Controller {
 		$user_detail = $this->UserModel->checkLogin($username, $password);
 		if( $user_detail ){
 			$this->session->set_userdata( $user_detail );
+			com_update_session();
 			$this->session->set_flashdata('success', 'You are successfully logged in');
 			redirect( 'dashboard' );
 			exit;

@@ -1,3 +1,20 @@
+<?php
+    $s_month = $s_queries = $s_pages = 1;
+    if( $report_setting ){
+        $s_month = $s_queries = $s_pages = 0;
+        $settings = array( 'month', 'queries', 'pages');
+        $report_setting[ 'wm' ] = json_decode( $report_setting[ 'wm' ] );        
+        $enSettings = array_intersect($settings, $report_setting[ 'wm' ]);
+        if( $enSettings ){
+            foreach ($enSettings as $enSetting) {
+                $setRef = 's_'.$enSetting;
+                ${$setRef} = 1;
+            }
+        }
+    }    
+
+if (!isset($full_report_show) || !$full_report_show) {
+    ?>
 <div class="row">
     <div class="col-lg-12">
         <div class="card card-outline-info">
@@ -17,8 +34,9 @@
         </div>
     </div>
 </div>
+<?php }?>
 <!-- Row -->
-    <div id="currentMonthData">
+    <div id="currentMonthDataWM">
     <style type="text/css">
     .align-bottom small {
         position: absolute;
@@ -101,8 +119,8 @@
 </div>
 </div>
 
-<div id="lastMonthsData">
-
+<div id="lastMonthsDataWM">
+<?php if( $s_month ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -143,7 +161,7 @@
         </div>
     </div>
 </div>
-
+<?php } if( $s_queries ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -183,7 +201,7 @@
         </div>
     </div>
 </div>
-
+<?php } if( $s_pages ){ ?>
 <div class="">
     <div class="card">
         <div class="card-body">
@@ -223,4 +241,5 @@
         </div>
     </div>
 </div>
-<div>
+<?php } ?>
+</div>

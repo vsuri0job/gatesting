@@ -31,10 +31,10 @@
           resize: true,
           data: <?= json_encode($chart_graph) ?>,
           xkey: 'date',
-          ykeys: ['sess'],
-          labels: ['Sessions'],
+          ykeys: ['sess', 'user'],
+          labels: ['Sessions', 'Users'],
           gridLineColor: '#eef0f2',
-          lineColors: ['#009efb'],
+          lineColors: ['#009efb', '#2e893a'],
           lineWidth: 1,
           hideHover: 'auto'
         });

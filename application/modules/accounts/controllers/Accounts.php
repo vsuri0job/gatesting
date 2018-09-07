@@ -6,7 +6,7 @@ class Accounts extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->isLogin();
-		$this->load->model('AccountModel');
+		$this->load->model('AccountModel');		
 	}
 
 	public function valid_url($url) {
@@ -17,7 +17,7 @@ class Accounts extends MY_Controller {
 		return TRUE;
 	}
 
-	public function index() {
+	public function index() {		
 		$inner = array();
 		$shell = array();
 		$user_agencies = explode(',', com_user_data('agencies'));
@@ -160,6 +160,7 @@ class Accounts extends MY_Controller {
 	
 	public function editProfileUrl( $profId ) {
 		$profDet = $this->AccountModel->getFetchedAccountDetail($profId);
+		$profDetSetting = $this->AccountModel->getFetchedAccountDetailSetting($profId, com_user_data( 'id' ));		
 		if( !$profDet ){
 			redirect( 'dashboard' );
 			exit;
@@ -176,17 +177,32 @@ class Accounts extends MY_Controller {
 				$val_errors = implode("\n", $this->form_validation->error_array());
 			}			
 			$inner['profDet'] = $profDet;
+			$inner['profDetSetting'] = $profDetSetting;
 			$inner['validation_errors'] = $val_errors;
 			$shell['page_title'] = 'Edit Account url:- '.$profDet[ 'account_url' ];
 			$shell['content'] = $this->load->view('accounts/edit_prof', $inner, true);
 			$shell['footer_js'] = $this->load->view('accounts/edit_prof_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
-		} else {
+		} else {			
 			$data = array();
 			$data[ 'close_rate' ] = $this->input->post( 'close_rate' );;
 			$data[ 'ltv_amount' ] = $this->input->post( 'ltv_amount' );;
 			$data[ 'avg_sale_amount' ] = $this->input->post( 'avg_sale_amount' );;
 			$this->AccountModel->updateProfile( $profDet[ 'id' ], $data );
+
+			$data = array();
+			$data['profile_id'] = $profDet[ 'id' ];
+			$data['account_id'] = com_user_data( 'id' );			
+			$seo = $this->input->post( 'seo' );
+			$ppc = $this->input->post( 'ppc' );
+			$wm = $this->input->post( 'wm' );
+			$data['seo'] = $seo ? json_encode( $seo ) : json_encode( [] );
+			$data['ppc'] = $ppc? json_encode( $ppc ): json_encode( [] );
+			$data['wm'] = $wm ? json_encode( $wm ): json_encode( [] );
+			$where = array();
+			$where['profile_id'] = $profDet[ 'id' ];
+			$where['account_id'] = com_user_data( 'id' );
+			$this->AccountModel->updateProfileSetting( $where, $data );
 			redirect('accounts/list');
 			exit;
 		}

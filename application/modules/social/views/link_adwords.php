@@ -23,7 +23,7 @@
                                     <label class="control-label text-right col-md-2">Adwords Projects</label>
                                     <div class="col-md-10">
                                         <select name="adwordProject" id="adwordProject" class="form-control" required>
-                                            <option>Select</option>
+                                            <option value="">Select</option>
                                             <?php                                                
                                                 echo $projects;
                                             ?>
@@ -47,6 +47,14 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="hide" id="progressBar">
+            <div class="progress-bar bg-success" role="progressbar" id="progress-bar" 
+                style="width: 15%;height:15px;" 
+                role="progressbar"> 15% </div>
+            <div class="font-weight-bold">
+                Gathering Adwords data for the last 13 months, this will take a bit
             </div>
         </div>
     </div>

@@ -22,6 +22,15 @@ class UserModel extends CI_Model {
 		return $rst;
 	}
 
+	public function getUserSettingDetail($user_id) {
+		$rst = $this->db
+			->select('*')
+			->from('user_settings')
+			->where('user_id', $user_id)
+			->get()->result_array();
+		return $rst;
+	}
+
 	public function checkUserEmail($email, $exceptId) {
 		$rst = $this->db->where('email', $email)
 			->where('id <> ', $exceptId)
@@ -49,11 +58,13 @@ class UserModel extends CI_Model {
 					->where('user_id', com_user_data('id'))
 					->get()->row_array();
 			if( $userDet ){
-				$this->db->where('user_id', $userDet[ 'id' ] )
-						->update('user_settings', $extra);
-			} else {
-				$extra[ 'user_id' ] = com_user_data('id');
-				$this->db->insert('user_settings', $extra);
+				foreach ($extra as $extraDet) {					
+					$this->db->where('user_id', $userDet[ 'id' ] )
+							->where('setting_name', $extraDet[ 'setting_name' ] )
+							->update('user_settings', $extraDet);
+				}
+			} else {				
+				$this->db->insert_batch('user_settings', $extra);
 			}
 		}
 		$this->db->where('id', com_user_data('id'))
