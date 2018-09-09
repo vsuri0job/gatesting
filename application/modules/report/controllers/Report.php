@@ -29,9 +29,9 @@ class Report extends MY_Controller {
 				$this->fetchedGMB($profId, 1);
 			} else if ($reportName == 'rankinity') {
 				$this->rankinityProf($profId, 1);
-			} else if ($reportName == 'overview') {				
+			} else if ($reportName == 'overview') {
 				$this->overview($profId, 1);
-			} else if ($reportName == 'full') {	
+			} else if ($reportName == 'full') {
 				$this->complete_full($profId, 1);
 			} else {
 				redirect("/");
@@ -149,29 +149,29 @@ class Report extends MY_Controller {
 		$whereStack['month_ref'] = $month_ref;
 		$whereStack['url_profile_id'] = $prof_id;
 		$whereStack['report_type'] = 'session_graph';
-		$whereStack['account_id'] = $log_user_id;		
+		$whereStack['account_id'] = $log_user_id;
 		$opt = array();
 		$opt['row_only'] = 1;
 		$graph_data = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);
-		$graph_data = json_decode( $graph_data[ 'session_data' ] );				
+		$graph_data = json_decode($graph_data['session_data']);
 		$chart_graph = array();
-		if( $graph_data ){
+		if ($graph_data) {
 			foreach ($graph_data as $key => $value) {
 				$year = substr($value[0], 0, 4);
 				$month = substr($value[0], 4, 2);
 				$day = substr($value[0], 6, 2);
-				$chart_graph[ $key ][ 'date' ] = date('d-M-y', strtotime($year.'-'.$month.'-'.$day));
-				$chart_graph[ $key ][ 'sess' ] = $value[1];
-				$chart_graph[ $key ][ 'user' ] = $value[2];
+				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
+				$chart_graph[$key]['sess'] = $value[1];
+				$chart_graph[$key]['conversion'] = $value[2];
 			}
-		}		
-	 	$inner['chart_graph'] = $chart_graph;
-	 	$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($prof_id, com_user_data( 'id' ));
+		}
+		$inner['chart_graph'] = $chart_graph;
+		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($prof_id, com_user_data('id'));
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
 		$inner['prodDet'] = $prodDet;
 		$inner['show_public_url'] = !$publicView;
-		$inner['log_user_det'] = com_get_user_data( $log_user_id );
+		$inner['log_user_det'] = com_get_user_data($log_user_id);
 		$shell['page_title'] = 'Google Analytics';
 		$shell['content'] = $this->load->view('ganalytic_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('ganalytic_report_js', $inner, true);
@@ -210,7 +210,7 @@ class Report extends MY_Controller {
 		$inner['assoc_links'] = $this->ReportModel->getAccountGoogleAnalyticProfileAssos($log_user_id);
 		$ga_data = $this->ReportModel->getAccAdwordsData($log_user_id, $adword_acc_id, "", $fetch_prof_id);
 		$inner['ga_data'] = com_make2dArray($ga_data, 'month_ref');
-		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data( 'id' ));
+		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data('id'));
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAdwords', $inner, true);
 		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAdwords', $inner, true);
 		$shell['page_title'] = 'Google Adwords';
@@ -257,7 +257,7 @@ class Report extends MY_Controller {
 		$opt['limit'] = '13';
 		$opt['order'] = 'month_ref desc';
 		$inner['months'] = $this->ReportModel->getWebmasterData($fetch_prof_id, 'month', $opt);
-		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data( 'id' ));
+		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($fetch_prof_id, com_user_data('id'));
 		$shell['page_title'] = 'Google Search Console';
 		$shell['content'] = $this->load->view('gwmaster_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('gwmaster_report_js', $inner, true);
@@ -374,7 +374,7 @@ class Report extends MY_Controller {
 		return $out;
 	}
 
-	private function fetchViewGraphData($analytics, $viewId, $profId){
+	private function fetchViewGraphData($analytics, $viewId, $profId) {
 		$logUserId = com_user_data('id');
 		$sday_month = date('Y-m-01', strtotime('-30 days'));
 		$lday_month = date('Y-m-d', time());
@@ -382,9 +382,9 @@ class Report extends MY_Controller {
 		$opt = array();
 		$opt['dimensions'] = 'ga:date';
 		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month,'ga:sessions, ga:users', $opt);		
+			$sday_month, $lday_month, 'ga:sessions, goalCompletionsAll', $opt);
 		$detailData = array();
-		$rIndex = 0;		
+		$rIndex = 0;
 		$detailData[$rIndex]['view_id'] = $viewId;
 		$detailData[$rIndex]['report_type'] = 'session_graph';
 		$detailData[$rIndex]['month_ref'] = $month_ref;
@@ -404,7 +404,7 @@ class Report extends MY_Controller {
 		$detailData[$rIndex]['avg_page_download_time'] = "";
 		$detailData[$rIndex]['goal_conversion_rate'] = "";
 		$detailData[$rIndex]['goal_completion_all'] = "";
-		$detailData[$rIndex]['session_data'] = json_encode( $ga_rstdata->rows );
+		$detailData[$rIndex]['session_data'] = json_encode($ga_rstdata->rows);
 		$whereStack = array();
 		$whereStack['view_id'] = $viewId;
 		$whereStack['month_ref'] = $month_ref;
@@ -740,9 +740,9 @@ class Report extends MY_Controller {
 		if (!$profDet || !$trelloToken || !$trello_board_id) {
 			redirect('accounts/list');
 			exit;
-		}		
-		$inner = $shell = $cards = $cardLists =array();
-		$cardLists = array( 'curr_mon' => '', 'last_mon' => '');
+		}
+		$inner = $shell = $cards = $cardLists = array();
+		$cardLists = array('curr_mon' => '', 'last_mon' => '');
 		if ($trelloToken) {
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
@@ -754,8 +754,8 @@ class Report extends MY_Controller {
 			$cards = json_decode($cards);
 
 			list($currMonth, $lastMonth) = com_lastMonths(2, "", true);
-			$tmNames = array( date("F", strtotime( $currMonth )), date("M", strtotime( $currMonth )) );
-			$lmNames = array( date("F", strtotime( $lastMonth )), date("M", strtotime( $lastMonth )) );
+			$tmNames = array(date("F", strtotime($currMonth)), date("M", strtotime($currMonth)));
+			$lmNames = array(date("F", strtotime($lastMonth)), date("M", strtotime($lastMonth)));
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
 				'token' => $trelloToken,
@@ -763,34 +763,34 @@ class Report extends MY_Controller {
 			$opt = array();
 			$opt['url'] = "https://api.trello.com/1/boards/" . $trello_board_id . '/lists?' . $query;
 			$blists = $this->curlRequest($opt);
-			$blists = json_decode($blists);			
+			$blists = json_decode($blists);
 			$cYear = date("Y", time());
-			if( $blists ){
+			if ($blists) {
 				foreach ($blists as $blist) {
-					if( !$cardLists[ 'curr_mon' ] ){
+					if (!$cardLists['curr_mon']) {
 						foreach ($tmNames as $tmName) {
-							if( ( strpos($blist->name, $tmName) !== FALSE ) 
-								&& ( strpos($blist->name, $cYear ) !== FALSE )  ){
-								$cardLists[ 'curr_mon' ] = $blist;								
+							if ((strpos($blist->name, $tmName) !== FALSE)
+								&& (strpos($blist->name, $cYear) !== FALSE)) {
+								$cardLists['curr_mon'] = $blist;
 								break;
 							}
 						}
 					}
-					if( !$cardLists[ 'last_mon' ] ){
+					if (!$cardLists['last_mon']) {
 						foreach ($lmNames as $lmName) {
-							if( ( strpos($blist->name, $lmName) !== FALSE ) 
-								&& ( strpos($blist->name, $cYear ) !== FALSE )  ){								
-								$cardLists[ 'last_mon' ] = $blist;
+							if ((strpos($blist->name, $lmName) !== FALSE)
+								&& (strpos($blist->name, $cYear) !== FALSE)) {
+								$cardLists['last_mon'] = $blist;
 								break;
 							}
 						}
-					}					
+					}
 				}
-			}		
+			}
 		}
 		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);
-		$log_user_id = com_user_data('id');	
-		$inner['board'] = $this->ReportModel->getBoardDetail( $trello_board_id );		
+		$log_user_id = com_user_data('id');
+		$inner['board'] = $this->ReportModel->getBoardDetail($trello_board_id);
 		$inner['cards'] = $cards;
 		$inner['cardLists'] = $cardLists;
 		$inner['cardsColor'] = RandomColor::many(count($inner['cards']));
@@ -1078,11 +1078,11 @@ class Report extends MY_Controller {
 				exit;
 			}
 		}
-		
+
 		$linkAccId = $prodDet['linked_account_id'];
 		$linkServUrl = $prodDet['linked_service_url'];
-		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $linkAccId);		
-		$serviceUrlData = com_makelist( $serviceUrlData, 'services', 'price', false);		
+		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $linkAccId);
+		$serviceUrlData = com_makelist($serviceUrlData, 'services', 'price', false);
 		$inner = array();
 		$shell = array();
 		$inner['prodDet'] = $prodDet;
@@ -1091,13 +1091,13 @@ class Report extends MY_Controller {
 		$profileId = $prodDet['profile_id'];
 		$propertyId = $prodDet['property_id'];
 		$months_tstamps = com_lastMonths(13);
-		$ga_data = array();		
+		$ga_data = array();
 		foreach ($months_tstamps as $mtstamp => $mDate) {
-			$month_ref = date('Y-m', $mtstamp);			
-			$gaData = $this->ReportModel->fetchViewAnalyticData($month_ref, $viewId, $profId);						
+			$month_ref = date('Y-m', $mtstamp);
+			$gaData = $this->ReportModel->fetchViewAnalyticData($month_ref, $viewId, $profId);
 			$gaData['month_ref'] = date('F Y', $mtstamp);
 			$ga_data[$month_ref] = $gaData;
-		}		
+		}
 		$inner['show_public_url'] = !$publicView;
 		$inner['ga_data'] = $ga_data;
 		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
@@ -1110,7 +1110,7 @@ class Report extends MY_Controller {
 		$gmb_data = $this->ReportModel->fetchUrlGoogleMyBusinessMonthData($profId, $locs, 13);
 		$gmb_data = com_make2dArray($gmb_data, 'month_ref');
 		$inner['gmb_data'] = $gmb_data;
-		$inner['gmb_locs'] = $gmb_locs;		
+		$inner['gmb_locs'] = $gmb_locs;
 		$shell['page_title'] = 'Overview Report';
 		$shell['content'] = $this->load->view('overview_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('overview_report_js', $inner, true);
@@ -1140,7 +1140,7 @@ class Report extends MY_Controller {
 		$linkAccId = $prodDet['linked_account_id'];
 		$linkServUrl = $prodDet['linked_service_url'];
 		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $linkAccId);
-		$serviceUrlData = com_makelist( $serviceUrlData, 'services', 'price', false);		
+		$serviceUrlData = com_makelist($serviceUrlData, 'services', 'price', false);
 		$inner = array();
 		$shell = array();
 		$inner['full_report_show'] = true;
@@ -1229,27 +1229,27 @@ class Report extends MY_Controller {
 		$whereStack['month_ref'] = $month_ref;
 		$whereStack['url_profile_id'] = $prof_id;
 		$whereStack['report_type'] = 'session_graph';
-		$whereStack['account_id'] = $log_user_id;		
+		$whereStack['account_id'] = $log_user_id;
 		$opt = array();
 		$opt['row_only'] = 1;
 		$graph_data = $this->ReportModel->getGAdataDetail($whereStack, $orderBy, $opt);
-		$graph_data = json_decode( $graph_data[ 'session_data' ] );				
+		$graph_data = json_decode($graph_data['session_data']);
 		$chart_graph = array();
-		if( $graph_data ){
+		if ($graph_data) {
 			foreach ($graph_data as $key => $value) {
 				$year = substr($value[0], 0, 4);
 				$month = substr($value[0], 4, 2);
 				$day = substr($value[0], 6, 2);
-				$chart_graph[ $key ][ 'date' ] = date('d-M-y', strtotime($year.'-'.$month.'-'.$day));
-				$chart_graph[ $key ][ 'sess' ] = $value[1];
+				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
+				$chart_graph[$key]['sess'] = $value[1];
 			}
 		}
 		$anly_repo['report_setting'] = [];
-	 	$anly_repo['chart_graph'] = $chart_graph;
+		$anly_repo['chart_graph'] = $chart_graph;
 		$anly_repo['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $anly_repo, true);
 		$anly_repo['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $anly_repo, true);
 		$inner['ganalytic_report'] = $this->load->view('ganalytic_report', $anly_repo, true);
-		$inner['ganalytic_report_js'] = $this->load->view('ganalytic_report_js', $anly_repo, true);		
+		$inner['ganalytic_report_js'] = $this->load->view('ganalytic_report_js', $anly_repo, true);
 		$adw_repo = array();
 		$fetch_prof_id = $prodDet['id'];
 		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
@@ -1322,11 +1322,11 @@ class Report extends MY_Controller {
 
 		$trello = array();
 		$trelloToken = com_arrIndex($prodDet, 'trello_access_token', '');
-		$trello_board_id = com_arrIndex($prodDet, 'linked_trello_board_id', '');		
+		$trello_board_id = com_arrIndex($prodDet, 'linked_trello_board_id', '');
 		if ($trelloToken && $trello_board_id) {
 			$trello['board'] = $trello['cards'] = array();
-			$trello['cardLists'] = array( 'curr_mon' => '', 'last_mon' => '');
-			$cards = $cardLists =array();			
+			$trello['cardLists'] = array('curr_mon' => '', 'last_mon' => '');
+			$cards = $cardLists = array();
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
 				'token' => $trelloToken,
@@ -1336,8 +1336,8 @@ class Report extends MY_Controller {
 			$cards = $this->curlRequest($opt);
 			$cards = json_decode($cards);
 			list($currMonth, $lastMonth) = com_lastMonths(2, "", true);
-			$tmNames = array( date("F", strtotime( $currMonth )), date("M", strtotime( $currMonth )) );
-			$lmNames = array( date("F", strtotime( $lastMonth )), date("M", strtotime( $lastMonth )) );
+			$tmNames = array(date("F", strtotime($currMonth)), date("M", strtotime($currMonth)));
+			$lmNames = array(date("F", strtotime($lastMonth)), date("M", strtotime($lastMonth)));
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
 				'token' => $trelloToken,
@@ -1347,36 +1347,36 @@ class Report extends MY_Controller {
 			$blists = $this->curlRequest($opt);
 			$blists = json_decode($blists);
 			$cYear = date("Y", time());
-			if( $blists ){
+			if ($blists) {
 				foreach ($blists as $blist) {
-					if( !$cardLists[ 'curr_mon' ] ){
+					if (!$cardLists['curr_mon']) {
 						foreach ($tmNames as $tmName) {
-							if( ( strpos($blist->name, $tmName) !== FALSE ) 
-								&& ( strpos($blist->name, $cYear ) !== FALSE )  ){
-								$cardLists[ 'curr_mon' ] = $blist;								
+							if ((strpos($blist->name, $tmName) !== FALSE)
+								&& (strpos($blist->name, $cYear) !== FALSE)) {
+								$cardLists['curr_mon'] = $blist;
 								break;
 							}
 						}
 					}
-					if( !$cardLists[ 'last_mon' ] ){
+					if (!$cardLists['last_mon']) {
 						foreach ($lmNames as $lmName) {
-							if( ( strpos($blist->name, $lmName) !== FALSE ) 
-								&& ( strpos($blist->name, $cYear ) !== FALSE )  ){								
-								$cardLists[ 'last_mon' ] = $blist;
+							if ((strpos($blist->name, $lmName) !== FALSE)
+								&& (strpos($blist->name, $cYear) !== FALSE)) {
+								$cardLists['last_mon'] = $blist;
 								break;
 							}
 						}
-					}					
+					}
 				}
 			}
-			$trello['board'] = $this->ReportModel->getBoardDetail( $trello_board_id );
+			$trello['board'] = $this->ReportModel->getBoardDetail($trello_board_id);
 			$trello['cards'] = $cards;
 			$trello['cardLists'] = $cardLists;
 			$trello['skip_det_link'] = 1;
 			$inner['tboard_report'] = $this->load->view('tboard_report', $trello, true);
 			$inner['tboard_report_js'] = $this->load->view('tboard_report_js', $trello, true);
 		}
-				
+
 		$webmaster['full_report_show'] = true;
 		$opt = array();
 		$opt['row_only'] = 1;
