@@ -28,15 +28,15 @@ class AccountModel extends CI_Model {
 	public function getAccountDetail($account_id, $agencies = array()) {
 		$rst = array();
 		if ($account_id) {
-			if( $agencies ){
+			if ($agencies) {
 				$this->db->where_in('agency_id', $agencies);
 			}
 			$rst = $this->db->select('accounts.id, accounts.agency_id, accounts.name,
 						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
-						accounts.account_status, 
+						accounts.account_status,
 						accounts.status, agencies.name `agency_name`')
 				->from('accounts')
-				->join('agencies', 'agency_id=agencies.id')				
+				->join('agencies', 'agency_id=agencies.id')
 				->where_in('accounts.status', 1)
 				->where('accounts.id', $account_id)
 				->get()->row_array();
@@ -47,16 +47,16 @@ class AccountModel extends CI_Model {
 	public function getAccountDetailFromServiceUrl($serviceUrl, $agencies = array()) {
 		$rst = array();
 		if ($serviceUrl) {
-			if( $agencies ){
+			if ($agencies) {
 				$this->db->where_in('agency_id', $agencies);
 			}
 			$rst = $this->db->select('accounts.id, accounts.agency_id, accounts.name,
 						accounts.email, accounts.parent_account_id, accounts.firstname, accounts.lastname,
-						accounts.account_status, 
+						accounts.account_status,
 						accounts.status, agencies.name `agency_name`')
 				->from('accounts')
 				->join('agencies', 'agency_id=agencies.id')
-				->join('services', 'services.account_id=accounts.id and services.status = 1' )
+				->join('services', 'services.account_id=accounts.id and services.status = 1')
 				->where_in('accounts.status', 1)
 				->where('services.url', $serviceUrl)
 				->get()->row_array();
@@ -142,9 +142,9 @@ class AccountModel extends CI_Model {
 
 	public function getFetchedAccountDetailSetting($aId, $account_id) {
 		return $this->db->from('account_url_profile_settings')
-				->where( 'profile_id', $aId )
-				->where( 'account_id', $account_id )
-				->get()->row_array();
+			->where('profile_id', $aId)
+			->where('account_id', $account_id)
+			->get()->row_array();
 	}
 
 	public function linkAnalyticAccount($analytic_id, $account_id) {
@@ -216,7 +216,7 @@ class AccountModel extends CI_Model {
 
 	public function addRankinityProjectEngineVisibility($data) {
 		if ($data) {
-			$this->db->insert_batch('rankinity_projects_engine_rank_visibility', $data);			
+			$this->db->insert_batch('rankinity_projects_engine_rank_visibility', $data);
 		}
 	}
 
@@ -246,9 +246,9 @@ class AccountModel extends CI_Model {
 	private function getProjectVisibilityData($projectId, $engineId, $aProfId) {
 		$data = $opt = array();
 		$opt['search_engine_id'] = $engineId;
-		$opt['project_id'] = $projectId;		
-		$visibilities = $this->rankinity->getProjectEngineVisibilities($opt);		
-		if (isset($visibilities['items'][0])) {			
+		$opt['project_id'] = $projectId;
+		$visibilities = $this->rankinity->getProjectEngineVisibilities($opt);
+		if (isset($visibilities['items'][0])) {
 			$visibility = $visibilities['items'][0];
 			$data['url_profile_id'] = $aProfId;
 			$data['visibility_id'] = $visibility['id'];
@@ -372,7 +372,8 @@ class AccountModel extends CI_Model {
 		return $projects['meta']['total'];
 	}
 
-	public function updateGoogleAdwordsData($profId, $adword_prj) {
+	public function updateGoogleAdwordsData($profDet, $log_user_id, $monthNum) {
+		$profId = $profDet['id'];
 		$fld_con = array();
 		$fld_con['CTR'] = 'ctr';
 		$fld_con['Cost'] = 'cost';
@@ -385,21 +386,17 @@ class AccountModel extends CI_Model {
 		$fld_con['Cost/conv.'] = 'cost_per_conversion';
 		$fld_con['Avg.position'] = 'avg_position';
 		$this->load->library('CSVReader');
-		$log_user_id = com_user_data('id');
-		// $linked_adwords = $this->SocialModel->getAccountGoogleAdwordsLinkDet($log_user_id);
-		$linked_adwords = $adword_prj;
-		$linked_adword_acc_id = $linked_adwords['account_id'];
+		$linked_adword_acc_id = $profDet['linked_adwords_acc_id'];
 		$upWhere = $upData = array();
 		$upData['linked_adwords_acc_id'] = $linked_adword_acc_id;
 		$upWhere['id'] = $profId;
 		$upWhere['account_id'] = $log_user_id;
 		$this->db->where($upWhere)
 			->update('account_url_profiles', $upData);
-		$months_tstamps = com_lastMonths( 13 );
+		$months_tstamps = com_lastMonths($monthNum);
 		$currMonthRef = date('Y-m', time());
 		$lastMonthRef = date('Y-m', strtotime("-1 months"));
 		foreach ($months_tstamps as $mtstamp => $mDate) {
-			$profDet = $this->getFetchedAccountDetail($profId);
 			$adw_msm = array();
 			$adw_mdt = array();
 			$month_ref = date('Y-m', $mtstamp);
@@ -471,12 +468,12 @@ class AccountModel extends CI_Model {
 		$data['view_id'] = "";
 		$data['profile_id'] = "";
 		$data['property_id'] = "";
-		$data['share_gmb_link'] = "";		
-		$data['linked_rankinity_id'] = "";		
+		$data['share_gmb_link'] = "";
+		$data['linked_rankinity_id'] = "";
 		$data['linked_trello_board_id'] = "";
 		$data['linked_account_id'] = 0;
 		$data['share_gsc_link'] = "";
-		$data['share_full_link'] = "";		
+		$data['share_full_link'] = "";
 		$data['share_trello_link'] = "";
 		$data['linked_google_page'] = "";
 		$data['share_adwords_link'] = "";
@@ -488,10 +485,10 @@ class AccountModel extends CI_Model {
 		$data['linked_adwords_acc_id'] = "";
 		$data['linked_google_page_location'] = "";
 		$data['account_id'] = com_user_data('id');
-		$data['close_rate'] = (float)$this->input->post('close_rate');
-		$data['ltv_amount'] = (float)$this->input->post('ltv_amount');
+		$data['close_rate'] = (float) $this->input->post('close_rate');
+		$data['ltv_amount'] = (float) $this->input->post('ltv_amount');
 		$data['account_url'] = $this->input->post('account_url');
-		$data['avg_sale_amount'] = (float)$this->input->post('avg_sale_amount');
+		$data['avg_sale_amount'] = (float) $this->input->post('avg_sale_amount');
 		$this->db->insert('account_url_profiles', $data);
 
 		$profile_id = $this->db->insert_id();
@@ -512,36 +509,35 @@ class AccountModel extends CI_Model {
 		$this->db->insert('account_url_profiles_social_token', $data);
 
 		$data = [];
-		
-		$data['share_gsc_link'] = com_b64UrlEncode('gsc/'.$profile_id);
-		$data['share_gmb_link'] = com_b64UrlEncode('gmb/'.$profile_id);
-		$data['share_full_link'] = com_b64UrlEncode('full/'.$profile_id);
-		$data['share_trello_link'] = com_b64UrlEncode('trello/'.$profile_id);
-		$data['share_adwords_link'] = com_b64UrlEncode('adword/'.$profile_id);
-		$data['share_analytic_link'] = com_b64UrlEncode('analytic/'.$profile_id);
-		$data['share_overview_link'] = com_b64UrlEncode('overview/'.$profile_id);
-		$data['share_citation_link'] = com_b64UrlEncode('citation/'.$profile_id);
-		$data['share_rankinity_link'] = com_b64UrlEncode('rankinity/'.$profile_id);
-		$this->db->where( 'id', $profile_id)
-				->update('account_url_profiles', $data);
+
+		$data['share_gsc_link'] = com_b64UrlEncode('gsc/' . $profile_id);
+		$data['share_gmb_link'] = com_b64UrlEncode('gmb/' . $profile_id);
+		$data['share_full_link'] = com_b64UrlEncode('full/' . $profile_id);
+		$data['share_trello_link'] = com_b64UrlEncode('trello/' . $profile_id);
+		$data['share_adwords_link'] = com_b64UrlEncode('adword/' . $profile_id);
+		$data['share_analytic_link'] = com_b64UrlEncode('analytic/' . $profile_id);
+		$data['share_overview_link'] = com_b64UrlEncode('overview/' . $profile_id);
+		$data['share_citation_link'] = com_b64UrlEncode('citation/' . $profile_id);
+		$data['share_rankinity_link'] = com_b64UrlEncode('rankinity/' . $profile_id);
+		$this->db->where('id', $profile_id)
+			->update('account_url_profiles', $data);
 	}
 
-	
-	public function updateProfile( $profId, $data ){
-		return $this->db->where( 'id', $profId)
-					->update('account_url_profiles', $data);
+	public function updateProfile($profId, $data) {
+		return $this->db->where('id', $profId)
+			->update('account_url_profiles', $data);
 	}
 
-	public function updateProfileSetting($where, $data){
-		$profSetting = $this->db->select( 'id' )
-							->from( 'account_url_profile_settings' )
-							->where( $where )
-							->get()->row_array();
-		if( $profSetting ){
-			$this->db->where( 'id', $profSetting[ 'id' ] )
-					->update( 'account_url_profile_settings', $data);
+	public function updateProfileSetting($where, $data) {
+		$profSetting = $this->db->select('id')
+			->from('account_url_profile_settings')
+			->where($where)
+			->get()->row_array();
+		if ($profSetting) {
+			$this->db->where('id', $profSetting['id'])
+				->update('account_url_profile_settings', $data);
 		} else {
-			$this->db->insert( 'account_url_profile_settings', $data);
+			$this->db->insert('account_url_profile_settings', $data);
 		}
 	}
 
@@ -561,81 +557,81 @@ class AccountModel extends CI_Model {
 			->get()->row_array();
 	}
 
-	public function getAccountServiceUrls( $agencies = array() ){
+	public function getAccountServiceUrls($agencies = array()) {
 		return $this->db->distinct()
-				->select( 'accounts.name, accounts.id, url, concat(url, " ", group_concat( services_master.name ) ) as `services`' )
-				->from( 'accounts' )
-				->join( 'services', 'services.account_id=accounts.id and services.status = 1' )
-				->join( 'services_master', 'service_master_id=services_master.id and services_master.status = 1' )
-				->where_in('agency_id', $agencies)				
-				->where( 'services.url <> ', "" )
-				->group_by( 'url, account_id' )->get()->result_array();
+			->select('accounts.name, accounts.id, url, concat(url, " ", group_concat( services_master.name ) ) as `services`')
+			->from('accounts')
+			->join('services', 'services.account_id=accounts.id and services.status = 1')
+			->join('services_master', 'service_master_id=services_master.id and services_master.status = 1')
+			->where_in('agency_id', $agencies)
+			->where('services.url <> ', "")
+			->group_by('url, account_id')->get()->result_array();
 	}
 
-	public function getAgencies(){
-		return 	$this->db->from( 'agencies' )
-					->get()->result_array();
+	public function getAgencies() {
+		return $this->db->from('agencies')
+			->get()->result_array();
 	}
 
-	public function addAgencies( $data ){
-		return 	$this->db->insert( 'agencies', $data );
+	public function addAgencies($data) {
+		return $this->db->insert('agencies', $data);
 	}
 
-	public function removeAccountDetail( $profId ){
-		$this->db->where( 'id', $profId)
-				->delete( 'account_url_profiles' );
+	public function removeAccountDetail($profId) {
+		$this->db->where('id', $profId)
+			->delete('account_url_profiles');
 	}
 
-	public function getAgencyData( $agencyId ){
-		return 	$this->db->where('id', $agencyId)
-					->from( 'agencies' )
-					->get()->row_array();
+	public function getAgencyData($agencyId) {
+		return $this->db->where('id', $agencyId)
+			->from('agencies')
+			->get()->row_array();
 	}
 
-	public function getAgencyUsers( $agencyId ){
-		return 	$this->db->where('agency_id', $agencyId)
-					->from( 'agency_users' )
-					->get()->result_array();
+	public function getAgencyUsers($agencyId) {
+		return $this->db->where('agency_id', $agencyId)
+			->from('agency_users')
+			->get()->result_array();
 	}
 
-	public function addAgencyUser( $agencyData ){
-		$this->db->insert( 'agency_users', $agencyData );
+	public function addAgencyUser($agencyData) {
+		$this->db->insert('agency_users', $agencyData);
 	}
 
-	public function resetLinkedData($id, $ref){
+	public function resetLinkedData($id, $ref) {
 		switch ($ref) {
-			case 'adwords':
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'account_url_profile_adword_data');
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'account_url_profile_adword_data_detail');
-			break;
-			
-			case 'analytic':
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'analytic_profile_property_view_data');
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'analytic_profile_property_view_data_detail');
+		case 'adwords':
+			$this->db->where('url_profile_id', $id)
+				->delete('account_url_profile_adword_data');
+			$this->db->where('url_profile_id', $id)
+				->delete('account_url_profile_adword_data_detail');
 			break;
 
-			case 'mbusiness':
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'account_url_profile_gmb_data');
+		case 'analytic':
+			$this->db->where('url_profile_id', $id)
+				->delete('analytic_profile_property_view_data');
+			$this->db->where('url_profile_id', $id)
+				->delete('analytic_profile_property_view_data_detail');
 			break;
 
-			case 'webmaster':
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'account_url_profile_webmaster_data');
+		case 'mbusiness':
+			$this->db->where('url_profile_id', $id)
+				->delete('account_url_profile_gmb_data');
 			break;
 
-			case 'rankinity':
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'rankinity_projects_engines');
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'rankinity_projects_engine_rank');
-				$this->db->where( 'url_profile_id', $id)
-						->delete( 'rankinity_projects_engine_rank_visibility');
+		case 'webmaster':
+			$this->db->where('url_profile_id', $id)
+				->delete('account_url_profile_webmaster_data');
+			break;
+
+		case 'rankinity':
+			$this->db->where('url_profile_id', $id)
+				->delete('rankinity_projects_engines');
+			$this->db->where('url_profile_id', $id)
+				->delete('rankinity_projects_engine_rank');
+			$this->db->where('url_profile_id', $id)
+				->delete('rankinity_projects_engine_rank_visibility');
 			break;
 		}
-	}	
+	}
 }

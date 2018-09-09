@@ -69,10 +69,10 @@ class Loaddata {
 			$scopes[] = "https://www.googleapis.com/auth/analytics.provision";
 			$scopes[] = "https://www.googleapis.com/auth/analytics.manage.users";
 		} else if ($prod == 'adwords') {
-			$rName = "Adwords";			
+			$rName = "Adwords";
 			$scopes[] = "https://www.googleapis.com/auth/adwords";
 		} else if ($prod == 'mbusiness') {
-			$rName = "Google Business";			
+			$rName = "Google Business";
 			$scopes[] = "https://www.googleapis.com/auth/plus.business.manage";
 		} else if ($prod == 'webmaster') {
 			$rName = "Google Webmaster";
@@ -108,9 +108,9 @@ class Loaddata {
 		$profToken = array();
 		if ($tokenExpired) {
 			$client->fetchAccessTokenWithRefreshToken($refresh_token);
-			$access_token = $client->getAccessToken();			
+			$access_token = $client->getAccessToken();
 			$profToken = $this->_ci->SocialappModel
-							->updateGoogleTokens($prodType, $access_token, $refresh_token, $profId);
+				->updateGoogleTokens($prodType, $access_token, $refresh_token, $profId);
 		}
 		if ($getClient) {
 			$out = array();

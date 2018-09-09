@@ -6,33 +6,33 @@ $attr['height'] = '19px';
 $attr['class'] = 'm-l-5';
 $attr['title'] = $attr['alt'] = 'Google My Business';
 $iconConf = array();
-$iconConf[ 'onclick' ] = "return confirm('Are you sure, you want to reset account?')";
-$gmbIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/mbusiness' ), 
-			img(base_url('img/social/gmb-on.png'), false, $attr), $iconConf);
+$iconConf['onclick'] = "return confirm('Are you sure, you want to reset account?')";
+$gmbIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/mbusiness'),
+	img(base_url('img/social/gmb-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Adwords';
-$ppcIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/adwords' ), 
-			img(base_url('img/social/adwords-on.png'), false, $attr), $iconConf);
+$ppcIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/adwords'),
+	img(base_url('img/social/adwords-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Analytics';
-$seoIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/analytic' ), 
-			img(base_url('img/social/analytic-on.png'), false, $attr), $iconConf);
+$seoIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/analytic'),
+	img(base_url('img/social/analytic-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Trello';
-$trelloIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/trello' ), 
-			img(base_url('img/social/trello-on.png'), false, $attr), $iconConf);
+$trelloIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/trello'),
+	img(base_url('img/social/trello-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Rankings';
-$rankIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/rankinity' ), 
-			img(base_url('img/social/rankinity-on.png'), false, $attr), $iconConf);
+$rankIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/rankinity'),
+	img(base_url('img/social/rankinity-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Admin';
-$adminIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/admin' ), 
-			img(base_url('img/social/admin-on.png'), false, $attr), $iconConf);
+$adminIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/admin'),
+	img(base_url('img/social/admin-on.png'), false, $attr), $iconConf);
 $attr['title'] = $attr['alt'] = 'Google Search Console';
-$webMIcon = anchor( base_url( 'social/reset_link/'.$account['id'].'/webmaster' ), 
-			img(base_url('img/social/search-console-on.png'), false, $attr), $iconConf);
+$webMIcon = anchor(base_url('social/reset_link/' . $account['id'] . '/webmaster'),
+	img(base_url('img/social/search-console-on.png'), false, $attr), $iconConf);
 $icon = array();
 $icon['width'] = '19px';
 $icon['height'] = '19px';
 $icon['class'] = 'm-l-5';
-$profIcon = anchor( base_url('accounts/editProfileUrl/' . $account['id']), 
-	'<i class="mdi mdi-settings"></i>', $icon );
+$profIcon = anchor(base_url('accounts/editProfileUrl/' . $account['id']),
+	'<i class="mdi mdi-settings"></i>', $icon);
 
 if (!$account['analytic_refresh_token'] || $account['analytic_reset_token']) {
 	$aattr = array();
@@ -86,7 +86,7 @@ if (!$account['linked_account_id']) {
 }
 
 $profHtml = '';
-$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon . $adminIcon. $profIcon;
+$iconsHtml = $seoIcon . $ppcIcon . $gmbIcon . $webMIcon . $trelloIcon . $rankIcon . $adminIcon . $profIcon;
 $rHtml = $viewAll = $seoHtml = $ppcHtml = $localHtml = $ccHtml = $trHtml = $webMHtml = 'N/A';
 // $services = explode(',', $account[ 'services' ]);
 // $services = array_unique($services);
@@ -127,9 +127,9 @@ if ($account['adword_customer_id']) {
 	}
 }
 
-if ($account['trello_access_token']) {	
+if ($account['trello_access_token']) {
 	$trHtml = '<a href="' . base_url('social/link_trello/' . $account['id']) . '"
-                    class="btn btn-primary m-t-10">Link</a>';	
+                    class="btn btn-primary m-t-10">Link</a>';
 	if ($account['linked_trello_board_id']) {
 		$hasReports = true;
 		$trHtml = '<a href="' . base_url('report/tboardreport/' . $account['id']) . '"
