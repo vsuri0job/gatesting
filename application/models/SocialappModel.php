@@ -175,13 +175,19 @@ class SocialappModel extends CI_Model {
 			->update('account_url_profiles', $data);
 	}
 
-	public function updateGBuissData($prof_id, $udata) {
-		$this->db->where('url_profile_id', $prof_id)
-			->delete('account_url_profile_gmb_data');
-		$this->db->insert_batch('account_url_profile_gmb_data', $udata);
+	public function updateGBuissData($prof_id, $mRef, $udata) {
+		if( $mRef && $prof_id){			
+			$this->db->where('url_profile_id', $prof_id)
+				->where_in('month_ref', $mRef)
+				->delete('account_url_profile_gmb_data');
+			if( $udata ){
+				$this->db->insert_batch('account_url_profile_gmb_data', $udata);
+			}
+		}
 	}
 
 	public function updateProfileGBuissData($fetchedProfile, $monthNum) {
+		$profId = $fetchedProfile[ 'id' ];
 		if ($fetchedProfile) {
 			$flds = array();
 			$flds['month_ref'] = "";
@@ -223,12 +229,14 @@ class SocialappModel extends CI_Model {
 			$months_tstamps = com_lastMonths($monthNum, '', false, true);
 			$gmbData = array();
 			$currTimeStamp = date("Y-m", time());
+			$monthRefDel = array();
 			foreach ($months_tstamps as $monthDTime => $monthRef) {
-				$monthYearDate = date("Y-m", $monthDTime);
+				$monthYearDate = date("Y-m", $monthDTime);				
 				$stTime = date('Y-m-01\T00:00:00\Z', $monthDTime);
 				$edTime = date('Y-m-t\T23:59:59\Z', $monthDTime);
 				if ($monthYearDate == $currTimeStamp) {
-					$edTime = date('Y-m-d\Th:i:s\Z', time());
+					// $edTime = date('Y-m-d\T00:00:01\Z', time());
+					$edTime = '2018-09-09T23:59:50Z';					
 				}
 				foreach ($pageLocPrep as $pageRef => $pageLocRef) {
 					$trange = new Google_Service_MyBusiness_TimeRange();
@@ -247,11 +255,14 @@ class SocialappModel extends CI_Model {
 					$repoInsight->locationNames = $pageLocRef;
 					$repoInsight->setBasicRequest($bMetric);
 
+
 					$gList = $this->GMBS->accounts_locations->reportInsights($pageRef, $repoInsight);
 					foreach ($gList->locationMetrics as $locKey => $locDet) {
+						$mRef = date("Y-m", strtotime($monthRef));
+						$monthRefDel[] = $mRef;
 						$indKey = $monthRef . '-' . $locDet->locationName;
 						$gmbData[$indKey] = $flds;
-						$gmbData[$indKey]['month_ref'] = date("Y-m", strtotime($monthRef));
+						$gmbData[$indKey]['month_ref'] = $mRef;
 						$gmbData[$indKey]['location_name'] = $locDet->locationName;
 						if ($locDet->metricValues) {
 							foreach ($locDet->metricValues as $metKey => $metDet) {
@@ -263,7 +274,7 @@ class SocialappModel extends CI_Model {
 				}
 			}
 			/* Loop End */
-			$this->updateGBuissData($profId, $gmbData);
+			$this->updateGBuissData($profId, $monthRefDel, $gmbData);
 		}
 	}
 }

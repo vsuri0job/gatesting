@@ -22,7 +22,7 @@
                                     <label class="control-label text-right col-md-2">Rankinity Projects</label>
                                     <div class="col-md-10">                                        
                                             <?php
-                                                echo form_dropdown( 'rankProjects', $projects, [], 
+                                                echo form_dropdown( 'rankProjects', $projects, array(), 
                                                     ' id="rankProjects" class="form-control" required' );
                                             ?>
                                     </div>

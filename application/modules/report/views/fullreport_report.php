@@ -77,18 +77,18 @@
 
     <div class="m-b-10">
         <?php 
-        if( $profDet[ 'linked_trello_board_id' ]){
-            echo '<h4 class="m-b-10">Trello Report</h4>';
-            echo $tboard_report;
+        if( $profDet[ 'linked_webmaster_site' ]){
+            echo '<h4 class="m-b-10">Google Search Console Report</h4>';
+            echo $gwmaster_report;
         }
         ?>
     </div>
 
     <div class="m-b-10">
         <?php 
-        if( $profDet[ 'linked_webmaster_site' ]){
-            echo '<h4 class="m-b-10">Google Search Console Report</h4>';
-            echo $gwmaster_report;
+        if( $profDet[ 'linked_trello_board_id' ]){
+            echo '<h4 class="m-b-10">Trello Report</h4>';
+            echo $tboard_report;
         }
         ?>
     </div>

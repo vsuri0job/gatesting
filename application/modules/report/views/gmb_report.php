@@ -1,3 +1,13 @@
+<style type="text/css">
+.align-bottom small {
+    position: absolute;
+    right: 0;
+    top: 11px;
+}
+.kpiText{
+    padding: 0; 
+}
+</style>
 <?php if (!isset($full_report_show) || !$full_report_show) {
 	?>
 <div class="row">
@@ -38,7 +48,69 @@ echo form_dropdown('locations', $gmb_locs, "",
                 </div>
 <?php }?>
 <!-- Row -->
-
+<div class="row">
+    <div class="col-lg-3 col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title"> 
+                    <img src="<?= base_url( 'img/social/gmb-on.png' ) ?>" width="20px" height="20px"> Clicks</h4>
+                <div class="text-left m-l-10">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 kpiText">
+                            <h2 id="clicks-info" 
+                                class="font-light m-b-0"><?= $gmb_loc_kpis[$gmb_loc_id][ 'clicks' ][ 'infotxt' ] ?></h2>
+                            <small>
+                                <i id="clicks-icon" 
+                                class="<?= $gmb_loc_kpis[$gmb_loc_id][ 'clicks' ][ 'class' ]; ?>"></i> 
+                                <?= $gmb_loc_kpis[$gmb_loc_id][ 'clicks' ][ 'difftxt' ]; ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title"> 
+                    <img src="<?= base_url( 'img/social/gmb-on.png' ) ?>" width="20px" height="20px"> Directions</h4>
+                <div class="text-left m-l-10">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 kpiText">
+                            <h2 id="direc-info" 
+                                class="font-light m-b-0"><?= $gmb_loc_kpis[$gmb_loc_id][ 'direc' ][ 'infotxt' ] ?></h2>
+                            <small>
+                                <i id="direc-icon" 
+                                    class="<?= $gmb_loc_kpis[$gmb_loc_id][ 'direc' ][ 'class' ]; ?>"></i> <?= $gmb_loc_kpis[$gmb_loc_id][ 'direc' ][ 'difftxt' ]; ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title"> 
+                    <img src="<?= base_url( 'img/social/gmb-on.png' ) ?>" width="20px" height="20px"> Calls</h4>
+                <div class="text-left m-l-10">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 kpiText">
+                            <h2 id="calls-info" 
+                            class="font-light m-b-0"><?= $gmb_loc_kpis[$gmb_loc_id][ 'calls' ][ 'infotxt' ] ?></h2>
+                            <small>
+                                <i  id="calls-icon" 
+                                class="<?= $gmb_loc_kpis[$gmb_loc_id][ 'calls' ][ 'class' ]; ?>"></i> <?= $gmb_loc_kpis[$gmb_loc_id][ 'calls' ][ 'difftxt' ]; ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">

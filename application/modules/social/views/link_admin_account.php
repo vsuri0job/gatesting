@@ -21,7 +21,7 @@
                                     <label class="control-label text-right col-md-2">Accounts List</label>
                                     <div class="col-md-10">                                        
                                             <?php
-                                                echo form_dropdown( 'adminAccounts', $accounts, [], 
+                                                echo form_dropdown( 'adminAccounts', $accounts, array(), 
                                                     ' id="adminAccounts" class="form-control" required' );
                                             ?>
                                     </div>

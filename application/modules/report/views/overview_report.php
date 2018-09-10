@@ -30,9 +30,19 @@ $gmb_price = com_arrIndex($service_url_data, 'Local SEO', 0);
 $gmb_price += com_arrIndex($service_url_data, 'GMB', 0);
 list($firMonthDate) = com_lastMonths(1, "", 1, 1);
 $firMonthData = date('Y-m', strtotime($firMonthDate));
-$lm_gan_data = $ga_data[$firMonthData];
-$lm_gmb_data = $gmb_data[$firMonthData];
-$lm_gad_data = $gad_data[$firMonthData];
+$lm_gan_data = com_arrIndex($ga_data, $firMonthData, array());
+$lm_gmb_data = com_arrIndex($gmb_data, $firMonthData, array());
+$lm_gad_data = com_arrIndex($gad_data, $firMonthData, array());
+if( !$lm_gan_data ){
+    $lm_gan_data = com_initAnlData();
+}
+if( !$lm_gmb_data ){
+    $lm_gmb_data = com_initGMBData();
+}
+if( !$lm_gad_data ){
+    $lm_gad_data = com_initAdwData();
+}
+
 $lmAdwordCost = com_arrIndex($lm_gad_data, 'cost', 0);
 if( $lmAdwordCost ){
     $lmAdwordCost = $lmAdwordCost / 1000000;
@@ -258,10 +268,14 @@ if( $cost && $lm_ttl_leads ){
             $month_txt = date("F Y", $timeStamp);
             $month_ref = date("Y-m", $timeStamp);
             
-            $tm_ga_data = $ga_data[$month_ref];
-            $tm_gmb_data = $gmb_data[$month_ref];
-            $tm_gad_data = $gad_data[$month_ref];
-            
+            // $tm_ga_data = $ga_data[$month_ref];
+            // $tm_gmb_data = $gmb_data[$month_ref];
+            // $tm_gad_data = $gad_data[$month_ref];
+
+            $tm_ga_data = com_arrIndex($ga_data, $month_ref, com_initAnlData());
+            $tm_gmb_data = com_arrIndex($gmb_data, $month_ref, com_initGMBData());
+            $tm_gad_data = com_arrIndex($gad_data, $month_ref, com_initAdwData());
+
             $tm_ttl_clicks = com_arrIndex($tm_gmb_data, "clicks", 0) 
                             + com_arrIndex($tm_gad_data, "clicks", 0)
                             + com_arrIndex($tm_ga_data, 'users', 0);

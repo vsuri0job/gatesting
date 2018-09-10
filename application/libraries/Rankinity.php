@@ -5,7 +5,7 @@ class Rankinity
     public $api_key;
     public $api_endpoint = 'https://my.rankinity.com/api/v2/';
     public $client;
-    public $query = [];
+    public $query = array();
 
     public function __construct($api_key){
         $this->api_key = $api_key;
@@ -65,7 +65,7 @@ class Rankinity
         */
     }
 
-    public function getProjects( $params = [] ){
+    public function getProjects( $params = array() ){
         $url = $this->api_endpoint.'projects.json?';
         $query = array_merge($this->query, $params);
         $opt = array();
@@ -73,7 +73,7 @@ class Rankinity
         return json_decode( $this->doRequest( $opt ), true );
     }
 
-    public function getProjectEngine($params = []){
+    public function getProjectEngine($params = array()){
         $url = $this->api_endpoint.'projects/search_engines.json?';
         $query = array_merge($this->query, $params);
         $opt = array();
@@ -81,7 +81,7 @@ class Rankinity
         return json_decode( $this->doRequest( $opt ), true );
     }
 
-    public function getProjectEngineKeywords($params = []){
+    public function getProjectEngineKeywords($params = array()){
         $url = $this->api_endpoint.'projects/search_engines.json?';
         $query = array_merge($this->query, $params);
         $opt = array();
@@ -89,7 +89,7 @@ class Rankinity
         return json_decode( $this->doRequest( $opt ), true );
     }
 
-    public function getProjectEngineRanks($params = []){
+    public function getProjectEngineRanks($params = array()){
         $url = $this->api_endpoint.'projects/ranks.json?';
         $query = array_merge($this->query, $params);
         $opt = array();
@@ -97,7 +97,7 @@ class Rankinity
         return json_decode( $this->doRequest( $opt ), true );
     }
 
-    public function getProjectEngineVisibilities($params = []){
+    public function getProjectEngineVisibilities($params = array()){
         $url = $this->api_endpoint.'projects/visibilities.json?';
         $query = array_merge($this->query, $params);
         $opt = array();

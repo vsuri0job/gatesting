@@ -194,9 +194,9 @@ class Adwords {
         $selector->setOrdering([new OrderBy('CustomerId', SortOrder::ASCENDING)]);
         $selector->setPaging(new Paging(0, $this->acc_page_list ));
         // Maps from customer IDs to accounts and links.
-        $customerIdsToAccounts = [];
-        $customerIdsToChildLinks = [];
-        $customerIdsToParentLinks = [];
+        $customerIdsToAccounts = array();
+        $customerIdsToChildLinks = array();
+        $customerIdsToParentLinks = array();
         $totalNumEntries = 0;
         $exMsg = "";
         try{

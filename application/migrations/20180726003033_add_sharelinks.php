@@ -11,7 +11,7 @@ class Migration_add_sharelinks extends CI_Migration {
 				->get()->result_array();
 		foreach ($urlProfiles as $uProfile) {
 			$profile_id = $uProfile[ 'id' ];
-			$data = [];
+			$data = array();
 			$data['share_gmb_link'] = com_b64UrlEncode('gmb/'.$profile_id);
 			$data['share_trello_link'] = com_b64UrlEncode('trello/'.$profile_id);
 			$data['share_adwords_link'] = com_b64UrlEncode('adword/'.$profile_id);

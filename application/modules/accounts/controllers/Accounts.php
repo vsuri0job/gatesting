@@ -196,9 +196,9 @@ class Accounts extends MY_Controller {
 			$seo = $this->input->post( 'seo' );
 			$ppc = $this->input->post( 'ppc' );
 			$wm = $this->input->post( 'wm' );
-			$data['seo'] = $seo ? json_encode( $seo ) : json_encode( [] );
-			$data['ppc'] = $ppc? json_encode( $ppc ): json_encode( [] );
-			$data['wm'] = $wm ? json_encode( $wm ): json_encode( [] );
+			$data['seo'] = $seo ? json_encode( $seo ) : json_encode( array() );
+			$data['ppc'] = $ppc? json_encode( $ppc ): json_encode( array() );
+			$data['wm'] = $wm ? json_encode( $wm ): json_encode( array() );
 			$where = array();
 			$where['profile_id'] = $profDet[ 'id' ];
 			$where['account_id'] = com_user_data( 'id' );

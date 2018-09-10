@@ -23,7 +23,7 @@
                                     <label class="control-label text-right col-md-2">Business List</label>
                                     <div class="col-md-10">                                        
                                             <?php
-                                                echo form_dropdown( 'gbuissAccounts[]', $gList, [], 
+                                                echo form_dropdown( 'gbuissAccounts[]', $gList, array(), 
                                                     ' id="gbuissAccounts" class="form-control select2-multiple" 
                                                         required multiple data-placeholder="Choose" ' );
                                             ?>

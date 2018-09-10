@@ -63,7 +63,9 @@ class Crontool extends CI_Controller {
 					}
 					if ($socRef == 'webmaster') {
 						$profDet = $this->AccountModel->getFetchedAccountDetail($urlProfile['id']);
-						$this->ReportModel->updateWebMasterData($profDet, 2);
+						if( $profDet[ 'linked_webmaster_site' ] ){
+							$this->ReportModel->updateUrlWebMasterData($profDet, 2);
+						}
 					}
 				}
 			}
@@ -85,8 +87,8 @@ class Crontool extends CI_Controller {
 		);
 		$urlProf = $profDet;
 		foreach ($socialAcc as $socRef => $fldRef) {
-			$access_token = $profDet["$fldRef_access_token"];
-			$refresh_token = $profDet["$fldRef_refresh_token"];
+			$access_token = $profDet[$fldRef."_access_token"];
+			$refresh_token = $profDet[$fldRef."_refresh_token"];
 			if ($access_token && $refresh_token) {
 				$opt = array();
 				$opt['prod'] = $socRef;

@@ -536,7 +536,7 @@ class Social extends MY_Controller {
 			// $accounts = $this->AccountModel->getAgencyAccounts($agencies);
 			// $accounts_list = com_makelist($accounts, 'id', 'name');
 			$serviceUrls = $this->AccountModel->getAccountServiceUrls($agencies);
-			$accounts_list = com_makelist($serviceUrls, 'url', 'services', false, "", [], "name");
+			$accounts_list = com_makelist($serviceUrls, 'url', 'services', false, "", array(), "name");
 			$inner = array();
 			$shell = array();
 			$log_user_id = com_user_data('id');
@@ -572,7 +572,7 @@ class Social extends MY_Controller {
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		if ($fetchedProfile && !$fetchedProfile['linked_google_page']) {
 			$gList = $this->SocialModel->getGbusinessDetail($fetchedProfile['id']);
-			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", [], "account_page_name");
+			$gList = com_makelist($gList, 'gpId', 'account_page_location_place', false, "Select", array(), "account_page_name");
 			$inner = array();
 			$shell = array();
 			$inner['gList'] = $gList;
@@ -687,7 +687,7 @@ class Social extends MY_Controller {
 			$data['linked_webmaster_site'] = $webmaster_site;
 			$this->ReportModel->updateProfileAnalytic($prof_id, $data);
 			$prodDet = $this->AccountModel->getProfileDetail($prof_id);
-			$this->ReportModel->updateWebMasterData($prodDet, 13);
+			$this->ReportModel->updateUrlWebMasterData($prodDet, 13);
 			redirect('dashboard');
 			exit;
 		}

@@ -234,7 +234,7 @@ class AccountModel extends CI_Model {
 	}
 
 	public function removeLinkedRankinity($whereArr, $profId) {
-		$data = [];
+		$data = array();
 		$data['linked_rankinity_id'] = '';
 		$this->db->where('id', $profId)
 			->update('account_url_profiles', $data);
@@ -300,7 +300,7 @@ class AccountModel extends CI_Model {
 		return $data;
 	}
 
-	private function buildRankInsertStack(&$dataStack = [], $rstSet, $projectId, $engineId, $aProfId) {
+	private function buildRankInsertStack(&$dataStack = array(), $rstSet, $projectId, $engineId, $aProfId) {
 		if ($rstSet['items']) {
 			foreach ($rstSet['items'] as $item) {
 				$dataStack[] = array(
@@ -464,7 +464,7 @@ class AccountModel extends CI_Model {
 	}
 
 	public function addProfile() {
-		$data = [];
+		$data = array();
 		$data['view_id'] = "";
 		$data['profile_id'] = "";
 		$data['property_id'] = "";
@@ -492,7 +492,7 @@ class AccountModel extends CI_Model {
 		$this->db->insert('account_url_profiles', $data);
 
 		$profile_id = $this->db->insert_id();
-		$data = [];
+		$data = array();
 		$data['profile_id'] = $profile_id;
 		$data['trello_access_token'] = "";
 		$data['rankinity_access_token'] = "";
@@ -508,7 +508,7 @@ class AccountModel extends CI_Model {
 		$data['gmb_token_expiration_time'] = date("Y-m-d h:i:s", time());
 		$this->db->insert('account_url_profiles_social_token', $data);
 
-		$data = [];
+		$data = array();
 
 		$data['share_gsc_link'] = com_b64UrlEncode('gsc/' . $profile_id);
 		$data['share_gmb_link'] = com_b64UrlEncode('gmb/' . $profile_id);

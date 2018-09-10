@@ -23,7 +23,7 @@
                                     <label class="control-label text-right col-md-2">Site Url</label>
                                     <div class="col-md-10">                                        
                                             <?php
-                                                echo form_dropdown( 'webmaster_sites', $webmaster_sites, [], 
+                                                echo form_dropdown( 'webmaster_sites', $webmaster_sites, array(), 
                                                     ' id="webmaster_sites" class="form-control" 
                                                         required data-placeholder="Choose" ' );
                                             ?>

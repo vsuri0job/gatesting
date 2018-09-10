@@ -8,7 +8,7 @@
                         <h4 class="m-b-0 text-white">Board <small><?= $board[ 'board_name' ] ?></small></h4>
                     </div>
                     <div class="col-md-4 col-4 align-self-center">
-                        <?php if ($show_public_url && 1 == 0) {
+                        <?php if (1 == 0 && $show_public_url) {
         echo anchor('publicReport/' . $prodDet['share_analytic_link'],
             'Public Link', ' class="btn pull-right btn-outline-primary" target="_blank" ');
     }?>

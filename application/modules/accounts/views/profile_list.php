@@ -42,7 +42,7 @@
                         </tfoot>
                         <tbody>
                             <?php foreach( $accounts as $account){
-                                $subInner = [];
+                                $subInner = array();
                                 $subInner[ 'account' ] = $account;
                                 echo $this->view( 'sub_views/prof_list_row', $subInner, true );
                             } ?>

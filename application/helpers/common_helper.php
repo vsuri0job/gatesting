@@ -194,13 +194,13 @@ if (!function_exists('com_make2dArray')) {
 if (!function_exists('com_makelist')) {
 	function com_makelist($rstSet, $Key_index, $Key_text, $forSelect = true, 
 		$defaultSel = 'Select', $selected = array(), $grpKey = '') {
-		$result = [];
+		$result = array();
 		if ($forSelect) {
 			$result[] = $defaultSel;
 		}
 		$Key_text_st = explode(",", $Key_text);
 		foreach ($rstSet as $rstSetRow) {
-			$Key_text = [];
+			$Key_text = array();
 			if( is_array( $Key_text_st ) ){
 				foreach ($Key_text_st as $kt_key) {
 					if( isset( $rstSetRow[ $kt_key ] ) ){
@@ -229,7 +229,7 @@ if (!function_exists('com_makelist')) {
 if (!function_exists('com_makelistElem')) {
 	function com_makelistElem($rstSet, $Key_index, $Key_text, $forSelect = true,
 		$defaultSel = 'Select', $defaultSelVal = "", $optGrp = false, $optGrpK = '',
-		$selected = [], $nonAssociate = false, $disabledOpt = False) {
+		$selected = array(), $nonAssociate = false, $disabledOpt = False) {
 		$result = '';
 		if ($forSelect) {
 			$result .= '<option value="' . $defaultSelVal . '">' . $defaultSel . '</option>';
@@ -370,5 +370,68 @@ if (!function_exists('com_lastMonths')) {
 			$stMonth = 12;
 		}
 		return $monthStamps;
+	}
+}
+
+if (!function_exists('com_initAnlData')) {
+	function com_initAnlData() {
+	    $data = array();
+	    $data[ 'users' ] = 0;
+	    $data[ 'sessions' ] = 0;
+	    $data[ 'new_users' ] = 0;    
+	    $data[ 'page_views' ] = 0;
+	    $data[ 'bounce_rate' ] = 0;
+	    $data[ 'per_new_sessions' ] = 0;
+	    $data[ 'goal_completion_all' ] = 0;    
+	    $data[ 'goal_conversion_rate' ] = 0;
+	    $data[ 'avg_session_duration' ] = 0;
+	    $data[ 'page_view_per_sessions' ] = 0;
+	    $data[ 'avg_page_download_time' ] = 0;
+	    return $data;
+	}
+}
+
+if (!function_exists('com_initAdwData')) {
+	function com_initAdwData() {
+	    $data = array();
+	    $data[ 'ctr' ] = 0;
+	    $data[ 'cost' ] = 0;
+	    $data[ 'clicks' ] = 0;
+	    $data[ 'avg_cpc' ] = 0;    
+	    $data[ 'avg_cost' ] = 0;
+	    $data[ 'conversion' ] = 0;
+	    $data[ 'impressions' ] = 0;
+	    $data[ 'phone_calls' ] = 0;
+	    $data[ 'avg_position' ] = 0;
+	    $data[ 'cost_per_conversion' ] = 0;
+	    return $data;
+	}
+}
+
+if (!function_exists('com_initGMBData')) {
+	function com_initGMBData() {
+	    $data = array();
+	    $data[ 'calls' ] = 0;
+	    $data[ 'direc' ] = 0;
+	    $data[ 'clicks' ] = 0;
+	    return $data;
+	}
+}
+
+if (!function_exists('com_compKPI')) {
+	function com_compKPI($fVal, $sVal) {		
+		$out = array();
+		$out[ 'infotxt' ] = $fVal;
+		$out[ 'difftxt' ] = '0';
+		$out[ 'class' ] = 'ti-arrow-up text-info';
+		$fVal = (float)$fVal;
+		$sVal = (float)$sVal;
+		if( $fVal && $sVal && ( $fVal < $sVal) ) {
+			$out[ 'difftxt' ] = '-'.number_format((($sVal - $fVal)/$fVal) * 100, 2).' %';
+			$out[ 'class' ] = 'ti-arrow-down text-danger';
+        } elseif( $fVal && $sVal && ( $fVal > $sVal)   ) {
+			$out[ 'difftxt' ] = number_format((($fVal - $sVal)/$sVal) * 100, 2).' %';			
+        }
+        return $out;
 	}
 }

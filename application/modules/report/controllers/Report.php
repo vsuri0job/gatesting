@@ -162,7 +162,7 @@ class Report extends MY_Controller {
 				$day = substr($value[0], 6, 2);
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
-				$chart_graph[$key]['conversion'] = $value[2];
+				$chart_graph[$key]['conversion'] = com_arrIndex( $value, 2, 0);
 			}
 		}
 		$inner['chart_graph'] = $chart_graph;
@@ -276,6 +276,7 @@ class Report extends MY_Controller {
 		$relProfId = $this->input->post('prof_id');
 		$prodDet = $this->AccountModel->getProfileDetail($relProfId);
 		$inner = $out = array();
+		$inner['report_setting'] = array();
 		$out['linkAccount'] = "";
 		$out['lastMonthHtml'] = "";
 		$out['currMonthHtml'] = "";
@@ -475,7 +476,8 @@ class Report extends MY_Controller {
 				}
 			}
 		}
-		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);
+		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);		
+		$inner['show_public_url'] = 0;
 		$log_user_id = com_user_data('id');
 		$inner['board'] = $this->ReportModel->getBoardDetail($trello_board_id);
 		$inner['cards'] = $cards;
@@ -718,16 +720,37 @@ class Report extends MY_Controller {
 		$inner['prodDet'] = $prodDet;
 		$inner['show_public_url'] = !$publicView;
 		$inner['gmb_data'] = $inner['gmb_locs'] = array();
-		$gmb_data = $gmb_locs = array();
+		$gmb_data = $gmb_locs = $gmb_loc_kpis = $gmb_loc_kpi_diff = array();
+		list( $firMonthDate, $secMonthDate) = com_lastMonths( 2, "", 1, 1 );
 		$gmb_loc_id = '';
 		foreach ($locs as $loc) {
-			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);
+			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);			
 			foreach ($gmb_rawdata as $key => $value) {
 				if (!$gmb_loc_id) {
 					$gmb_loc_id = $value['location_name'];
 				}
+				if( !isset( $gmb_loc_kpis[ $value['location_name'] ] ) ){
+					$gmb_loc_kpis[ $value['location_name'] ] = 
+					array( $firMonthDate => com_initGMBData(),  $secMonthDate => com_initGMBData());
+					$gmb_loc_kpi_diff[ $value['location_name'] ] = com_initGMBData();
+				}
 				$gmb_locs[$value['location_name']] = $value['account_page_location_place'];
-				$monthRefReport = date("F Y", strtotime($value['month_ref'] . '-01'));
+				$date_ref = $value['month_ref'] . '-01';				
+				$monthRefReport = date("F Y", strtotime($date_ref));
+				if( in_array($date_ref, array($firMonthDate, $secMonthDate)) ){
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'clicks' ] = $value['actions_website'];
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'direc' ] = $value['actions_driving_directions'];
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'calls' ] = $value['actions_phone'];
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'clicks' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'clicks' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'clicks' ]);
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'direc' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'direc' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'direc' ]);
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'calls' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'calls' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'calls' ]);
+				}
 				$gmb_data[$value['location_name']][] =
 				array(
 					$monthRefReport,
@@ -740,6 +763,7 @@ class Report extends MY_Controller {
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
 		$inner['gmb_loc_id'] = $gmb_loc_id;
+		$inner['gmb_loc_kpis'] = $gmb_loc_kpi_diff;		
 		$shell['page_title'] = 'Google My Business';
 		$shell['content'] = $this->load->view('gmb_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('gmb_report_js', $inner, true);
@@ -824,6 +848,7 @@ class Report extends MY_Controller {
 				exit;
 			}
 		}
+		$report_setting = $this->AccountModel->getFetchedAccountDetailSetting($profId, $log_user_id);
 		$linkAccId = $prodDet['linked_account_id'];
 		$linkServUrl = $prodDet['linked_service_url'];
 		$serviceUrlData = $this->ReportModel->getServiceUrlCost($linkServUrl, $linkAccId);
@@ -854,10 +879,10 @@ class Report extends MY_Controller {
 		$inner['gmb_data'] = $inner['gmb_locs'] = array();
 		$gmb_data = $gmb_locs = array();
 		$gmb_data = $this->ReportModel->fetchUrlGoogleMyBusinessMonthData($profId, $locs, 13);
-		$gmb_data = com_make2dArray($gmb_data, 'month_ref');
-		$inner['report_setting'] = [];
+		$gmb_data = com_make2dArray($gmb_data, 'month_ref');		
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
+		$inner['report_setting'] = $report_setting;
 		$inner['overview_report'] = $this->load->view('overview_report', $inner, true);
 		$inner['overview_report_js'] = $this->load->view('overview_report_js', $inner, true);
 
@@ -930,14 +955,15 @@ class Report extends MY_Controller {
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
 			}
-		}
-		$anly_repo['report_setting'] = [];
+		}		
+		$anly_repo['report_setting'] = $report_setting;
 		$anly_repo['chart_graph'] = $chart_graph;
 		$anly_repo['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $anly_repo, true);
 		$anly_repo['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $anly_repo, true);
 		$inner['ganalytic_report'] = $this->load->view('ganalytic_report', $anly_repo, true);
 		$inner['ganalytic_report_js'] = $this->load->view('ganalytic_report_js', $anly_repo, true);
-		$adw_repo = array();
+		$adw_repo = array();		
+		$adw_repo['report_setting'] = $report_setting;
 		$fetch_prof_id = $prodDet['id'];
 		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
 		$adw_repo['assoc_prof_id'] = $fetch_prof_id;
@@ -976,7 +1002,7 @@ class Report extends MY_Controller {
 		$gmb_repo['gmb_data'] = $gmb_data;
 		$gmb_repo['gmb_locs'] = $gmb_locs;
 		$gmb_repo['gmb_loc_id'] = $gmb_loc_id;
-		$gmb_repo['report_setting'] = [];
+		$gmb_repo['report_setting'] = $report_setting;
 		$inner['gmb_report'] = $this->load->view('gmb_report', $gmb_repo, true);
 		$inner['gmb_report_js'] = $this->load->view('gmb_report_js', $gmb_repo, true);
 
@@ -985,6 +1011,7 @@ class Report extends MY_Controller {
 		$profileEngines = $this->ReportModel->getRankinityProfileEngines($rankProfile['rankinity_project_id'], $profId);
 		$profileEnginesRanks = array();
 		$profileEnginesVisibility = array();
+		$profileEnginesVisibilityHistory = array();
 		foreach ($profileEngines as $engine) {
 			$profileEnginesRanks[$engine['engine_id']] =
 			$this->ReportModel->getRankinityProfileEngineRanks($engine['project_id'], $engine['engine_id'], $profId);
@@ -1001,9 +1028,11 @@ class Report extends MY_Controller {
 		$inner['rankinity_report'] = $this->load->view('rankinity_report', $rank_repo, true);
 		$inner['rankinity_report_js'] = $this->load->view('rankinity_report_js', $rank_repo, true);
 
-		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');
+		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');		
+		$cc_repo['prof_id'] = $profId;
 		$cc_repo['cc_counts'] = $this->ReportModel->getCitationContentCount($linked_account_id);
 		$cc_repo['skip_det_link'] = 1;
+		$cc_repo['report_setting'] = $report_setting;
 		$inner['citation_content'] = $this->load->view('citation_content', $cc_repo, true);
 		$inner['citation_content_js'] = $this->load->view('citation_content_js', $cc_repo, true);
 
@@ -1013,7 +1042,7 @@ class Report extends MY_Controller {
 		if ($trelloToken && $trello_board_id) {
 			$trello['board'] = $trello['cards'] = array();
 			$trello['cardLists'] = array('curr_mon' => '', 'last_mon' => '');
-			$cards = $cardLists = array();
+			$cards = $cardLists = array('curr_mon' => '', 'last_mon' => '');
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
 				'token' => $trelloToken,
@@ -1060,6 +1089,7 @@ class Report extends MY_Controller {
 			$trello['cards'] = $cards;
 			$trello['cardLists'] = $cardLists;
 			$trello['skip_det_link'] = 1;
+			$trello['report_setting'] = $report_setting;
 			$inner['tboard_report'] = $this->load->view('tboard_report', $trello, true);
 			$inner['tboard_report_js'] = $this->load->view('tboard_report_js', $trello, true);
 		}
@@ -1076,7 +1106,7 @@ class Report extends MY_Controller {
 		$opt['limit'] = '13';
 		$opt['order'] = 'month_ref desc';
 		$webmaster['months'] = $this->ReportModel->getWebmasterData($profId, 'month', $opt);
-		$webmaster['report_setting'] = [];
+		$webmaster['report_setting'] = $report_setting;
 		$inner['gwmaster_report'] = $this->load->view('gwmaster_report', $webmaster, true);
 		$inner['gwmaster_report_js'] = $this->load->view('gwmaster_report_js', $webmaster, true);
 

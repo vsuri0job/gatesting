@@ -367,7 +367,10 @@ class ReportModel extends CI_Model {
 			->get()->result_array();
 	}
 
-	public function updateWebmasterData($data, $where, $rowData = true) {
+	public function updateWebmasterData($data, $where, $rowData = true, $mRef = array()) {
+		if( $mRef ){
+			$this->db->where_in("month_ref", $mRef);
+		}
 		$this->db->where($where)
 			->delete('account_url_profile_webmaster_data');
 		if ($rowData) {
@@ -546,7 +549,7 @@ class ReportModel extends CI_Model {
 		$opt = array();
 		$opt['dimensions'] = 'ga:date';
 		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month, 'ga:sessions, goalCompletionsAll', $opt);
+			$sday_month, $lday_month, 'ga:sessions, ga:goalCompletionsAll', $opt);
 		$detailData = array();
 		$rIndex = 0;
 		$detailData[$rIndex]['view_id'] = $viewId;
@@ -720,8 +723,9 @@ class ReportModel extends CI_Model {
 		return $detailData;
 	}
 
-	public function updateWebMasterData($prodDet, $monthNum){
+	public function updateUrlWebMasterData($prodDet, $monthNum){
 		$prof_id = $prodDet['id'];
+		$webmaster_site = $prodDet['linked_webmaster_site'];
 		$opt = array();
 		$opt['prod'] = 'webmaster';
 		$opt['profId'] = $prodDet['id'];
@@ -736,8 +740,7 @@ class ReportModel extends CI_Model {
 			'clicks' => '', 'ctr' => '', 'impressions' => '', 'server_error' => '', 'url_profile_id' => '',
 			'soft_404' => '', 'not_found' => '', 'other' => '', 'total_pages' => '', 'total_links' => '',
 		);
-		// webmasters.urlcrawlerrorscounts.query
-
+		// webmasters.urlcrawlerrorscounts.query		
 		$wmKpi = $flds;
 		$wmKpi['report_type'] = 'kpi';
 		$wmKpi['url_profile_id'] = $prodDet['id'];
@@ -749,7 +752,7 @@ class ReportModel extends CI_Model {
 		foreach ($kpiStack as $kKey => $kVal) {
 			$opts = array();
 			$opts['platform'] = 'web';
-			$opts['category'] = $kKey;
+			$opts['category'] = $kKey;			
 			$webResult = $webMaster->urlcrawlerrorscounts->query($webmaster_site, $opts);
 			if ($webResult && isset($webResult->countPerTypes)) {
 				if (isset($webResult->countPerTypes[0])) {
@@ -789,8 +792,9 @@ class ReportModel extends CI_Model {
 		}
 		$months_tstamps = com_lastMonths($monthNum);
 		$web_month_data = array();
+		$monthUpRef = array();		
 		foreach ($months_tstamps as $mtstamp => $mDate) {
-			$month_ref = date('Y-m-t', $mtstamp);
+			$month_ref = date('Y-m-01', $mtstamp);			
 			$lday_month = date('Y-m-t', $mtstamp);
 			$sday_month = date('Y-m-01', $mtstamp);
 			$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
@@ -799,6 +803,7 @@ class ReportModel extends CI_Model {
 			$webResult = $webMaster->searchanalytics->query($webmaster_site, $reqObj);
 			if ($webResult && $webResult->rows) {
 				foreach ($webResult->rows as $rKey => $rData) {
+					$monthUpRef[] = $month_ref;
 					$web_month_data[$month_ref] = $flds;
 					$web_month_data[$month_ref]['month_ref'] = $month_ref;
 					$web_month_data[$month_ref]['report_type'] = 'month';
@@ -821,6 +826,6 @@ class ReportModel extends CI_Model {
 		$this->updateWebmasterData($pages, $where, false);
 		$where['report_type'] = 'month';
 		$where['url_profile_id'] = $prof_id;
-		$this->updateWebmasterData($web_month_data, $where, false);
+		$this->updateWebmasterData($web_month_data, $where, false, $monthUpRef);
 	}
 }

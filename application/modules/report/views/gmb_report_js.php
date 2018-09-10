@@ -8,6 +8,7 @@
 <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
 <script type="text/javascript">
 	var gmb_data = <?= json_encode($gmb_data); ?>;
+    var gmb_loc_kpis = <?= json_encode($gmb_loc_kpis); ?>;
     function tableRow( rowData ){
         let icon = 'mdi-arrow-down-bold text-danger';
         rowData[ 'position_boost' ] = parseInt( rowData[ 'position_boost' ] );
@@ -32,7 +33,17 @@
         $( '#locations' ).on( 'change', function( event ){
             let locId = this.value;
             let locData = gmb_data[ locId ];
-            let locHtml = '';            
+            let locKpi = gmb_loc_kpis[ locId ];
+            $("#clicks-info").text( locKpi[ 'clicks' ][ 'infotxt' ] );
+            $("#clicks-icon").text( locKpi[ 'clicks' ][ 'difftxt' ] );
+            $("#clicks-icon").removeClass().addClass( locKpi[ 'clicks' ][ 'class' ] );
+            $("#direc-info").text( locKpi[ 'direc' ][ 'infotxt' ] );
+            $("#direc-icon").text( locKpi[ 'direc' ][ 'difftxt' ] );
+            $("#direc-icon").removeClass().addClass( locKpi[ 'direc' ][ 'class' ] );
+            $("#calls-info").text( locKpi[ 'calls' ][ 'infotxt' ] );
+            $("#calls-icon").text( locKpi[ 'calls' ][ 'difftxt' ] );
+            $("#calls-icon").removeClass().addClass( locKpi[ 'calls' ][ 'class' ] );
+            let locHtml = '';
             locTable.clear().draw();            
             $.each( locData, function( index, value ){
                 locHtml = "<tr> \
