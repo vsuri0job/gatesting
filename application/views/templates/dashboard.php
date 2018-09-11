@@ -9,8 +9,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/favicon.png'); ?>">
-    <title>Monster Admin Template - The Most Complete & Trusted Bootstrap 4 Admin Template</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/fav-icon.png'); ?>">
+    <title>aDash.io - Showing the TRUE Value of Your Digital Marketing Efforts</title>
     <!-- Bootstrap Core CSS -->
     <link href="<?= base_url('assets/plugins/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">    
     <!-- chartist CSS -->

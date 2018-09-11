@@ -69,7 +69,7 @@ class Accounts extends MY_Controller {
 		$this->load->view(TMP_DEFAULT, $shell);
 	}
 
-	public function list() {
+	public function ulist() {
 		$inner = array();
 		$shell = array();
 		$emsg = $this->session->flashdata('emsg');
@@ -153,7 +153,7 @@ class Accounts extends MY_Controller {
 			$this->load->view(TMP_DEFAULT, $shell);
 		} else {			
 			$this->AccountModel->addProfile();
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 	}
@@ -188,22 +188,23 @@ class Accounts extends MY_Controller {
 			$data[ 'close_rate' ] = $this->input->post( 'close_rate' );;
 			$data[ 'ltv_amount' ] = $this->input->post( 'ltv_amount' );;
 			$data[ 'avg_sale_amount' ] = $this->input->post( 'avg_sale_amount' );;
-			$this->AccountModel->updateProfile( $profDet[ 'id' ], $data );
-
+			$this->AccountModel->updateProfile( $profDet[ 'id' ], $data );			
 			$data = array();
 			$data['profile_id'] = $profDet[ 'id' ];
 			$data['account_id'] = com_user_data( 'id' );			
 			$seo = $this->input->post( 'seo' );
 			$ppc = $this->input->post( 'ppc' );
 			$wm = $this->input->post( 'wm' );
+			$fr = $this->input->post( 'fr' );
 			$data['seo'] = $seo ? json_encode( $seo ) : json_encode( array() );
 			$data['ppc'] = $ppc? json_encode( $ppc ): json_encode( array() );
 			$data['wm'] = $wm ? json_encode( $wm ): json_encode( array() );
+			$data['fr'] = $fr ? json_encode( $fr ): json_encode( array() );
 			$where = array();
 			$where['profile_id'] = $profDet[ 'id' ];
 			$where['account_id'] = com_user_data( 'id' );
 			$this->AccountModel->updateProfileSetting( $where, $data );
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 	}
@@ -215,7 +216,7 @@ class Accounts extends MY_Controller {
 			exit;
 		}		
 		$this->AccountModel->removeAccountDetail($profDet[ 'id' ]);
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit;
 	}
 }

@@ -159,7 +159,7 @@ class Social extends MY_Controller {
 						$this->update_google_website_list($opt);
 					}
 				}
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -171,64 +171,68 @@ class Social extends MY_Controller {
 		$logUserId = com_user_data('id');
 		$service = new Google_Service_Oauth2($client);
 		$analytics = new Google_Service_Analytics($client);
-		$accounts = $analytics->management_accountSummaries->listManagementAccountSummaries();
-		$profiles = array();
-		$profile_properties = array();
-		$profile_property_adass = array();
-		$profile_property_views = array();
-		$profile_property_view_adata = array();
-		foreach ($accounts->getItems() as $index => $item) {
-			$GAAccountId = $item->id;
-			$profiles[$index]['account_id'] = $logUserId;
-			$profiles[$index]['profile_id'] = $GAAccountId;
-			$profiles[$index]['profile_name'] = $item->name;
-			$profiles[$index]['url_profile_id'] = $profId;
-			foreach ($item->webProperties as $propIndex => $property) {
-				$propertyId = $property->id;
-				$profile_properties[$propertyId]['account_id'] = $logUserId;
-				$profile_properties[$propertyId]['profile_id'] = $GAAccountId;
-				$profile_properties[$propertyId]['property_id'] = $propertyId;
-				$profile_properties[$propertyId]['property_name'] = $property->name;
-				$profile_properties[$propertyId]['url_profile_id'] = $profId;
-				$profile_properties[$propertyId]['property_website_url'] = $property->websiteUrl;
-				$accountsAdwords = $analytics->management_webPropertyAdWordsLinks->listManagementWebPropertyAdWordsLinks($GAAccountId, $propertyId);
-				foreach ($property->profiles as $viewItem) {
-					$viewId = $viewItem->id;
-					$profile_property_views[$viewId]['view_id'] = $viewId;
-					$profile_property_views[$viewId]['account_id'] = $logUserId;
-					$profile_property_views[$viewId]['property_id'] = $propertyId;
-					$profile_property_views[$viewId]['view_name'] = $viewItem->name;
-					$profile_property_views[$viewId]['url_profile_id'] = $profId;
-					// $ga_data = $this->getPropViewAnalyticData($analytics, $viewId);
-					// $profile_property_view_adata = array_merge($profile_property_view_adata, $ga_data);
-				}
-				if ($accountsAdwords->totalResults) {
-					foreach ($accountsAdwords->items as $adwordAss) {
-						$profile_property_adass[$adwordAss->id]['account_id'] = $logUserId;
-						$profile_property_adass[$adwordAss->id]['property_id'] = $propertyId;
-						$profile_property_adass[$adwordAss->id]['url_profile_id'] = $profId;
-						$profile_property_adass[$adwordAss->id]['adword_link_id'] = $adwordAss->id;
-						$profile_property_adass[$adwordAss->id]['adword_link_name'] = $adwordAss->name;
-						$pIds = array();
-						if (isset($adwordAss->profileIds)) {
-							$pIds = $adwordAss->profileIds;
+		try{
+			$accounts = $analytics->management_accountSummaries->listManagementAccountSummaries();
+			$profiles = array();
+			$profile_properties = array();
+			$profile_property_adass = array();
+			$profile_property_views = array();
+			$profile_property_view_adata = array();
+			foreach ($accounts->getItems() as $index => $item) {
+				$GAAccountId = $item->id;
+				$profiles[$index]['account_id'] = $logUserId;
+				$profiles[$index]['profile_id'] = $GAAccountId;
+				$profiles[$index]['profile_name'] = $item->name;
+				$profiles[$index]['url_profile_id'] = $profId;
+				foreach ($item->webProperties as $propIndex => $property) {
+					$propertyId = $property->id;
+					$profile_properties[$propertyId]['account_id'] = $logUserId;
+					$profile_properties[$propertyId]['profile_id'] = $GAAccountId;
+					$profile_properties[$propertyId]['property_id'] = $propertyId;
+					$profile_properties[$propertyId]['property_name'] = $property->name;
+					$profile_properties[$propertyId]['url_profile_id'] = $profId;
+					$profile_properties[$propertyId]['property_website_url'] = $property->websiteUrl;
+					$accountsAdwords = $analytics->management_webPropertyAdWordsLinks->listManagementWebPropertyAdWordsLinks($GAAccountId, $propertyId);
+					foreach ($property->profiles as $viewItem) {
+						$viewId = $viewItem->id;
+						$profile_property_views[$viewId]['view_id'] = $viewId;
+						$profile_property_views[$viewId]['account_id'] = $logUserId;
+						$profile_property_views[$viewId]['property_id'] = $propertyId;
+						$profile_property_views[$viewId]['view_name'] = $viewItem->name;
+						$profile_property_views[$viewId]['url_profile_id'] = $profId;
+						// $ga_data = $this->getPropViewAnalyticData($analytics, $viewId);
+						// $profile_property_view_adata = array_merge($profile_property_view_adata, $ga_data);
+					}
+					if ($accountsAdwords->totalResults) {
+						foreach ($accountsAdwords->items as $adwordAss) {
+							$profile_property_adass[$adwordAss->id]['account_id'] = $logUserId;
+							$profile_property_adass[$adwordAss->id]['property_id'] = $propertyId;
+							$profile_property_adass[$adwordAss->id]['url_profile_id'] = $profId;
+							$profile_property_adass[$adwordAss->id]['adword_link_id'] = $adwordAss->id;
+							$profile_property_adass[$adwordAss->id]['adword_link_name'] = $adwordAss->name;
+							$pIds = array();
+							if (isset($adwordAss->profileIds)) {
+								$pIds = $adwordAss->profileIds;
+							}
+							$profile_property_adass[$adwordAss->id]['profile_ids'] = implode(',', $pIds);
+							$adword_cus_ref = array();
+							foreach ($adwordAss->adWordsAccounts as $adWordAcc) {
+								$adword_cus_ref[] = $adWordAcc['customerId'];
+							}
+							$profile_property_adass[$adwordAss->id]['adword_refs'] = implode(',', $adword_cus_ref);
 						}
-						$profile_property_adass[$adwordAss->id]['profile_ids'] = implode(',', $pIds);
-						$adword_cus_ref = array();
-						foreach ($adwordAss->adWordsAccounts as $adWordAcc) {
-							$adword_cus_ref[] = $adWordAcc['customerId'];
-						}
-						$profile_property_adass[$adwordAss->id]['adword_refs'] = implode(',', $adword_cus_ref);
 					}
 				}
 			}
+			$this->SocialappModel->emptyAnalyticData($logUserId, $profId);
+			$this->SocialModel->addUserGoogleAnalyticsProfiles($profiles);
+			$this->SocialModel->addUserGoogleAnalyticsProfileProperties($profile_properties);
+			$this->SocialModel->addUserGoogleAnalyticsProfilePropertyView($profile_property_views);
+			$this->SocialModel->addUserGoogleAnalyticsProfilePropertyAdwordAssoc($profile_property_adass);
+			// $this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);
+		} catch(Exception $ex){
+			// com_e( $ex );
 		}
-		$this->SocialappModel->emptyAnalyticData($logUserId, $profId);
-		$this->SocialModel->addUserGoogleAnalyticsProfiles($profiles);
-		$this->SocialModel->addUserGoogleAnalyticsProfileProperties($profile_properties);
-		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyView($profile_property_views);
-		$this->SocialModel->addUserGoogleAnalyticsProfilePropertyAdwordAssoc($profile_property_adass);
-		// $this->SocialModel->addUserGoogleAnalyticsProfilePropertyViewGData($profile_property_view_adata);
 	}
 
 	private function getPropViewAnalyticData($analytics, $viewId) {
@@ -263,7 +267,7 @@ class Social extends MY_Controller {
 			$this->updateTrelloBoards($ret_code, $profId);
 			// $this->updateTrelloBoardCards();
 		}
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit;
 	}
 
@@ -326,8 +330,8 @@ class Social extends MY_Controller {
 				$opt['prod'] = $sRef;
 				$opt['profId'] = $profId;
 				$opt['log_user_id'] = $fetchedProfile['account_id'];
-				$opt['access_token'] = $fetchedProfile[$fldCheck . 'access_token'];
-				$opt['refresh_token'] = $fetchedProfile[$fldCheck . 'refresh_token'];
+				$opt['access_token'] = $fetchedProfile['analytic_access_token'];
+				$opt['refresh_token'] = $fetchedProfile['analytic_refresh_token'];
 				$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
 				$client = $ctoken['client'];
 				$this->fetchAnalyticData($client, $profId);
@@ -417,11 +421,12 @@ class Social extends MY_Controller {
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
 		$rank_token = $this->input->post('rankinity_token');
+		$rank_token = trim( $rank_token );
 		if ($fetchedProfile && $rank_token && !$fetchedProfile['rankinity_access_token']) {
 			$this->SocialappModel->updateRankinityAccessToken($rank_token, $fetchedProfile['id']);
 			$this->updateRankinityProjects($fetchedProfile['id']);
 		}
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit();
 	}
 
@@ -441,7 +446,7 @@ class Social extends MY_Controller {
 			$shell['footer_js'] = $this->load->view('link_rankinity_proj_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
 		} else {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit();
 		}
 	}
@@ -486,7 +491,7 @@ class Social extends MY_Controller {
 			// rankinity_project_url
 			$this->AccountModel->linkRankinityAccount($rankinityProj, $fetchedProfile['id']);
 		}
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit;
 	}
 
@@ -516,14 +521,14 @@ class Social extends MY_Controller {
 
 	public function updateAccountAdwords() {
 		$profile_id = $this->input->post('fetched_profile');
-		$adword_proj = $this->input->post('adwordProject');
+		$adword_proj = $this->input->post('adwordProject');		
 		$this->load->model('AccountModel');
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profile_id);
 		$adwordProj = $this->SocialModel->getAdwordProjDetail($adword_proj);
 		if ($fetchedProfile && !$fetchedProfile['linked_adwords_acc_id'] && $adwordProj) {
-			$this->AccountModel->updateGoogleAdwordsData($fetchedProfile, com_user_data('id'), 13);
+			$this->AccountModel->updateGoogleAdwordsData($fetchedProfile, com_user_data('id'), 13, $adwordProj['account_id']);
 		}
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit;
 	}
 
@@ -563,7 +568,7 @@ class Social extends MY_Controller {
 			$data['linked_service_url'] = $accServiceUrl;
 			$this->SocialappModel->updateAdminAccount($fetchedProfile['id'], $data);
 		}
-		redirect("accounts/list");
+		redirect("accounts/ulist");
 		exit;
 	}
 
@@ -578,7 +583,7 @@ class Social extends MY_Controller {
 			$inner['gList'] = $gList;
 			$log_user_id = com_user_data('id');
 			$inner['profile'] = $fetchedProfile;
-			$inner['accounts'] = $accounts_list;
+			// $inner['accounts'] = $accounts_list;
 			$shell['page_title'] = 'Link Google My Business';
 			$shell['content'] = $this->load->view('link_gbusiness', $inner, true);
 			$shell['footer_js'] = $this->load->view('link_gbusiness_js', $inner, true);
@@ -605,7 +610,7 @@ class Social extends MY_Controller {
 				$this->SocialappModel->updateProfileGBuissData($fetchedProfile, 13);
 			}
 		}
-		redirect("accounts/list");
+		redirect("accounts/ulist");
 		exit;
 	}
 
@@ -665,7 +670,7 @@ class Social extends MY_Controller {
 	public function link_webmaster($prof_id) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		// $this->breadcrumb->addElement('Google Webmaster', 'report/link_webmaster/' . $prof_id);
@@ -734,7 +739,7 @@ class Social extends MY_Controller {
 			$this->AccountModel->updateProfile($accId, $data);
 			$this->AccountModel->resetLinkedData($accId, $ref);
 		}
-		redirect('accounts/list');
+		redirect('accounts/ulist');
 		exit;
 	}
 }

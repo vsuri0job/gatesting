@@ -20,6 +20,21 @@
 </div>
 <?php
 }
+$s_ov_total = 1;
+if( $report_setting ){
+    $s_ov_total = 0;    
+    $enSettings = $settings = array( 'ov_total');
+    if( isset( $report_setting[ 'fr' ] ) ){
+        $report_setting[ 'fr' ] = json_decode( $report_setting[ 'fr' ] );        
+        $enSettings = array_intersect($settings, $report_setting[ 'fr' ]);
+    }
+    if( $enSettings ){
+        foreach ($enSettings as $enSetting) {
+            $setRef = 's_'.$enSetting;
+            ${$setRef} = 1;
+        }
+    }
+}
 $monthStamp = com_lastMonths(13);
 // $prices = explode(',', $service_url_data['price']);
 // $services = explode(',', $service_url_data['services']);
@@ -30,9 +45,9 @@ $gmb_price = com_arrIndex($service_url_data, 'Local SEO', 0);
 $gmb_price += com_arrIndex($service_url_data, 'GMB', 0);
 list($firMonthDate) = com_lastMonths(1, "", 1, 1);
 $firMonthData = date('Y-m', strtotime($firMonthDate));
-$lm_gan_data = com_arrIndex($ga_data, $firMonthData, array());
-$lm_gmb_data = com_arrIndex($gmb_data, $firMonthData, array());
-$lm_gad_data = com_arrIndex($gad_data, $firMonthData, array());
+$lm_gan_data = array_merge(com_initAnlData(), com_arrIndex($ga_data, $firMonthData, array()) );
+$lm_gmb_data = array_merge(com_initGMBData(), com_arrIndex($gmb_data, $firMonthData, array()) );
+$lm_gad_data = array_merge(com_initAdwData(), com_arrIndex($gad_data, $firMonthData, array()) );
 if( !$lm_gan_data ){
     $lm_gan_data = com_initAnlData();
 }
@@ -96,6 +111,11 @@ $ttl_cost_per_lead = 0;
 if( $cost && $lm_ttl_leads ){
     $ttl_cost_per_lead = $cost / $lm_ttl_leads;
 }
+$showTotal = true;
+if( $full_report_show ){
+    $showTotal = $s_ov_total;
+}
+if( $showTotal ){
 ?>
 <!-- Row -->
 <div class="card">
@@ -138,8 +158,9 @@ if( $cost && $lm_ttl_leads ){
         </div>
     </div>
 </div>
-
-<?php if (!isset($full_report_show) || !$full_report_show) {
+<?php 
+}
+if (!isset($full_report_show) || !$full_report_show) {
     $gmb_cost_per_lead = $seo_cost_per_lead = $ppc_cost_per_lead = 0;
     $lm_gan_data["goal_completion_all"] = (float)$lm_gan_data["goal_completion_all"];
     if( $seo_price && $lm_gan_data["goal_completion_all"]){

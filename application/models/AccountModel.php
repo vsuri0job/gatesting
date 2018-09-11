@@ -372,7 +372,7 @@ class AccountModel extends CI_Model {
 		return $projects['meta']['total'];
 	}
 
-	public function updateGoogleAdwordsData($profDet, $log_user_id, $monthNum) {
+	public function updateGoogleAdwordsData($profDet, $log_user_id, $monthNum, $linked_adword_acc_id = 0) {
 		$profId = $profDet['id'];
 		$fld_con = array();
 		$fld_con['CTR'] = 'ctr';
@@ -386,7 +386,9 @@ class AccountModel extends CI_Model {
 		$fld_con['Cost/conv.'] = 'cost_per_conversion';
 		$fld_con['Avg.position'] = 'avg_position';
 		$this->load->library('CSVReader');
-		$linked_adword_acc_id = $profDet['linked_adwords_acc_id'];
+		if( !$linked_adword_acc_id ){
+			$linked_adword_acc_id = $profDet['linked_adwords_acc_id'];
+		}
 		$upWhere = $upData = array();
 		$upData['linked_adwords_acc_id'] = $linked_adword_acc_id;
 		$upWhere['id'] = $profId;

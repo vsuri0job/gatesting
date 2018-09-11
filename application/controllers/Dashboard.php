@@ -73,6 +73,7 @@ class Dashboard extends MY_Controller {
 			// gadword
 			$socialTabActive = $this->input->get('sac');
 		}
+		$inner['socialTabActive'] = $socialTabActive;
 		$shell['page_title'] = 'Profile';
 		$shell['content'] = $this->load->view('dashboard/profile', $inner, true);
 		$shell['footer_js'] = $this->load->view('dashboard/profile_js', $inner, true);

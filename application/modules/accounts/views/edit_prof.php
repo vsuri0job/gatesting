@@ -68,21 +68,24 @@
               <td>Analytic (SEO)</td>
               <?php
                 $seo_total = $seo_organic =
-                $seo_source_medium = $seo_medium = $seo_landing =
-                $ppc_month = $wm_month = $wm_queries = $wm_pages = 'checked';
-
+                $seo_source_medium = $seo_medium = $seo_landing = $fr_ov_total =
+                $ppc_month = $wm_month = $wm_queries = $wm_pages = 'checked';                
                 if( $profDetSetting ){
                   $setting = array();
                   $setting[ 'seo' ] = [ 'total', 'organic', 
                                       'medium', 'source_medium', 'landing' ];
                   $setting[ 'ppc' ] = [ 'month' ];
                   $setting[ 'wm' ] = [ 'month', 'queries', 'pages' ];
+                  $setting[ 'fr' ] = [ 'ov_total' ];
                   $seo_total = $seo_organic =
-                  $seo_source_medium = $seo_medium = $seo_landing =
+                  $seo_source_medium = $seo_medium = $seo_landing = $fr_ov_total =
                   $ppc_month = $wm_month = $wm_queries = $wm_pages = '';
                   foreach($setting as $skey => $sRef){
                       $profDetSetting[ $skey ] = json_decode( $profDetSetting[ $skey ] );
-                      $enableSett = array_intersect($sRef, $profDetSetting[ $skey ]);                      
+                      if( !is_array( $profDetSetting[ $skey ] ) ){
+                        $profDetSetting[ $skey ] = $setting[ $skey ];
+                      }
+                      $enableSett = array_intersect($sRef, $profDetSetting[ $skey ]);
                       if( $enableSett ){
                         foreach ($enableSett as $enKey) {
                           $sett_set = $skey.'_'.$enKey;
@@ -174,6 +177,22 @@
                               <input type="checkbox" class="custom-control-input" 
                               name="wm[]" value="pages"  <?= $wm_pages; ?>>
                               <span class="custom-control-label">Pages</span>
+                          </label>
+                      </div>
+                    </div>
+                  </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Full Report</td>
+              <td>
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="m-b-10">
+                          <label class="custom-control custom-checkbox">
+                              <input type="checkbox" class="custom-control-input" 
+                              name="fr[]" value="ov_total"  <?= $fr_ov_total; ?>>
+                              <span class="custom-control-label">Overview Report Total</span>
                           </label>
                       </div>
                     </div>

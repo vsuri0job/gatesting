@@ -20,7 +20,9 @@
 </div>
 <?php 
 }
-    foreach($cardLists as $listDet){
+
+    foreach($cardLists as $monthRef => $listDet){
+        if( $listDet ){
 ?>
     <h2>List : <?= $listDet->name ?></h2>
     <div class="row">
@@ -50,4 +52,6 @@
         ?>
         </div>
     <!-- Column -->
-<?php } ?>
+<?php 
+        }
+} ?>

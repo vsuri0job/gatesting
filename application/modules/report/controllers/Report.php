@@ -43,7 +43,7 @@ class Report extends MY_Controller {
 	public function link_analytic($prof_id) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		$this->breadcrumb->addElement('Google Analytics', 'report/link_analytic/' . $prof_id);
@@ -85,7 +85,7 @@ class Report extends MY_Controller {
 	public function fetchedAnalytic($prof_id, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -93,7 +93,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -185,7 +185,7 @@ class Report extends MY_Controller {
 	public function fetchedAdwords($prof_id, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -193,7 +193,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -227,7 +227,7 @@ class Report extends MY_Controller {
 	public function fetchedWebmaster($prof_id, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -235,7 +235,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -293,6 +293,7 @@ class Report extends MY_Controller {
 			$analytics = new Google_Service_Analytics($client);
 			$this->updateFetchedAccountProfile($prodDet['id']);
 			$inner = $this->ReportModel->fetchPropViewAnalyticData($analytics, $viewId, $prodDet['id'], $prodDet['account_id'], 13);
+			$inner['report_setting'] = array();
 			$out['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
 			$out['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
 		}
@@ -426,7 +427,7 @@ class Report extends MY_Controller {
 		$trelloToken = com_arrIndex($profDet, 'trello_access_token', '');
 		$trello_board_id = com_arrIndex($profDet, 'linked_trello_board_id', '');
 		if (!$profDet || !$trelloToken || !$trello_board_id) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		$inner = $shell = $cards = $cardLists = array();
@@ -558,12 +559,12 @@ class Report extends MY_Controller {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');
 		if (!$prodDet || !$linked_account_id) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		$log_user_id = com_user_data('id');
 		if ($log_user_id != $prodDet['account_id']) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		$url = base_url('report/citation_and_content/' . $prof_id);
@@ -583,7 +584,7 @@ class Report extends MY_Controller {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');
 		if (!$prodDet || !$linked_account_id) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		$this->breadcrumb->addElement('Citation & Content', base_url('report/citation_and_content/' . $prof_id));
@@ -626,7 +627,7 @@ class Report extends MY_Controller {
 	public function rankinityProf($profId, $publicView = 0) {
 		$rankProfile = $this->ReportModel->getRankinityProfile($profId);
 		if (!$rankProfile) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -634,7 +635,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $rankProfile['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -700,7 +701,7 @@ class Report extends MY_Controller {
 	public function fetchedGMB($prof_id, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($prof_id);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -708,7 +709,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -763,7 +764,7 @@ class Report extends MY_Controller {
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
 		$inner['gmb_loc_id'] = $gmb_loc_id;
-		$inner['gmb_loc_kpis'] = $gmb_loc_kpi_diff;		
+		$inner['gmb_loc_kpis'] = $gmb_loc_kpi_diff;
 		$shell['page_title'] = 'Google My Business';
 		$shell['content'] = $this->load->view('gmb_report', $inner, true);
 		$shell['footer_js'] = $this->load->view('gmb_report_js', $inner, true);
@@ -777,7 +778,7 @@ class Report extends MY_Controller {
 	public function overview($profId, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($profId);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -785,7 +786,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -820,6 +821,8 @@ class Report extends MY_Controller {
 		$gmb_data = $gmb_locs = array();
 		$gmb_data = $this->ReportModel->fetchUrlGoogleMyBusinessMonthData($profId, $locs, 13);
 		$gmb_data = com_make2dArray($gmb_data, 'month_ref');
+		$inner['report_setting'] = array();
+		$inner['full_report_show'] = false;
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
 		$shell['page_title'] = 'Overview Report';
@@ -836,7 +839,7 @@ class Report extends MY_Controller {
 	public function complete_full($profId, $publicView = 0) {
 		$prodDet = $this->AccountModel->getProfileDetail($profId);
 		if (!$prodDet) {
-			redirect('accounts/list');
+			redirect('accounts/ulist');
 			exit;
 		}
 		if ($publicView) {
@@ -844,7 +847,7 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/list');
+				redirect('accounts/ulist');
 				exit;
 			}
 		}
@@ -979,8 +982,9 @@ class Report extends MY_Controller {
 
 		$fetch_prof_id = $prodDet['id'];
 		$locs = explode(",", $prodDet['linked_google_page_location']);
-		$gmb_repo['gmb_data'] = $gmb_repo['gmb_locs'] = array();
-		$gmb_data = $gmb_locs = array();
+		$gmb_repo['gmb_data'] = $gmb_repo['gmb_locs'] = array();		
+		$gmb_data = $gmb_locs = $gmb_loc_kpis = $gmb_loc_kpi_diff = array();
+		list( $firMonthDate, $secMonthDate) = com_lastMonths( 2, "", 1, 1 );
 		$gmb_loc_id = '';
 		foreach ($locs as $loc) {
 			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);
@@ -988,8 +992,28 @@ class Report extends MY_Controller {
 				if (!$gmb_loc_id) {
 					$gmb_loc_id = $value['location_name'];
 				}
+				if( !isset( $gmb_loc_kpis[ $value['location_name'] ] ) ){
+					$gmb_loc_kpis[ $value['location_name'] ] = 
+					array( $firMonthDate => com_initGMBData(),  $secMonthDate => com_initGMBData());
+					$gmb_loc_kpi_diff[ $value['location_name'] ] = com_initGMBData();
+				}
 				$gmb_locs[$value['location_name']] = $value['account_page_location_place'];
-				$monthRefReport = date("F Y", strtotime($value['month_ref'] . '-01'));
+				$date_ref = $value['month_ref'] . '-01';
+				$monthRefReport = date("F Y", strtotime($date_ref));
+				if( in_array($date_ref, array($firMonthDate, $secMonthDate)) ){
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'clicks' ] = $value['actions_website'];
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'direc' ] = $value['actions_driving_directions'];
+					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'calls' ] = $value['actions_phone'];
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'clicks' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'clicks' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'clicks' ]);
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'direc' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'direc' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'direc' ]);
+					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'calls' ] = 
+					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'calls' ], 
+						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'calls' ]);
+				}
 				$gmb_data[$value['location_name']][] =
 				array(
 					$monthRefReport,
@@ -999,10 +1023,12 @@ class Report extends MY_Controller {
 				);
 			}
 		}
+						
 		$gmb_repo['gmb_data'] = $gmb_data;
 		$gmb_repo['gmb_locs'] = $gmb_locs;
 		$gmb_repo['gmb_loc_id'] = $gmb_loc_id;
 		$gmb_repo['report_setting'] = $report_setting;
+		$gmb_repo['gmb_loc_kpis'] = $gmb_loc_kpi_diff;
 		$inner['gmb_report'] = $this->load->view('gmb_report', $gmb_repo, true);
 		$inner['gmb_report_js'] = $this->load->view('gmb_report_js', $gmb_repo, true);
 

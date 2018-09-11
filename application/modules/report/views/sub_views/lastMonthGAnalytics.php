@@ -1,4 +1,4 @@
-<?php    
+<?php
     $s_total = $s_organic = $s_medium = 
     $s_source_medium = $s_landing = 1;
     if( $report_setting ){
@@ -13,7 +13,7 @@
                 ${$setRef} = 1;
             }
         }
-    }    
+    }
 ?>
 <div class="">
     <div class="card">

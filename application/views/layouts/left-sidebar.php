@@ -22,7 +22,7 @@
             <ul id="sidebarnav">
                 <li class="nav-devider"></li>
                 <li class="">
-                    <a class="" href="<?=base_url( 'accounts/list' )?>" aria-expanded="false">
+                    <a class="" href="<?=base_url( 'accounts/ulist' )?>" aria-expanded="false">
                         <i class="mdi mdi-account-network"></i>
                         <span class="hide-menu">Accounts</span>
                     </a>

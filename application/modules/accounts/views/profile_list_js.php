@@ -81,7 +81,7 @@
 	});
 </script>
 <script type="text/javascript">
-	<?php if( $emsg ){ ?>
+	<?php if( isset($emsg) ){ ?>
 		swal("Issue", "<?= $emsg; ?>", 'warning');
 	<?php } ?>
 </script>
