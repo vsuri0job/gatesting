@@ -6,7 +6,7 @@ class Accounts extends MY_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->isLogin();
-		$this->load->model('AccountModel');		
+		$this->load->model('AccountModel');
 	}
 
 	public function valid_url($url) {
@@ -17,7 +17,7 @@ class Accounts extends MY_Controller {
 		return TRUE;
 	}
 
-	public function index() {		
+	public function index() {
 		$inner = array();
 		$shell = array();
 		$user_agencies = explode(',', com_user_data('agencies'));
@@ -136,9 +136,9 @@ class Accounts extends MY_Controller {
 	public function addProfileUrl() {
 		$this->form_validation->set_error_delimiters('', '');
 		$this->form_validation->set_rules('account_url', 'Account Url', 'required|is_unique[account_url_profiles.account_url]');
-		$this->form_validation->set_rules( 'close_rate', 'Close Rate', 'required' );
-		$this->form_validation->set_rules( 'avg_sale_amount', 'Avg. Sale Amt.', 'required' );
-		$this->form_validation->set_rules( 'ltv_amount', 'LTV Amt.', 'required' );
+		$this->form_validation->set_rules('close_rate', 'Close Rate', 'required');
+		$this->form_validation->set_rules('avg_sale_amount', 'Avg. Sale Amt.', 'required');
+		$this->form_validation->set_rules('ltv_amount', 'LTV Amt.', 'required');
 		$inner = array();
 		$shell = array();
 		if ($this->form_validation->run() == FALSE) {
@@ -151,71 +151,83 @@ class Accounts extends MY_Controller {
 			$shell['content'] = $this->load->view('accounts/add_prof', $inner, true);
 			$shell['footer_js'] = $this->load->view('accounts/add_prof_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
-		} else {			
+		} else {
 			$this->AccountModel->addProfile();
 			redirect('accounts/ulist');
 			exit;
 		}
 	}
-	
-	public function editProfileUrl( $profId ) {
+
+	public function editProfileUrl($profId) {
 		$profDet = $this->AccountModel->getFetchedAccountDetail($profId);
-		$profDetSetting = $this->AccountModel->getFetchedAccountDetailSetting($profId, com_user_data( 'id' ));		
-		if( !$profDet ){
-			redirect( 'dashboard' );
+		$profDetSetting = $this->AccountModel->getFetchedAccountDetailSetting($profId, com_user_data('id'));
+		if (!$profDet) {
+			redirect('dashboard');
 			exit;
 		}
-		$this->form_validation->set_error_delimiters('', '');		
-		$this->form_validation->set_rules( 'close_rate', 'Close Rate', 'required' );
-		$this->form_validation->set_rules( 'avg_sale_amount', 'Avg. Sale Amt.', 'required' );
-		$this->form_validation->set_rules( 'ltv_amount', 'LTV Amt.', 'required' );
+		$this->form_validation->set_error_delimiters('', '');
+		$this->form_validation->set_rules('close_rate', 'Close Rate', 'required');
+		$this->form_validation->set_rules('avg_sale_amount', 'Avg. Sale Amt.', 'required');
+		$this->form_validation->set_rules('ltv_amount', 'LTV Amt.', 'required');
 		$inner = array();
 		$shell = array();
 		if ($this->form_validation->run() == FALSE) {
 			$val_errors = "";
 			if ($this->form_validation->error_array()) {
 				$val_errors = implode("\n", $this->form_validation->error_array());
-			}			
+			}
 			$inner['profDet'] = $profDet;
 			$inner['profDetSetting'] = $profDetSetting;
 			$inner['validation_errors'] = $val_errors;
-			$shell['page_title'] = 'Edit Account url:- '.$profDet[ 'account_url' ];
+			$shell['page_title'] = 'Edit Account url:- ' . $profDet['account_url'];
 			$shell['content'] = $this->load->view('accounts/edit_prof', $inner, true);
 			$shell['footer_js'] = $this->load->view('accounts/edit_prof_js', $inner, true);
 			$this->load->view(TMP_DEFAULT, $shell);
-		} else {			
+		} else {
 			$data = array();
-			$data[ 'close_rate' ] = $this->input->post( 'close_rate' );;
-			$data[ 'ltv_amount' ] = $this->input->post( 'ltv_amount' );;
-			$data[ 'avg_sale_amount' ] = $this->input->post( 'avg_sale_amount' );;
-			$this->AccountModel->updateProfile( $profDet[ 'id' ], $data );			
+			$data['close_rate'] = $this->input->post('close_rate');
+			$data['ltv_amount'] = $this->input->post('ltv_amount');
+			$data['avg_sale_amount'] = $this->input->post('avg_sale_amount');
+			$this->AccountModel->updateProfile($profDet['id'], $data);
 			$data = array();
-			$data['profile_id'] = $profDet[ 'id' ];
-			$data['account_id'] = com_user_data( 'id' );			
-			$seo = $this->input->post( 'seo' );
-			$ppc = $this->input->post( 'ppc' );
-			$wm = $this->input->post( 'wm' );
-			$fr = $this->input->post( 'fr' );
-			$data['seo'] = $seo ? json_encode( $seo ) : json_encode( array() );
-			$data['ppc'] = $ppc? json_encode( $ppc ): json_encode( array() );
-			$data['wm'] = $wm ? json_encode( $wm ): json_encode( array() );
-			$data['fr'] = $fr ? json_encode( $fr ): json_encode( array() );
+			$data['profile_id'] = $profDet['id'];
+			$data['account_id'] = com_user_data('id');
+			$seo = $this->input->post('seo');
+			$ppc = $this->input->post('ppc');
+			$wm = $this->input->post('wm');
+			$fr = $this->input->post('fr');
+			$data['seo'] = $seo ? json_encode($seo) : json_encode(array());
+			$data['ppc'] = $ppc ? json_encode($ppc) : json_encode(array());
+			$data['wm'] = $wm ? json_encode($wm) : json_encode(array());
+			$data['fr'] = $fr ? json_encode($fr) : json_encode(array());
+			if (isset($_FILES['report_logo'])) {
+				$config['encrypt_name'] = TRUE;
+				$config['upload_path'] = 'uploads/report_logo/';
+				$config['allowed_types'] = 'gif|jpg|png';
+				$this->load->library('upload', $config);
+				if (!$this->upload->do_upload('report_logo')) {
+					$inner['file_error'] = array('error' => $this->upload->display_errors());
+				} else {
+					$fdata = array('upload_data' => $this->upload->data());
+					$data['report_logo'] = $fdata['upload_data']['file_name'];
+				}
+			}
 			$where = array();
-			$where['profile_id'] = $profDet[ 'id' ];
-			$where['account_id'] = com_user_data( 'id' );
-			$this->AccountModel->updateProfileSetting( $where, $data );
+			$where['profile_id'] = $profDet['id'];
+			$where['account_id'] = com_user_data('id');
+			$this->AccountModel->updateProfileSetting($where, $data);
 			redirect('accounts/ulist');
 			exit;
 		}
 	}
 
-	public function deleteProfileUrl( $profId ) {
+	public function deleteProfileUrl($profId) {
 		$profDet = $this->AccountModel->getFetchedAccountDetail($profId);
-		if( !$profDet ){
-			redirect( 'dashboard' );
+		if (!$profDet) {
+			redirect('dashboard');
 			exit;
-		}		
-		$this->AccountModel->removeAccountDetail($profDet[ 'id' ]);
+		}
+		$this->AccountModel->removeAccountDetail($profDet['id']);
 		redirect('accounts/ulist');
 		exit;
 	}
