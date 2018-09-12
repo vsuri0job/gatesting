@@ -161,6 +161,7 @@ class Report extends MY_Controller {
 				$month = substr($value[0], 4, 2);
 				$day = substr($value[0], 6, 2);
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
+				$chart_graph[$key]['date'] = date('Y-m-d', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
 				$chart_graph[$key]['conversion'] = com_arrIndex($value, 2, 0);
 			}
