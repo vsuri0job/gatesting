@@ -1,7 +1,7 @@
 <!-- <script src="<?=base_url('assets/plugins/sweetalert/sweetalert.min.js')?>"></script> -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<link href="<?= base_url( 'assets/plugins/select2/dist/css/select2.min.css' ) ?>" rel="stylesheet" type="text/css" />
-<script src="<?= base_url( 'assets/plugins/select2/dist/js/select2.full.min.js' ) ?>" type="text/javascript"></script>
+<link href="<?=base_url('assets/plugins/select2/dist/css/select2.min.css')?>" rel="stylesheet" type="text/css" />
+<script src="<?=base_url('assets/plugins/select2/dist/js/select2.full.min.js')?>" type="text/javascript"></script>
 <script type="text/javascript">
 <?php
 $propStack = array();
@@ -13,7 +13,7 @@ if ($props) {
 }
 if ($views) {
 	foreach ($views as $view) {
-		$viewStack[$view['property_id']][$view['view_id']] = $view['view_name'].'        '.$view['property_id'];
+		$viewStack[$view['property_id']][$view['view_id']] = $view['view_name'] . '        ' . $view['property_id'];
 	}
 }
 echo 'var propStack = ' . json_encode($propStack) . ';';
@@ -64,7 +64,7 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
         });
 
         $("#getGoogleData").on( 'submit', function( event ){
-            event.preventDefault();            
+            event.preventDefault();
             let profile = $( "#profile" ).val();
             let prop = $( "#prop" ).val();
             let view = $( "#view" ).val();
@@ -74,12 +74,12 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
             $( "#link_update").hide();
             $("#lastMonthsData").html("");
             $("#currentMonthData").html("");
-            // $("#lastMonthsData").html('<img src="<?=base_url('img/spinner.gif');?>"> loading...');            
-            // $.post("<?= base_url( 'report/getViewData' ) ?>",{
+            // $("#lastMonthsData").html('<img src="<?=base_url('img/spinner.gif');?>"> loading...');
+            // $.post("<?=base_url('report/getViewData')?>",{
             //     profile: profile,
             //     prop: prop,
             //     view: view,
-            //     prof_id: "<?= $profDet[ 'id' ]; ?>"
+            //     prof_id: "<?=$profDet['id'];?>"
             // },function(data){
             //     $("#lastMonthsData").html( data.lastMonthHtml );
             //     $("#currentMonthData").html( data.currMonthHtml );
@@ -88,15 +88,15 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                 profile: profile,
                 prop: prop,
                 view: view,
-                prof_id: "<?= $profDet[ 'id' ]; ?>"    
+                prof_id: "<?=$profDet['id'];?>"
             };
             $('#progress-bar').removeClass('hide');
             $.ajax({
                 xhr: function () {
                     var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function (evt) {            
-                        if (evt.lengthComputable) {                
-                            var percentComplete = evt.loaded / evt.total;                
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
                             $('#progress-bar')
                             .css( { width: percentComplete + '%' } )
                             .html( percentComplete + '%' );
@@ -106,18 +106,18 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                             if (percentComplete === 1) {
                                 $('#progress-bar')
                                 .css( { width: '15%' } )
-                                .html( '15%' );                                
+                                .html( '15%' );
                                 processCounter = setInterval(updateProcess, 3000);
                                 // $('#progress-bar').addClass('hide');
                                 // $('#progress-bar')
                                 // .css( { width: percentComplete * 0 + '%' } )
-                                // .html( percentComplete * 0 + '%' );                    
+                                // .html( percentComplete * 0 + '%' );
                             }
                         }
                     }, false);
-                    xhr.addEventListener("progress", function (evt) {            
+                    xhr.addEventListener("progress", function (evt) {
                         if (evt.lengthComputable) {
-                            var percentComplete = evt.loaded / evt.total;                
+                            var percentComplete = evt.loaded / evt.total;
                             // $('.progress').css({
                             //     width: percentComplete * 100 + '%'
                             // });
@@ -127,7 +127,7 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                             $('#progress-bar').addClass('hide')
                             .css( { width: '0%' } )
                             .html( '0%' );
-                        } else {                
+                        } else {
                             $('#progress-bar')
                             .css( { width: 70 + '%' } )
                             .html( 70 + '%' );
@@ -139,7 +139,7 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                     return xhr;
                 },
                 type: 'POST',
-                url: "<?= base_url( 'report/getViewData' ) ?>",
+                url: "<?=base_url('report/getViewData')?>",
                 data: pData,
                 success: function (data) {
                     $('#progress-bar').addClass('hide')
@@ -148,7 +148,7 @@ echo 'var viewStack = ' . json_encode($viewStack) . ';';
                     clearInterval( processCounter );
                     data = JSON.parse( data );
                     $("#lastMonthsData").html( data.lastMonthHtml );
-                    $("#currentMonthData").html( data.currMonthHtml );        
+                    $("#currentMonthData").html( data.currMonthHtml );
                 }
             },'json');
             event.preventDefault();

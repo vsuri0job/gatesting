@@ -162,7 +162,7 @@ class Report extends MY_Controller {
 				$day = substr($value[0], 6, 2);
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
-				$chart_graph[$key]['conversion'] = com_arrIndex( $value, 2, 0);
+				$chart_graph[$key]['conversion'] = com_arrIndex($value, 2, 0);
 			}
 		}
 		$inner['chart_graph'] = $chart_graph;
@@ -277,7 +277,6 @@ class Report extends MY_Controller {
 		$prodDet = $this->AccountModel->getProfileDetail($relProfId);
 		$inner = $out = array();
 		$inner['report_setting'] = array();
-		$out['linkAccount'] = "";
 		$out['lastMonthHtml'] = "";
 		$out['currMonthHtml'] = "";
 		if ($prodDet) {
@@ -294,8 +293,10 @@ class Report extends MY_Controller {
 			$this->updateFetchedAccountProfile($prodDet['id']);
 			$inner = $this->ReportModel->fetchPropViewAnalyticData($analytics, $viewId, $prodDet['id'], $prodDet['account_id'], 13);
 			$inner['report_setting'] = array();
-			$out['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
-			$out['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
+			$otext = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
+			$out['lastMonthHtml'] = utf8_encode($otext);
+			$otext = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
+			$out['currMonthHtml'] = utf8_encode($otext);
 		}
 		echo json_encode($out);
 		exit;
@@ -432,6 +433,8 @@ class Report extends MY_Controller {
 		}
 		$inner = $shell = $cards = $cardLists = array();
 		$cardLists = array('curr_mon' => '', 'last_mon' => '');
+		$thisMonthHasCards = 0;
+		$lastMonthHasCards = 0;
 		if ($trelloToken) {
 			$query = http_build_query([
 				'key' => TRELLO_DEV_KEY,
@@ -477,7 +480,7 @@ class Report extends MY_Controller {
 				}
 			}
 		}
-		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);		
+		$this->breadcrumb->addElement('Trello Board Cards', 'report/tboardreport/' . $prof_id);
 		$inner['show_public_url'] = 0;
 		$log_user_id = com_user_data('id');
 		$inner['board'] = $this->ReportModel->getBoardDetail($trello_board_id);
@@ -722,35 +725,35 @@ class Report extends MY_Controller {
 		$inner['show_public_url'] = !$publicView;
 		$inner['gmb_data'] = $inner['gmb_locs'] = array();
 		$gmb_data = $gmb_locs = $gmb_loc_kpis = $gmb_loc_kpi_diff = array();
-		list( $firMonthDate, $secMonthDate) = com_lastMonths( 2, "", 1, 1 );
+		list($firMonthDate, $secMonthDate) = com_lastMonths(2, "", 1, 1);
 		$gmb_loc_id = '';
 		foreach ($locs as $loc) {
-			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);			
+			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);
 			foreach ($gmb_rawdata as $key => $value) {
 				if (!$gmb_loc_id) {
 					$gmb_loc_id = $value['location_name'];
 				}
-				if( !isset( $gmb_loc_kpis[ $value['location_name'] ] ) ){
-					$gmb_loc_kpis[ $value['location_name'] ] = 
-					array( $firMonthDate => com_initGMBData(),  $secMonthDate => com_initGMBData());
-					$gmb_loc_kpi_diff[ $value['location_name'] ] = com_initGMBData();
+				if (!isset($gmb_loc_kpis[$value['location_name']])) {
+					$gmb_loc_kpis[$value['location_name']] =
+					array($firMonthDate => com_initGMBData(), $secMonthDate => com_initGMBData());
+					$gmb_loc_kpi_diff[$value['location_name']] = com_initGMBData();
 				}
 				$gmb_locs[$value['location_name']] = $value['account_page_location_place'];
-				$date_ref = $value['month_ref'] . '-01';				
+				$date_ref = $value['month_ref'] . '-01';
 				$monthRefReport = date("F Y", strtotime($date_ref));
-				if( in_array($date_ref, array($firMonthDate, $secMonthDate)) ){
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'clicks' ] = $value['actions_website'];
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'direc' ] = $value['actions_driving_directions'];
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'calls' ] = $value['actions_phone'];
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'clicks' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'clicks' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'clicks' ]);
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'direc' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'direc' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'direc' ]);
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'calls' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'calls' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'calls' ]);
+				if (in_array($date_ref, array($firMonthDate, $secMonthDate))) {
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['clicks'] = $value['actions_website'];
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['direc'] = $value['actions_driving_directions'];
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['calls'] = $value['actions_phone'];
+					$gmb_loc_kpi_diff[$value['location_name']]['clicks'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['clicks'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['clicks']);
+					$gmb_loc_kpi_diff[$value['location_name']]['direc'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['direc'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['direc']);
+					$gmb_loc_kpi_diff[$value['location_name']]['calls'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['calls'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['calls']);
 				}
 				$gmb_data[$value['location_name']][] =
 				array(
@@ -882,7 +885,7 @@ class Report extends MY_Controller {
 		$inner['gmb_data'] = $inner['gmb_locs'] = array();
 		$gmb_data = $gmb_locs = array();
 		$gmb_data = $this->ReportModel->fetchUrlGoogleMyBusinessMonthData($profId, $locs, 13);
-		$gmb_data = com_make2dArray($gmb_data, 'month_ref');		
+		$gmb_data = com_make2dArray($gmb_data, 'month_ref');
 		$inner['gmb_data'] = $gmb_data;
 		$inner['gmb_locs'] = $gmb_locs;
 		$inner['report_setting'] = $report_setting;
@@ -958,14 +961,14 @@ class Report extends MY_Controller {
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
 			}
-		}		
+		}
 		$anly_repo['report_setting'] = $report_setting;
 		$anly_repo['chart_graph'] = $chart_graph;
 		$anly_repo['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $anly_repo, true);
 		$anly_repo['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $anly_repo, true);
 		$inner['ganalytic_report'] = $this->load->view('ganalytic_report', $anly_repo, true);
 		$inner['ganalytic_report_js'] = $this->load->view('ganalytic_report_js', $anly_repo, true);
-		$adw_repo = array();		
+		$adw_repo = array();
 		$adw_repo['report_setting'] = $report_setting;
 		$fetch_prof_id = $prodDet['id'];
 		$adword_acc_id = $prodDet['linked_adwords_acc_id'];
@@ -982,9 +985,9 @@ class Report extends MY_Controller {
 
 		$fetch_prof_id = $prodDet['id'];
 		$locs = explode(",", $prodDet['linked_google_page_location']);
-		$gmb_repo['gmb_data'] = $gmb_repo['gmb_locs'] = array();		
+		$gmb_repo['gmb_data'] = $gmb_repo['gmb_locs'] = array();
 		$gmb_data = $gmb_locs = $gmb_loc_kpis = $gmb_loc_kpi_diff = array();
-		list( $firMonthDate, $secMonthDate) = com_lastMonths( 2, "", 1, 1 );
+		list($firMonthDate, $secMonthDate) = com_lastMonths(2, "", 1, 1);
 		$gmb_loc_id = '';
 		foreach ($locs as $loc) {
 			$gmb_rawdata = $this->ReportModel->fetchUrlGoogleMyBusiness($fetch_prof_id, $loc, 13);
@@ -992,27 +995,27 @@ class Report extends MY_Controller {
 				if (!$gmb_loc_id) {
 					$gmb_loc_id = $value['location_name'];
 				}
-				if( !isset( $gmb_loc_kpis[ $value['location_name'] ] ) ){
-					$gmb_loc_kpis[ $value['location_name'] ] = 
-					array( $firMonthDate => com_initGMBData(),  $secMonthDate => com_initGMBData());
-					$gmb_loc_kpi_diff[ $value['location_name'] ] = com_initGMBData();
+				if (!isset($gmb_loc_kpis[$value['location_name']])) {
+					$gmb_loc_kpis[$value['location_name']] =
+					array($firMonthDate => com_initGMBData(), $secMonthDate => com_initGMBData());
+					$gmb_loc_kpi_diff[$value['location_name']] = com_initGMBData();
 				}
 				$gmb_locs[$value['location_name']] = $value['account_page_location_place'];
 				$date_ref = $value['month_ref'] . '-01';
 				$monthRefReport = date("F Y", strtotime($date_ref));
-				if( in_array($date_ref, array($firMonthDate, $secMonthDate)) ){
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'clicks' ] = $value['actions_website'];
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'direc' ] = $value['actions_driving_directions'];
-					$gmb_loc_kpis[ $value['location_name'] ][ $date_ref ][ 'calls' ] = $value['actions_phone'];
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'clicks' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'clicks' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'clicks' ]);
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'direc' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'direc' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'direc' ]);
-					$gmb_loc_kpi_diff[ $value['location_name'] ][ 'calls' ] = 
-					com_compKPI( $gmb_loc_kpis[ $value['location_name'] ][ $firMonthDate ][ 'calls' ], 
-						$gmb_loc_kpis[ $value['location_name'] ][ $secMonthDate ][ 'calls' ]);
+				if (in_array($date_ref, array($firMonthDate, $secMonthDate))) {
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['clicks'] = $value['actions_website'];
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['direc'] = $value['actions_driving_directions'];
+					$gmb_loc_kpis[$value['location_name']][$date_ref]['calls'] = $value['actions_phone'];
+					$gmb_loc_kpi_diff[$value['location_name']]['clicks'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['clicks'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['clicks']);
+					$gmb_loc_kpi_diff[$value['location_name']]['direc'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['direc'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['direc']);
+					$gmb_loc_kpi_diff[$value['location_name']]['calls'] =
+						com_compKPI($gmb_loc_kpis[$value['location_name']][$firMonthDate]['calls'],
+						$gmb_loc_kpis[$value['location_name']][$secMonthDate]['calls']);
 				}
 				$gmb_data[$value['location_name']][] =
 				array(
@@ -1023,7 +1026,7 @@ class Report extends MY_Controller {
 				);
 			}
 		}
-						
+
 		$gmb_repo['gmb_data'] = $gmb_data;
 		$gmb_repo['gmb_locs'] = $gmb_locs;
 		$gmb_repo['gmb_loc_id'] = $gmb_loc_id;
@@ -1054,7 +1057,7 @@ class Report extends MY_Controller {
 		$inner['rankinity_report'] = $this->load->view('rankinity_report', $rank_repo, true);
 		$inner['rankinity_report_js'] = $this->load->view('rankinity_report_js', $rank_repo, true);
 
-		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');		
+		$linked_account_id = com_arrIndex($prodDet, 'linked_account_id', '');
 		$cc_repo['prof_id'] = $profId;
 		$cc_repo['cc_counts'] = $this->ReportModel->getCitationContentCount($linked_account_id);
 		$cc_repo['skip_det_link'] = 1;

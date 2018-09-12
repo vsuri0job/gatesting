@@ -368,7 +368,7 @@ class ReportModel extends CI_Model {
 	}
 
 	public function updateWebmasterData($data, $where, $rowData = true, $mRef = array()) {
-		if( $mRef ){
+		if ($mRef) {
 			$this->db->where_in("month_ref", $mRef);
 		}
 		$this->db->where($where)
@@ -424,8 +424,8 @@ class ReportModel extends CI_Model {
 		$ga_data_organic = array();
 		foreach ($months_tstamps as $mtstamp => $mDate) {
 			$month_ref = date('Y-m', $mtstamp);
-			$gaData = $this->fetchTotalTraffic($analytics, $month_ref, $viewId, $profId, $logUserId);
-			$gaDataOrganic = $this->fetchTotalTrafficOrganic($analytics, $month_ref, $viewId, $profId, $logUserId);
+			$gaData = $this->fetchTotalTraffic($analytics, $month_ref, $viewId, $profId, $logUserId, false);
+			$gaDataOrganic = $this->fetchTotalTrafficOrganic($analytics, $month_ref, $viewId, $profId, $logUserId, false);
 			$gaData['month_ref'] = date('F Y', $mtstamp);
 			$gaDataOrganic['month_ref'] = date('F Y', $mtstamp);
 			$ga_data[$month_ref] = $gaData;
@@ -434,18 +434,18 @@ class ReportModel extends CI_Model {
 		$out = array();
 		$out['ga_data'] = $ga_data;
 		$out['ga_data_organic'] = $ga_data_organic;
-		$out['ga_data_graph_data'] = $this->fetchViewGraphData($analytics, $viewId, $profId, $logUserId);
-		$out['ga_data_medium'] = $this->fetchMediumPerformance($analytics, $viewId, $profId, $logUserId);
-		$out['ga_data_source_medium'] = $this->fetchSourMediumPerformance($analytics, $viewId, $profId, $logUserId);
-		$out['ga_data_landing_page'] = $this->fetchLandingPagePerformance($analytics, $viewId, $profId, $logUserId);
+		$out['ga_data_graph_data'] = $this->fetchViewGraphData($analytics, $viewId, $profId, $logUserId, false);
+		$out['ga_data_medium'] = $this->fetchMediumPerformance($analytics, $viewId, $profId, $logUserId, false);
+		$out['ga_data_source_medium'] = $this->fetchSourMediumPerformance($analytics, $viewId, $profId, $logUserId, false);
+		$out['ga_data_landing_page'] = $this->fetchLandingPagePerformance($analytics, $viewId, $profId, $logUserId, false);
 		return $out;
 	}
 
-	private function fetchTotalTraffic($analytics, $month_ref, $viewId, $profId, $logUserId) {
+	private function fetchTotalTraffic($analytics, $month_ref, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$currMonthRef = date('Y-m', time());
 		$lastMonthRef = date('Y-m', strtotime("-1 months"));
 		$gaData = $this->fetchViewAnalyticData($month_ref, $viewId, $profId);
-		if (!$gaData || in_array($month_ref, array($currMonthRef, $lastMonthRef))) {
+		if (!$skipLiveData && (!$gaData || in_array($month_ref, array($currMonthRef, $lastMonthRef)))) {
 			$mtstamp = strtotime($month_ref . '-01');
 			$sday_month = date('Y-m-01', $mtstamp);
 			$lday_month = date('Y-m-t', $mtstamp);
@@ -489,11 +489,11 @@ class ReportModel extends CI_Model {
 		return $gaData;
 	}
 
-	private function fetchTotalTrafficOrganic($analytics, $month_ref, $viewId, $profId, $logUserId) {
+	private function fetchTotalTrafficOrganic($analytics, $month_ref, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$currMonthRef = date('Y-m', time());
 		$lastMonthRef = date('Y-m', strtotime("-1 months"));
 		$gaData = $this->fetchViewAnalyticDataOrganic($month_ref, $viewId, $profId);
-		if (!$gaData || in_array($month_ref, array($currMonthRef, $lastMonthRef))) {
+		if (!$skipLiveData && (!$gaData || in_array($month_ref, array($currMonthRef, $lastMonthRef)))) {
 			$mtstamp = strtotime($month_ref . '-01');
 			$sday_month = date('Y-m-01', $mtstamp);
 			$lday_month = date('Y-m-t', $mtstamp);
@@ -542,188 +542,236 @@ class ReportModel extends CI_Model {
 		return $gaData;
 	}
 
-	private function fetchViewGraphData($analytics, $viewId, $profId, $logUserId) {
+	private function fetchViewGraphData($analytics, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$sday_month = date('Y-m-01', strtotime('-30 days'));
 		$lday_month = date('Y-m-d', time());
 		$month_ref = date('Y-m', time());
-		$opt = array();
-		$opt['dimensions'] = 'ga:date';
-		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month, 'ga:sessions, ga:goalCompletionsAll', $opt);
-		$detailData = array();
-		$rIndex = 0;
-		$detailData[$rIndex]['view_id'] = $viewId;
-		$detailData[$rIndex]['report_type'] = 'session_graph';
-		$detailData[$rIndex]['month_ref'] = $month_ref;
-		$detailData[$rIndex]['account_id'] = $logUserId;
-		$detailData[$rIndex]['url_profile_id'] = $profId;
-		$detailData[$rIndex]['medium'] = '';
-		$detailData[$rIndex]['source_medium'] = '';
-		$detailData[$rIndex]['landing_page'] = '';
-		$detailData[$rIndex]['sessions'] = "";
-		$detailData[$rIndex]['users'] = "";
-		$detailData[$rIndex]['new_users'] = "";
-		$detailData[$rIndex]['per_new_sessions'] = "";
-		$detailData[$rIndex]['page_views'] = "";
-		$detailData[$rIndex]['page_view_per_sessions'] = "";
-		$detailData[$rIndex]['avg_session_duration'] = "";
-		$detailData[$rIndex]['bounce_rate'] = "";
-		$detailData[$rIndex]['avg_page_download_time'] = "";
-		$detailData[$rIndex]['goal_conversion_rate'] = "";
-		$detailData[$rIndex]['goal_completion_all'] = "";
-		$detailData[$rIndex]['session_data'] = json_encode($ga_rstdata->rows);
-		$whereStack = array();
-		$whereStack['view_id'] = $viewId;
-		$whereStack['month_ref'] = $month_ref;
-		$whereStack['account_id'] = $logUserId;
-		$whereStack['report_type'] = 'session_graph';
-		$whereStack['url_profile_id'] = $profId;
-		$this->updateGAdataDetail($whereStack, $detailData);
+		if (!$skipLiveData) {
+			$opt = array();
+			$opt['dimensions'] = 'ga:date';
+			$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+				$sday_month, $lday_month, 'ga:sessions, ga:goalCompletionsAll', $opt);
+			$detailData = array();
+			$rIndex = 0;
+			$detailData[$rIndex]['view_id'] = $viewId;
+			$detailData[$rIndex]['report_type'] = 'session_graph';
+			$detailData[$rIndex]['month_ref'] = $month_ref;
+			$detailData[$rIndex]['account_id'] = $logUserId;
+			$detailData[$rIndex]['url_profile_id'] = $profId;
+			$detailData[$rIndex]['medium'] = '';
+			$detailData[$rIndex]['source_medium'] = '';
+			$detailData[$rIndex]['landing_page'] = '';
+			$detailData[$rIndex]['sessions'] = "";
+			$detailData[$rIndex]['users'] = "";
+			$detailData[$rIndex]['new_users'] = "";
+			$detailData[$rIndex]['per_new_sessions'] = "";
+			$detailData[$rIndex]['page_views'] = "";
+			$detailData[$rIndex]['page_view_per_sessions'] = "";
+			$detailData[$rIndex]['avg_session_duration'] = "";
+			$detailData[$rIndex]['bounce_rate'] = "";
+			$detailData[$rIndex]['avg_page_download_time'] = "";
+			$detailData[$rIndex]['goal_conversion_rate'] = "";
+			$detailData[$rIndex]['goal_completion_all'] = "";
+			$detailData[$rIndex]['session_data'] = json_encode($ga_rstdata->rows);
+			$whereStack = array();
+			$whereStack['view_id'] = $viewId;
+			$whereStack['month_ref'] = $month_ref;
+			$whereStack['account_id'] = $logUserId;
+			$whereStack['report_type'] = 'session_graph';
+			$whereStack['url_profile_id'] = $profId;
+			$this->updateGAdataDetail($whereStack, $detailData);
+		} else {
+			$whereStack = array();
+			$whereStack['view_id'] = $viewId;
+			$whereStack['month_ref'] = $month_ref;
+			$whereStack['account_id'] = $logUserId;
+			$whereStack['report_type'] = 'session_graph';
+			$whereStack['url_profile_id'] = $profId;
+			$detailData = $this->db->from('analytic_profile_property_view_data_detail')
+				->where($whereStack)
+				->get()->result_array();
+		}
 		return $detailData;
 	}
 
-	private function fetchMediumPerformance($analytics, $viewId, $profId, $logUserId) {
+	private function fetchMediumPerformance($analytics, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$sday_month = date('Y-m-01', time());
 		$lday_month = date('Y-m-t', time());
 		$month_ref = date('Y-m', time());
-		$opt = array();
-		$opt['dimensions'] = 'ga:medium';
-		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month,
-			'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
-		$detailData = array();
-		if ($ga_rstdata->rows) {
-			foreach ($ga_rstdata->rows as $rIndex => $detRow) {
-				$pview_per_sessions = 0;
-				if ($detRow[7] && $detRow[3]) {
-					$pview_per_sessions = $detRow[7] / $detRow[3];
+		if (!$skipLiveData) {
+			$opt = array();
+			$opt['dimensions'] = 'ga:medium';
+			$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+				$sday_month, $lday_month,
+				'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
+			$detailData = array();
+			if ($ga_rstdata->rows) {
+				foreach ($ga_rstdata->rows as $rIndex => $detRow) {
+					$pview_per_sessions = 0;
+					if ($detRow[7] && $detRow[3]) {
+						$pview_per_sessions = $detRow[7] / $detRow[3];
+					}
+					$detailData[$rIndex]['view_id'] = $viewId;
+					$detailData[$rIndex]['report_type'] = 'medium';
+					$detailData[$rIndex]['month_ref'] = $month_ref;
+					$detailData[$rIndex]['account_id'] = $logUserId;
+					$detailData[$rIndex]['url_profile_id'] = $profId;
+					$detailData[$rIndex]['medium'] = $detRow[0];
+					$detailData[$rIndex]['source_medium'] = '';
+					$detailData[$rIndex]['landing_page'] = "";
+					$detailData[$rIndex]['sessions'] = $detRow[1];
+					$detailData[$rIndex]['users'] = $detRow[2];
+					$detailData[$rIndex]['new_users'] = $detRow[3];
+					$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
+					$detailData[$rIndex]['page_views'] = $detRow[5];
+					$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
+					$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
+					$detailData[$rIndex]['bounce_rate'] = $detRow[7];
+					$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
+					$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
+					$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
 				}
-				$detailData[$rIndex]['view_id'] = $viewId;
-				$detailData[$rIndex]['report_type'] = 'medium';
-				$detailData[$rIndex]['month_ref'] = $month_ref;
-				$detailData[$rIndex]['account_id'] = $logUserId;
-				$detailData[$rIndex]['url_profile_id'] = $profId;
-				$detailData[$rIndex]['medium'] = $detRow[0];
-				$detailData[$rIndex]['source_medium'] = '';
-				$detailData[$rIndex]['landing_page'] = "";
-				$detailData[$rIndex]['sessions'] = $detRow[1];
-				$detailData[$rIndex]['users'] = $detRow[2];
-				$detailData[$rIndex]['new_users'] = $detRow[3];
-				$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
-				$detailData[$rIndex]['page_views'] = $detRow[5];
-				$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
-				$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
-				$detailData[$rIndex]['bounce_rate'] = $detRow[7];
-				$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
-				$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
-				$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
+				$whereStack = array();
+				$whereStack['view_id'] = $viewId;
+				$whereStack['month_ref'] = $month_ref;
+				$whereStack['account_id'] = $logUserId;
+				$whereStack['report_type'] = 'medium';
+				$whereStack['url_profile_id'] = $profId;
+				$this->updateGAdataDetail($whereStack, $detailData);
 			}
+		} else {
 			$whereStack = array();
 			$whereStack['view_id'] = $viewId;
 			$whereStack['month_ref'] = $month_ref;
 			$whereStack['account_id'] = $logUserId;
 			$whereStack['report_type'] = 'medium';
 			$whereStack['url_profile_id'] = $profId;
-			$this->updateGAdataDetail($whereStack, $detailData);
+			$detailData = $this->db->from('analytic_profile_property_view_data_detail')
+				->where($whereStack)
+				->get()->result_array();
 		}
 		return $detailData;
 	}
 
-	private function fetchSourMediumPerformance($analytics, $viewId, $profId, $logUserId) {
+	private function fetchSourMediumPerformance($analytics, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$month_ref = date('Y-m', time());
 		$sday_month = date('Y-m-01', time());
 		$lday_month = date('Y-m-t', time());
-		$opt = array();
-		$opt['dimensions'] = 'ga:sourceMedium';
-		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month,
-			'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
-		$detailData = array();
-		if ($ga_rstdata->rows) {
-			foreach ($ga_rstdata->rows as $rIndex => $detRow) {
-				$pview_per_sessions = 0;
-				if ($detRow[7] && $detRow[3]) {
-					$pview_per_sessions = $detRow[7] / $detRow[3];
+		if (!$skipLiveData) {
+			$opt = array();
+			$opt['dimensions'] = 'ga:sourceMedium';
+			$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+				$sday_month, $lday_month,
+				'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
+			$detailData = array();
+			if ($ga_rstdata->rows) {
+				foreach ($ga_rstdata->rows as $rIndex => $detRow) {
+					$pview_per_sessions = 0;
+					if ($detRow[7] && $detRow[3]) {
+						$pview_per_sessions = $detRow[7] / $detRow[3];
+					}
+					$detailData[$rIndex]['report_type'] = 'source_medium';
+					$detailData[$rIndex]['view_id'] = $viewId;
+					$detailData[$rIndex]['month_ref'] = $month_ref;
+					$detailData[$rIndex]['account_id'] = $logUserId;
+					$detailData[$rIndex]['url_profile_id'] = $profId;
+					$detailData[$rIndex]['medium'] = '';
+					$detailData[$rIndex]['source_medium'] = $detRow[0];
+					$detailData[$rIndex]['landing_page'] = "";
+					$detailData[$rIndex]['sessions'] = $detRow[1];
+					$detailData[$rIndex]['users'] = $detRow[2];
+					$detailData[$rIndex]['new_users'] = $detRow[3];
+					$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
+					$detailData[$rIndex]['page_views'] = $detRow[5];
+					$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
+					$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
+					$detailData[$rIndex]['bounce_rate'] = $detRow[7];
+					$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
+					$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
+					$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
 				}
-				$detailData[$rIndex]['report_type'] = 'source_medium';
-				$detailData[$rIndex]['view_id'] = $viewId;
-				$detailData[$rIndex]['month_ref'] = $month_ref;
-				$detailData[$rIndex]['account_id'] = $logUserId;
-				$detailData[$rIndex]['url_profile_id'] = $profId;
-				$detailData[$rIndex]['medium'] = '';
-				$detailData[$rIndex]['source_medium'] = $detRow[0];
-				$detailData[$rIndex]['landing_page'] = "";
-				$detailData[$rIndex]['sessions'] = $detRow[1];
-				$detailData[$rIndex]['users'] = $detRow[2];
-				$detailData[$rIndex]['new_users'] = $detRow[3];
-				$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
-				$detailData[$rIndex]['page_views'] = $detRow[5];
-				$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
-				$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
-				$detailData[$rIndex]['bounce_rate'] = $detRow[7];
-				$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
-				$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
-				$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
+				$whereStack = array();
+				$whereStack['view_id'] = $viewId;
+				$whereStack['month_ref'] = $month_ref;
+				$whereStack['account_id'] = $logUserId;
+				$whereStack['url_profile_id'] = $profId;
+				$whereStack['report_type'] = 'source_medium';
+				$this->updateGAdataDetail($whereStack, $detailData);
 			}
+		} else {
 			$whereStack = array();
 			$whereStack['view_id'] = $viewId;
 			$whereStack['month_ref'] = $month_ref;
 			$whereStack['account_id'] = $logUserId;
+			$whereStack['report_type'] = 'medium';
 			$whereStack['url_profile_id'] = $profId;
-			$whereStack['report_type'] = 'source_medium';
-			$this->updateGAdataDetail($whereStack, $detailData);
+			$detailData = $this->db->from('analytic_profile_property_view_data_detail')
+				->where($whereStack)
+				->get()->result_array();
 		}
 		return $detailData;
 	}
 
-	private function fetchLandingPagePerformance($analytics, $viewId, $profId, $logUserId) {
+	private function fetchLandingPagePerformance($analytics, $viewId, $profId, $logUserId, $skipLiveData = false) {
 		$month_ref = date('Y-m', time());
 		$sday_month = date('Y-m-01', time());
 		$lday_month = date('Y-m-t', time());
-		$opt = array();
-		$opt['dimensions'] = 'ga:landingPagePath';
-		$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
-			$sday_month, $lday_month,
-			'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
-		$detailData = array();
-		if ($ga_rstdata->rows) {
-			foreach ($ga_rstdata->rows as $rIndex => $detRow) {
-				$pview_per_sessions = 0;
-				if ($detRow[7] && $detRow[3]) {
-					$pview_per_sessions = $detRow[7] / $detRow[3];
+		if (!$skipLiveData) {
+			$opt = array();
+			$opt['dimensions'] = 'ga:landingPagePath';
+			$ga_rstdata = $analytics->data_ga->get('ga:' . $viewId,
+				$sday_month, $lday_month,
+				'ga:sessions, ga:users, ga:newUsers, ga:percentNewSessions, ga:pageviews, ga:avgSessionDuration, ga:bounceRate, ga:avgPageDownloadTime, ga:goalConversionRateAll, ga:goalCompletionsAll', $opt);
+			$detailData = array();
+			if ($ga_rstdata->rows) {
+				foreach ($ga_rstdata->rows as $rIndex => $detRow) {
+					$pview_per_sessions = 0;
+					if ($detRow[7] && $detRow[3]) {
+						$pview_per_sessions = $detRow[7] / $detRow[3];
+					}
+					$detailData[$rIndex]['report_type'] = 'landing_page';
+					$detailData[$rIndex]['view_id'] = $viewId;
+					$detailData[$rIndex]['month_ref'] = $month_ref;
+					$detailData[$rIndex]['account_id'] = $logUserId;
+					$detailData[$rIndex]['url_profile_id'] = $profId;
+					$detailData[$rIndex]['medium'] = '';
+					$detailData[$rIndex]['source_medium'] = "";
+					$detailData[$rIndex]['landing_page'] = $detRow[0];
+					$detailData[$rIndex]['sessions'] = $detRow[1];
+					$detailData[$rIndex]['users'] = $detRow[2];
+					$detailData[$rIndex]['new_users'] = $detRow[3];
+					$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
+					$detailData[$rIndex]['page_views'] = $detRow[5];
+					$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
+					$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
+					$detailData[$rIndex]['bounce_rate'] = $detRow[7];
+					$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
+					$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
+					$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
 				}
-				$detailData[$rIndex]['report_type'] = 'landing_page';
-				$detailData[$rIndex]['view_id'] = $viewId;
-				$detailData[$rIndex]['month_ref'] = $month_ref;
-				$detailData[$rIndex]['account_id'] = $logUserId;
-				$detailData[$rIndex]['url_profile_id'] = $profId;
-				$detailData[$rIndex]['medium'] = '';
-				$detailData[$rIndex]['source_medium'] = "";
-				$detailData[$rIndex]['landing_page'] = $detRow[0];
-				$detailData[$rIndex]['sessions'] = $detRow[1];
-				$detailData[$rIndex]['users'] = $detRow[2];
-				$detailData[$rIndex]['new_users'] = $detRow[3];
-				$detailData[$rIndex]['per_new_sessions'] = $detRow[4];
-				$detailData[$rIndex]['page_views'] = $detRow[5];
-				$detailData[$rIndex]['page_view_per_sessions'] = $pview_per_sessions;
-				$detailData[$rIndex]['avg_session_duration'] = $detRow[6];
-				$detailData[$rIndex]['bounce_rate'] = $detRow[7];
-				$detailData[$rIndex]['avg_page_download_time'] = $detRow[8];
-				$detailData[$rIndex]['goal_conversion_rate'] = $detRow[9];
-				$detailData[$rIndex]['goal_completion_all'] = $detRow[10];
+				$whereStack = array();
+				$whereStack['view_id'] = $viewId;
+				$whereStack['month_ref'] = $month_ref;
+				$whereStack['account_id'] = $logUserId;
+				$whereStack['url_profile_id'] = $profId;
+				$whereStack['report_type'] = 'landing_page';
+				$this->updateGAdataDetail($whereStack, $detailData);
 			}
+		} else {
 			$whereStack = array();
 			$whereStack['view_id'] = $viewId;
 			$whereStack['month_ref'] = $month_ref;
 			$whereStack['account_id'] = $logUserId;
 			$whereStack['url_profile_id'] = $profId;
 			$whereStack['report_type'] = 'landing_page';
-			$this->updateGAdataDetail($whereStack, $detailData);
+			$detailData = $this->db->from('analytic_profile_property_view_data_detail')
+				->where($whereStack)
+				->get()->result_array();
 		}
 		return $detailData;
 	}
 
-	public function updateUrlWebMasterData($prodDet, $monthNum){
+	public function updateUrlWebMasterData($prodDet, $monthNum) {
 		$prof_id = $prodDet['id'];
 		$webmaster_site = $prodDet['linked_webmaster_site'];
 		$opt = array();
@@ -740,7 +788,7 @@ class ReportModel extends CI_Model {
 			'clicks' => '', 'ctr' => '', 'impressions' => '', 'server_error' => '', 'url_profile_id' => '',
 			'soft_404' => '', 'not_found' => '', 'other' => '', 'total_pages' => '', 'total_links' => '',
 		);
-		// webmasters.urlcrawlerrorscounts.query		
+		// webmasters.urlcrawlerrorscounts.query
 		$wmKpi = $flds;
 		$wmKpi['report_type'] = 'kpi';
 		$wmKpi['url_profile_id'] = $prodDet['id'];
@@ -752,7 +800,7 @@ class ReportModel extends CI_Model {
 		foreach ($kpiStack as $kKey => $kVal) {
 			$opts = array();
 			$opts['platform'] = 'web';
-			$opts['category'] = $kKey;			
+			$opts['category'] = $kKey;
 			$webResult = $webMaster->urlcrawlerrorscounts->query($webmaster_site, $opts);
 			if ($webResult && isset($webResult->countPerTypes)) {
 				if (isset($webResult->countPerTypes[0])) {
@@ -792,9 +840,9 @@ class ReportModel extends CI_Model {
 		}
 		$months_tstamps = com_lastMonths($monthNum);
 		$web_month_data = array();
-		$monthUpRef = array();		
+		$monthUpRef = array();
 		foreach ($months_tstamps as $mtstamp => $mDate) {
-			$month_ref = date('Y-m-01', $mtstamp);			
+			$month_ref = date('Y-m-01', $mtstamp);
 			$lday_month = date('Y-m-t', $mtstamp);
 			$sday_month = date('Y-m-01', $mtstamp);
 			$reqObj = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
