@@ -21,7 +21,7 @@
         $("#adwordProject").val();
     	// $("#adwordProject").attr('disabled', true);
         $("#progressBar").removeClass('hide');
-    	processCounter = setInterval(updateProcess, 2000);
+    	processCounter = setInterval(updateProcess, 3500);
     	$("#update_adwords").attr('disabled', true);
     });
 </script>

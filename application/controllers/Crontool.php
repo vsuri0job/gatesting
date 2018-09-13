@@ -10,6 +10,8 @@ class Crontool extends CI_Controller {
 		$this->load->model('ReportModel');
 		$this->load->model('AccountModel');
 		$this->load->model('SocialappModel');
+		$this->loaddata->loadConst();
+		$this->load->library('Rankinity', RANKINITY_KEY);
 	}
 
 	public function index($to = 'World') {
@@ -35,7 +37,9 @@ class Crontool extends CI_Controller {
 				if (!$urlProfile[$fldRef . "_reset_token"]) {
 					if ($socRef == 'mbusiness') {
 						$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($urlProfile['id']);
-						$this->SocialappModel->updateProfileGBuissData($fetchedProfile, 2);
+						if( $fetchedProfile[ 'linked_google_page_location' ] ){
+							$this->SocialappModel->updateProfileGBuissData($fetchedProfile, 2);
+						}
 					}
 					if ($socRef == 'analytic') {
 						$access_token = $urlProfile[$fldRef . "_access_token"];
@@ -56,8 +60,8 @@ class Crontool extends CI_Controller {
 					}
 					if ($socRef == 'adwords') {
 						$access_token = $urlProfile[$fldRef . "_access_token"];
-						$refresh_token = $urlProfile[$fldRef . "_refresh_token"];
-						if ($access_token && $refresh_token) {
+						$refresh_token = $urlProfile[$fldRef . "_refresh_token"];						
+						if ($access_token && $refresh_token && $urlProfile["linked_adwords_acc_id"]) {
 							$this->AccountModel->updateGoogleAdwordsData($urlProfile, $urlProfile['account_id'], 2);
 						}
 					}
@@ -74,7 +78,7 @@ class Crontool extends CI_Controller {
 				$urlProfile['linked_rankinity_id']) {
 				$rankProj = array();
 				$rankProj['rankinity_project_id'] = $urlProfile['linked_rankinity_id'];
-				$this->AccountModel->linkRankinityAccount($rankinityProj, $urlProfile['id']);
+				$this->AccountModel->linkRankinityAccount($rankProj, $urlProfile['id']);
 			}
 		}
 	}
@@ -86,21 +90,23 @@ class Crontool extends CI_Controller {
 			'webmaster' => 'gsc',
 		);
 		$urlProf = $profDet;
+		$prof_id = $profDet['id'];
+		$account_id = $profDet['account_id'];
 		foreach ($socialAcc as $socRef => $fldRef) {
-			$access_token = $profDet[$fldRef."_access_token"];
-			$refresh_token = $profDet[$fldRef."_refresh_token"];
+			$access_token = $urlProf[$fldRef."_access_token"];
+			$refresh_token = $urlProf[$fldRef."_refresh_token"];
 			if ($access_token && $refresh_token) {
 				$opt = array();
 				$opt['prod'] = $socRef;
-				$opt['profId'] = $profDet['id'];
-				$opt['log_user_id'] = $profDet['account_id'];
+				$opt['profId'] = $prof_id;
+				$opt['log_user_id'] = $account_id;
 				$opt['access_token'] = $access_token;
 				$opt['refresh_token'] = $refresh_token;
 				$ctoken = $this->loaddata->updateGoogleTokens(true, $opt);
 				$client = $ctoken['client'];
 				$access_token = $client->getAccessToken();
 				$refresh_token = $client->getRefreshToken();
-				$profDet = $ctoken['profile_detail'];
+				$profDet = array_merge($profDet, $ctoken['profile_detail']);
 			}
 		}
 		$urlProf = array_merge($urlProf, $profDet);

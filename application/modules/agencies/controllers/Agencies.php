@@ -83,11 +83,10 @@ class Agencies extends MY_Controller {
 			$data[ 'company_name' ] = $company_name;			
 			if (isset($_FILES['logo'])) {
 				$config['encrypt_name'] = TRUE;
-				$config['upload_path'] = 'uploads/agency_user_report_logo/';
-				$config['allowed_types'] = 'gif|jpg|png';
+				$config['upload_path'] = 'uploads/report_logo/';				
 				$this->load->library('upload', $config);
 				if (!$this->upload->do_upload('logo')) {
-					// $inner['file_error'] = array('error' => $this->upload->display_errors());
+					$inner['file_error'] = array('error' => $this->upload->display_errors());
 					// return false;
 				} else {
 					$logoData = array('upload_data' => $this->upload->data());

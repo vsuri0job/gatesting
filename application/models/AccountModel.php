@@ -544,10 +544,13 @@ class AccountModel extends CI_Model {
 	}
 
 	public function getProfiles() {
+		$sadmin = com_user_data('is_super_admin');
+		if( !$sadmin ){
+			$this->db->where('account_url_profiles.account_id', com_user_data('id'));
+		}
 		return $this->db->select('account_url_profiles_social_token.*, account_url_profiles.*')
 			->from('account_url_profiles')
 			->join('account_url_profiles_social_token', 'account_url_profiles.id=account_url_profiles_social_token.profile_id', 'left')
-			->where('account_url_profiles.account_id', com_user_data('id'))
 			->get()->result_array();
 	}
 

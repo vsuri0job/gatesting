@@ -11,6 +11,12 @@
                 </div>
             </div>
             <div class="card-body">
+                <?php
+                    $errors = validation_errors();
+                    if( $errors ){
+                        echo ul($errors, array( 'class' => 'form-contrl text-danger' ));
+                    }
+                ?>
                 <form action="<?= base_url( 'agencies/add_user/'.$agency[ 'id' ] ) ?>" class="form-horizontal" 
                     id="add_agency" method="POST">
                     <div class="form-body">
@@ -20,7 +26,10 @@
                                     <label class="control-label text-right col-md-2">Company Name</label>
                                     <div class="col-md-10">                                        
                                         <input  type="text" name="company_name" 
-                                                id="company_name" class="form-control" required>
+                                                id="company_name" 
+                                                class="form-control" 
+                                                required
+                                                value="<?= set_value( 'company_name' ); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -31,6 +40,7 @@
                                     <label class="control-label text-right col-md-2">Email</label>
                                     <div class="col-md-10">                                        
                                         <input  type="text" name="email" 
+                                                value="<?= set_value( 'email' ); ?>"
                                                 id="email" class="form-control" required>
                                     </div>
                                 </div>
@@ -52,7 +62,9 @@
                                 <div class="form-group row">
                                     <label class="control-label text-right col-md-2">Logo</label>
                                     <div class="col-md-10">                                        
-                                        <input type="file" name="logo">
+                                        <input type="file" name="logo"
+                                        accept="image/*" 
+                                        >
                                     </div>
                                 </div>
                             </div>

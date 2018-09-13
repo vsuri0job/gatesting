@@ -15,6 +15,11 @@ class Social extends MY_Controller {
 
 	public function google($prod, $profId) {
 		$fetchedProfile = $this->AccountModel->getFetchedAccountDetail($profId);
+		if( $fetchedProfile[ 'account_id' ] !== com_user_data('id') ){			
+			$this->session->set_flashdata('emsg', 'You are not authorised!');
+			redirect('accounts/ulist');
+			exit;
+		}
 		$ex_state = "";
 		$fldCheck = "";
 		switch ($prod) {
@@ -129,8 +134,11 @@ class Social extends MY_Controller {
 						$opt['access_token'] = $access_token;
 						$opt['refresh_token'] = $refresh_token;
 						$opt['clientCustomerId'] = $ex["CUS_ID"];
-						$opt['log_user_id'] = com_user_data('id');
+						$opt['log_user_id'] = com_user_data('id');						
 						$adWordsAccounts = $this->adwords->getList($opt);
+						if( !$adWordsAccounts ){
+							$adWordsAccounts = $this->adwords->getCustomers($opt);
+						}
 						if (is_array($adWordsAccounts) && $adWordsAccounts) {
 							$rsWhere = array();
 							$rsWhere['prof_id'] = $sD['PID'];
@@ -139,6 +147,8 @@ class Social extends MY_Controller {
 							$this->SocialappModel->linkProfileAdword($sD['PID'], $ex["CUS_ID"]);
 						} else if (is_string($adWordsAccounts) && $adWordsAccounts) {
 							$this->session->set_flashdata('emsg', $adWordsAccounts);
+							$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID'], true);
+						} else {
 							$this->SocialappModel->updateGoogleTokens($sD['PROD'], $access_token, $refresh_token, $sD['PID'], true);
 						}
 					} else if ($sD['PROD'] == 'mbusiness') {
@@ -505,7 +515,8 @@ class Social extends MY_Controller {
 			$inner = array();
 			$shell = array();
 			$optHtml = '';
-			com_makelistElemFromTable($this, 'adword_account_list', 'account_id', 'account_name', 'parent_account_id', 0, $where, $optHtml);
+			com_makelistElemFromTable($this, 'adword_account_list', 'account_id', 'account_name', 'parent_account_id', 0, 
+				$where, $optHtml);
 			$log_user_id = com_user_data('id');
 			$inner['profile'] = $fetchedProfile;
 			$inner['projects'] = $optHtml;

@@ -73,6 +73,7 @@ class Accounts extends MY_Controller {
 		$inner = array();
 		$shell = array();
 		$emsg = $this->session->flashdata('emsg');
+		//com_e( $emsg );
 		if ($emsg) {
 			$inner['emsg'] = $emsg;
 		}
@@ -203,7 +204,7 @@ class Accounts extends MY_Controller {
 			if (isset($_FILES['report_logo'])) {
 				$config['encrypt_name'] = TRUE;
 				$config['upload_path'] = 'uploads/report_logo/';
-				$config['allowed_types'] = 'gif|jpg|png';
+				$config['allowed_types'] = 'gif|jpg|png|jpeg';
 				$this->load->library('upload', $config);
 				if (!$this->upload->do_upload('report_logo')) {
 					$inner['file_error'] = array('error' => $this->upload->display_errors());

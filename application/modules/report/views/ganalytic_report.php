@@ -3,10 +3,12 @@
             <div class="row" style="margin-top:-50px">
                 <div class="col-lg-6"></div>
                 <div class="col-lg-6 text-right">
-                    <?php if( isset( $log_user_det[ 'report_logo' ] ) ){ 
+                    <?php if( isset( $report_setting[ 'report_logo' ] ) 
+                    && $report_setting[ 'report_logo' ]){ 
                         $iattr = array();
-                        $iattr[ 'style' ] = ' width="100px" height="100px"';
-                        echo img("/uploads/report_logo/".$log_user_det[ 'report_logo' ], "", $iattr);
+                        $iattr[ 'style' ] = ' width="100px" height="100px" ';
+                        $iattr[ 'accept' ] = ' image/png,image/gif,image/jpg ';
+                        echo img("/uploads/report_logo/".$report_setting[ 'report_logo' ], "", $iattr);
                     } ?>            
                 </div>
             </div>

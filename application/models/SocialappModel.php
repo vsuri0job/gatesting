@@ -57,9 +57,9 @@ class SocialappModel extends CI_Model {
 			$fldRef = $prodType == 'mbusiness' ? 'gmb'
 			: ($prodType == 'adwords' ? 'adword' : ($prodType == 'analytic' ? 'analytic' : ''));
 			if ($fldRef) {
-				$data["$fldRef_refresh_token"] = "";
-				$data["$fldRef_access_token"] = "";
-				$data["$fldRef_token_expiration_time"] = date('Y-m-d h:i:s', time());
+				$data[$fldRef."_refresh_token"] = "";
+				$data[$fldRef."_access_token"] = "";
+				$data[$fldRef."_token_expiration_time"] = date('Y-m-d h:i:s', time());
 			}
 		}
 		if (!$profData) {

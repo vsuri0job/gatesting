@@ -61,7 +61,7 @@ class Adwords {
         if( isset( $params[ 'clientCustomerId' ] ) ){
             $opt[ 'ADWORDS' ][ 'clientCustomerId' ] = $params[ 'clientCustomerId' ];
         }
-        if( isset( $params[ 'customerIdMode' ] ) ){            
+        if( isset( $params[ 'customerIdMode' ] ) ){  
             $opt[ 'ADWORDS' ][ 'clientCustomerId' ] = $params[ 'customerIdMode' ];
         }
         $this->config_path = $this->resetAdwordConfig( $opt );
@@ -171,18 +171,34 @@ class Adwords {
         }
     }
 
-    // public function getList(  $opt = array()  ){        
-    //     $session = $this->getAdwordSession( $opt );
-    //     $adWordsServices = new AdWordsServices();
-    //     $customerService = $adWordsServices->get(
-    //         $session, CustomerService::class
-    //     );
-    //     com_e( $customerService->getCustomers() );
-    // }
+    public function getCustomers(  $opt = array()  ){
+        $prof_id = $opt[ 'profId' ];
+        $log_user_id = $opt[ 'log_user_id' ];
+        $session = $this->getAdwordSession( $opt );
+        $adWordsServices = new AdWordsServices();
+        $customerService = $adWordsServices->get(
+            $session, CustomerService::class
+        );
+        $cusDets = $customerService->getCustomers();
+        $accStack = [];
+        if( $cusDets ){
+            foreach ($cusDets as $cusDet) {                
+                $accStack[] = array(
+                    'depth' => 0,
+                    'prof_id' => $prof_id,
+                    'account_id' => $cusDet->getCustomerId(),
+                    'log_acc_id' => $log_user_id,
+                    'account_name' => $cusDet->getDescriptiveName(),
+                    'parent_account_id' => 0,
+                );
+            }
+        }
+        return $accStack;
+    }
 
     public function getList( $opt = array() ){
         $prof_id = $opt[ 'profId' ];
-        $log_user_id = $opt[ 'log_user_id' ];        
+        $log_user_id = $opt[ 'log_user_id' ];
         $session = $this->getAdwordSession( $opt );
         $adWordsServices = new AdWordsServices();
         $managedCustomerService = $adWordsServices->get(

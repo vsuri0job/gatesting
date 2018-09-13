@@ -86,7 +86,7 @@
 
     <div class="m-b-10">
         <?php 
-        if( $profDet[ 'linked_trello_board_id' ]){
+        if( $profDet[ 'linked_trello_board_id' ] && $tboard_cards){
             echo '<h4 class="m-b-10">Trello Report</h4>';
             echo $tboard_report;
         }

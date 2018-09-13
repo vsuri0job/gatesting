@@ -93,8 +93,9 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/ulist');
-				exit;
+				$log_user_id = $prodDet['account_id'];
+				// redirect('accounts/ulist');
+				// exit;
 			}
 		}
 		$viewId = $prodDet['view_id'];
@@ -161,7 +162,7 @@ class Report extends MY_Controller {
 				$month = substr($value[0], 4, 2);
 				$day = substr($value[0], 6, 2);
 				$chart_graph[$key]['date'] = date('d-M-y', strtotime($year . '-' . $month . '-' . $day));
-				$chart_graph[$key]['date'] = date('Y-m-d', strtotime($year . '-' . $month . '-' . $day));
+				$chart_graph[$key]['date'] = date('d-m-y', strtotime($year . '-' . $month . '-' . $day));
 				$chart_graph[$key]['sess'] = $value[1];
 				$chart_graph[$key]['conversion'] = com_arrIndex($value, 2, 0);
 			}
@@ -169,7 +170,7 @@ class Report extends MY_Controller {
 		$inner['chart_graph'] = $chart_graph;
 		$inner['report_setting'] = $this->AccountModel->getFetchedAccountDetailSetting($prof_id, com_user_data('id'));
 		$inner['lastMonthHtml'] = $this->load->view('sub_views/lastMonthGAnalytics', $inner, true);
-		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);
+		$inner['currMonthHtml'] = $this->load->view('sub_views/currentMonthGAnalytic', $inner, true);		
 		$inner['prodDet'] = $prodDet;
 		$inner['show_public_url'] = !$publicView;
 		$inner['log_user_det'] = com_get_user_data($log_user_id);
@@ -194,8 +195,9 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/ulist');
-				exit;
+				$log_user_id = $prodDet['account_id'];
+				// redirect('accounts/ulist');
+				// exit;
 			}
 		}
 		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');
@@ -236,8 +238,9 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/ulist');
-				exit;
+				$log_user_id = $prodDet['account_id'];
+				// redirect('accounts/ulist');
+				// exit;
 			}
 		}
 		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');
@@ -568,8 +571,8 @@ class Report extends MY_Controller {
 		}
 		$log_user_id = com_user_data('id');
 		if ($log_user_id != $prodDet['account_id']) {
-			redirect('accounts/ulist');
-			exit;
+			// redirect('accounts/ulist');
+			// exit;
 		}
 		$url = base_url('report/citation_and_content/' . $prof_id);
 		$this->breadcrumb->addElement('Citation & Content', $url);
@@ -639,8 +642,8 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $rankProfile['account_id']) {
-				redirect('accounts/ulist');
-				exit;
+				// redirect('accounts/ulist');
+				// exit;
 			}
 		}
 		$inner = array();
@@ -713,8 +716,9 @@ class Report extends MY_Controller {
 		} else {
 			$log_user_id = com_user_data('id');
 			if ($log_user_id != $prodDet['account_id']) {
-				redirect('accounts/ulist');
-				exit;
+				$log_user_id = $prodDet['account_id'];
+				// redirect('accounts/ulist');
+				// exit;
 			}
 		}
 		// $this->breadcrumb->addElement('Google Adwords', 'report/gadwordreport');
@@ -1069,6 +1073,7 @@ class Report extends MY_Controller {
 		$trello = array();
 		$trelloToken = com_arrIndex($prodDet, 'trello_access_token', '');
 		$trello_board_id = com_arrIndex($prodDet, 'linked_trello_board_id', '');
+		$hasTrelloCards = false;
 		if ($trelloToken && $trello_board_id) {
 			$trello['board'] = $trello['cards'] = array();
 			$trello['cardLists'] = array('curr_mon' => '', 'last_mon' => '');
@@ -1114,12 +1119,24 @@ class Report extends MY_Controller {
 						}
 					}
 				}
+			}			
+			if( $cardLists ){
+				foreach($cardLists as $monthRef => $listDet){
+					if( $listDet ){
+						foreach( $cards as $cIndex => $card ){
+							if( $card->idList == $listDet->id && !$card->closed ){
+								$hasTrelloCards = true;
+							}
+						}
+					}
+				}
 			}
 			$trello['board'] = $this->ReportModel->getBoardDetail($trello_board_id);
 			$trello['cards'] = $cards;
 			$trello['cardLists'] = $cardLists;
 			$trello['skip_det_link'] = 1;
-			$trello['report_setting'] = $report_setting;
+			$trello['report_setting'] = $report_setting;			
+			$inner['tboard_cards'] = $hasTrelloCards;
 			$inner['tboard_report'] = $this->load->view('tboard_report', $trello, true);
 			$inner['tboard_report_js'] = $this->load->view('tboard_report_js', $trello, true);
 		}
