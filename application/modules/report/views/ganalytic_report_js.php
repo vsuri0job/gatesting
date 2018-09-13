@@ -8,18 +8,23 @@
 <script type="text/javascript">
 	$( document ).ready( function(){
 		$('#total-traffic').DataTable({
+            "paging":   false,
             "order": []
         });
 		$('#organic-traffic').DataTable({
+            "paging":   false,
             "order": []
         });
 		$('#medium-traffic').DataTable({
+            "paging":   false,
             "order": []
         });
 		$('#source-traffic').DataTable({
+            "paging":   false,
             "order": []
         });
 		$('#landing-traffic').DataTable({
+            "paging":   false,
             "order": []
         });
 	});

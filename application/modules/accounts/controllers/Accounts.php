@@ -188,6 +188,7 @@ class Accounts extends MY_Controller {
 			$data = array();
 			$data['close_rate'] = $this->input->post('close_rate');
 			$data['ltv_amount'] = $this->input->post('ltv_amount');
+			$data['cost_con_trgt'] = $this->input->post('cost_con_trgt');
 			$data['avg_sale_amount'] = $this->input->post('avg_sale_amount');
 			$this->AccountModel->updateProfile($profDet['id'], $data);
 			$data = array();

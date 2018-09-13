@@ -489,6 +489,7 @@ class AccountModel extends CI_Model {
 		$data['account_id'] = com_user_data('id');
 		$data['close_rate'] = (float) $this->input->post('close_rate');
 		$data['ltv_amount'] = (float) $this->input->post('ltv_amount');
+		$data['cost_con_trgt'] = (float) $this->input->post('cost_con_trgt');
 		$data['account_url'] = $this->input->post('account_url');
 		$data['avg_sale_amount'] = (float) $this->input->post('avg_sale_amount');
 		$this->db->insert('account_url_profiles', $data);

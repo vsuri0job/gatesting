@@ -59,5 +59,15 @@
       </div>
       <div class="col-8"></div>
     </div>
+    <div class="form-group row">
+      <label for="cost_con_trgt" class="col-2 col-form-label">Cost / Conv. Target</label>
+      <div class="col-2">
+        <span>$</span>
+        <input  class="form-control"  style="width: 90%"
+                type="number" value="0.00" min="0" value="0" step=".01"
+                id="cost_con_trgt" required name="cost_con_trgt">
+      </div>
+      <div class="col-8"></div>
+    </div>
   <button type="submit" class="btn btn-success waves-effect waves-light float-right">Submit</button>
 </form>

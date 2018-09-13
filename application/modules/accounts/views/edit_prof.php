@@ -55,11 +55,21 @@
       <div class="col-8"></div>
     </div>
     <div class="form-group row">
+      <label for="cost_con_trgt" class="col-2 col-form-label">Cost / Conv. Target</label>
+      <div class="col-2">
+        <span>$</span>
+        <input  class="form-control"  style="width: 90%"
+                type="number" value="<?=$profDet['cost_con_trgt']?>" min="0" value="0" step=".01"
+                id="cost_con_trgt" required name="cost_con_trgt">
+      </div>
+      <div class="col-8"></div>
+    </div>
+    <div class="form-group row">
       <label for="report_logo" class="col-2 col-form-label">Report Logo
       </label>
       <div class="col-4">
         <input  class="form-control"
-                type="file" id="report_logo" required name="report_logo">
+                type="file" id="report_logo" name="report_logo">
       </div>
       <div class="col-6"></div>
     </div>
